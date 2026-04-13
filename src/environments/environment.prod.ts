@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  apiUrl: '/api/v1',
+  apiUrl: 'https://perc-suppliers-api-production.up.railway.app/api/v1',
 };
