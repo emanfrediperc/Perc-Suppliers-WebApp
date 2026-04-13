@@ -1,4 +1,4 @@
-import { Component, input } from '@angular/core';
+import { Component, input, ChangeDetectionStrategy } from '@angular/core';
 
 @Component({
   selector: 'app-glass-card',
@@ -14,6 +14,7 @@ import { Component, input } from '@angular/core';
     .card-title { font-size: 1rem; font-weight: 600; color: var(--color-gray-900); margin-bottom: 1rem; }
     :host { display: block; }
   `],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class GlassCardComponent {
   title = input<string>('');

@@ -1,4 +1,4 @@
-import { Component, input, signal, OnInit, effect } from '@angular/core';
+import { Component, input, signal, OnInit, effect, ChangeDetectionStrategy } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ComentarioService, Comentario } from '../../services/comentario.service';
@@ -64,6 +64,7 @@ import { ComentarioService, Comentario } from '../../services/comentario.service
     }
     @keyframes spin { to { transform: rotate(360deg); } }
   `],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ComentariosSectionComponent implements OnInit {
   entidad = input.required<string>();

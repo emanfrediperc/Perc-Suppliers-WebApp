@@ -1,4 +1,4 @@
-import { Component, input, output } from '@angular/core';
+import { Component, input, output, ChangeDetectionStrategy } from '@angular/core';
 import { GlassModalComponent } from '../glass-modal/glass-modal';
 
 @Component({
@@ -20,6 +20,7 @@ import { GlassModalComponent } from '../glass-modal/glass-modal';
     .confirm-actions .btn-primary, .confirm-actions .btn-secondary { padding: 0.625rem 1.25rem; font-size: 0.875rem; }
     .danger { --c: var(--color-error); }
   `],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ConfirmDialogComponent {
   open = input(false);

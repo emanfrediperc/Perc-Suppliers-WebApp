@@ -1,13 +1,14 @@
-import { Component, input, output, signal, computed, effect } from '@angular/core';
+import { Component, input, output, signal, computed, effect, ChangeDetectionStrategy } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { GlassModalComponent } from '../../../shared/glass-modal/glass-modal';
+import { NumberFormatDirective } from '../../../shared/number-format/number-format.directive';
 import { ConvenioService } from '../../../services/convenio.service';
 import { Convenio } from '../../../models';
 
 @Component({
   selector: 'app-convenio-form-modal',
   standalone: true,
-  imports: [FormsModule, GlassModalComponent],
+  imports: [FormsModule, GlassModalComponent, NumberFormatDirective],
   template: `
     <app-glass-modal [open]="open()" [title]="isEdit() ? 'Editar Convenio' : 'Nuevo Convenio'" subtitle="Configura las reglas del convenio" (close)="onClose()">
       <form (ngSubmit)="onSubmit()" class="form">
@@ -22,11 +23,11 @@ import { Convenio } from '../../../models';
           </div>
           <div class="form-group">
             <label>Comision (%)</label>
-            <input type="number" [(ngModel)]="comisionPorcentaje" name="comision" min="0" max="100" step="0.01" />
+            <input appNumberFormat [decimals]="2" [(ngModel)]="comisionPorcentaje" name="comision" min="0" />
           </div>
           <div class="form-group">
             <label>Descuento (%)</label>
-            <input type="number" [(ngModel)]="descuentoPorcentaje" name="descuento" min="0" max="100" step="0.01" />
+            <input appNumberFormat [decimals]="2" [(ngModel)]="descuentoPorcentaje" name="descuento" min="0" />
           </div>
         </div>
 
@@ -34,15 +35,15 @@ import { Convenio } from '../../../models';
         <div class="form-grid">
           <div class="form-group">
             <label>Comision Minima</label>
-            <input type="number" [(ngModel)]="comisionMinima" name="comMin" min="0" step="0.01" />
+            <input appNumberFormat [decimals]="2" [(ngModel)]="comisionMinima" name="comMin" min="0" />
           </div>
           <div class="form-group">
             <label>Comision Maxima</label>
-            <input type="number" [(ngModel)]="comisionMaxima" name="comMax" min="0" step="0.01" />
+            <input appNumberFormat [decimals]="2" [(ngModel)]="comisionMaxima" name="comMax" min="0" />
           </div>
           <div class="form-group">
             <label>Dias de pago</label>
-            <input type="number" [(ngModel)]="diasPago" name="diasPago" min="0" />
+            <input appNumberFormat [(ngModel)]="diasPago" name="diasPago" min="0" />
           </div>
           <div class="form-group checkbox-group">
             <label><input type="checkbox" [(ngModel)]="aplicaIVA" name="aplicaIVA" /> Aplica IVA sobre comision</label>
@@ -79,6 +80,7 @@ import { Convenio } from '../../../models';
     .form-actions { display: flex; gap: 0.75rem; justify-content: flex-end; margin-top: 1.5rem; }
     .form-actions .btn-primary, .form-actions .btn-secondary { padding: 0.625rem 1.5rem; font-size: 0.875rem; }
   `],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ConvenioFormModalComponent {
   open = input(false);

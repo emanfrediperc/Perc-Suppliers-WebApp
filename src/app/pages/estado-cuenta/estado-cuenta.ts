@@ -1,8 +1,9 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, OnInit, signal, ChangeDetectionStrategy } from '@angular/core';
 import { CurrencyPipe, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ReporteService } from '../../services/reporte.service';
 import { EmpresaProveedoraService } from '../../services/empresa-proveedora.service';
+import { ExportService } from '../../services/export.service';
 import { EmpresaProveedora } from '../../models';
 import { PageHeaderComponent } from '../../shared/page-header/page-header';
 import { GlassCardComponent } from '../../shared/glass-card/glass-card';
@@ -30,6 +31,10 @@ import { EmptyStateComponent } from '../../shared/empty-state/empty-state';
           <option [value]="p._id">{{ p.razonSocial }} ({{ p.cuit }})</option>
         }
       </select>
+      <button class="btn-export" [disabled]="!selectedProveedor" (click)="exportar()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Exportar Excel
+      </button>
     </div>
 
     @if (loading()) {
@@ -135,6 +140,9 @@ import { EmptyStateComponent } from '../../shared/empty-state/empty-state';
     .selector-bar { display: flex; align-items: center; gap: 1rem; padding: 1rem; margin-bottom: 1.5rem; }
     .selector-bar label { font-weight: 500; font-size: 0.875rem; color: var(--color-gray-700); white-space: nowrap; }
     .selector-bar select { flex: 1; max-width: 400px; padding: 0.5rem 0.75rem; border: 1px solid var(--color-gray-200); border-radius: var(--radius-md); font-size: 0.875rem; background: var(--glass-bg); color: var(--color-gray-900); }
+    .btn-export { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.5rem 0.875rem; border: 1px solid var(--color-gray-200); border-radius: var(--radius-md); background: var(--card-bg); color: var(--color-gray-700); font-size: 0.8125rem; font-weight: 500; cursor: pointer; margin-left: auto; }
+    .btn-export:hover:not(:disabled) { background: var(--glass-bg); border-color: var(--color-primary); color: var(--color-primary); }
+    .btn-export:disabled { opacity: 0.4; cursor: not-allowed; }
     .summary-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1.5rem; }
     .summary-value { font-size: 1.25rem; font-weight: 700; color: var(--color-gray-900); margin: 0; }
     .section-title { font-size: 1rem; font-weight: 600; color: var(--color-gray-900); margin: 1.5rem 0 0.75rem; }
@@ -147,6 +155,7 @@ import { EmptyStateComponent } from '../../shared/empty-state/empty-state';
     .text-red { color: #dc2626; }
     .text-amber { color: #d97706; }
   `],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EstadoCuentaComponent implements OnInit {
   proveedores = signal<EmpresaProveedora[]>([]);
@@ -187,7 +196,15 @@ export class EstadoCuentaComponent implements OnInit {
   constructor(
     private reporteService: ReporteService,
     private empresaProveedoraService: EmpresaProveedoraService,
+    private exportService: ExportService,
   ) {}
+
+  exportar() {
+    if (!this.selectedProveedor) return;
+    this.exportService.download('reportes/estado-cuenta-proveedor/export', 'xlsx', {
+      empresaProveedora: this.selectedProveedor,
+    });
+  }
 
   ngOnInit() {
     this.empresaProveedoraService.getAll({ limit: 200 }).subscribe({

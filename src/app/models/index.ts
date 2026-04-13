@@ -4,6 +4,7 @@ export interface User {
   nombre: string;
   apellido: string;
   role: string;
+  mustChangePassword?: boolean;
 }
 
 export interface AuthResponse {

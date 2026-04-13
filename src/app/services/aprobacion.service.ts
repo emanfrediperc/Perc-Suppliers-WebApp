@@ -1,5 +1,6 @@
-import { Injectable, signal } from '@angular/core';
+import { Injectable, signal, DestroyRef, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { environment } from '../../environments/environment';
 import { tap } from 'rxjs';
 
@@ -23,12 +24,15 @@ export interface Aprobacion {
 export class AprobacionService {
   private url = `${environment.apiUrl}/aprobaciones`;
   private _pendingCount = signal(0);
+  private destroyRef = inject(DestroyRef);
   pendingCount = this._pendingCount.asReadonly();
 
   constructor(private http: HttpClient) {}
 
   loadPendingCount() {
-    this.http.get<number>(`${this.url}/count`).subscribe(count => this._pendingCount.set(count));
+    this.http.get<number>(`${this.url}/count`).pipe(
+      takeUntilDestroyed(this.destroyRef),
+    ).subscribe(count => this._pendingCount.set(count));
   }
 
   getPendientes() {

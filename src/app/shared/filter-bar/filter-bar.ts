@@ -1,4 +1,4 @@
-import { Component, input, output, signal } from '@angular/core';
+import { Component, input, output, signal, ChangeDetectionStrategy } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
 @Component({
@@ -28,6 +28,7 @@ import { FormsModule } from '@angular/forms';
     }
     .search-input::placeholder { color: var(--color-gray-400); }
   `],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FilterBarComponent {
   placeholder = input('Buscar...');

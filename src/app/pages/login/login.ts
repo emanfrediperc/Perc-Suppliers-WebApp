@@ -1,6 +1,6 @@
-import { Component, signal } from '@angular/core';
+import { Component, signal, ChangeDetectionStrategy } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
 import { ToastService } from '../../shared/toast/toast.service';
 import { ToastComponent } from '../../shared/toast/toast';
@@ -8,14 +8,14 @@ import { ToastComponent } from '../../shared/toast/toast';
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [FormsModule, RouterLink, ToastComponent],
+  imports: [FormsModule, ToastComponent],
   template: `
     <app-toast />
     <div class="auth-page">
       <div class="auth-card card-glass modal-body-glass">
         <div class="auth-header">
-          <div class="logo"><span class="logo-icon">P</span></div>
-          <h1>Perc Suppliers</h1>
+          <div class="logo"><span class="logo-icon">B</span></div>
+          <h1>Beethoven</h1>
           <p>Ingresa a tu cuenta</p>
         </div>
         <form (ngSubmit)="onSubmit()" class="auth-form">
@@ -32,7 +32,6 @@ import { ToastComponent } from '../../shared/toast/toast';
             Iniciar Sesion
           </button>
         </form>
-        <p class="auth-footer">No tienes cuenta? <a routerLink="/register">Registrate</a></p>
       </div>
     </div>
   `,
@@ -62,12 +61,8 @@ import { ToastComponent } from '../../shared/toast/toast';
       transition: border-color var(--transition-fast);
     }
     .form-group input:focus { outline: none; border-color: var(--color-primary); }
-    .auth-footer {
-      text-align: center; margin-top: 1.5rem; font-size: 0.875rem; color: var(--color-gray-500);
-    }
-    .auth-footer a { color: var(--color-primary); text-decoration: none; font-weight: 500; }
-    .auth-footer a:hover { text-decoration: underline; }
-  `],
+`],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LoginComponent {
   email = '';
@@ -80,9 +75,13 @@ export class LoginComponent {
     if (!this.email || !this.password) return;
     this.loading.set(true);
     this.auth.login(this.email, this.password).subscribe({
-      next: () => {
+      next: (res) => {
         this.loading.set(false);
-        this.router.navigate(['/dashboard']);
+        if (res.user.mustChangePassword) {
+          this.router.navigate(['/change-password']);
+        } else {
+          this.router.navigate(['/dashboard']);
+        }
       },
       error: (err) => {
         this.loading.set(false);

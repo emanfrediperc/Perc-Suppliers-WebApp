@@ -1,21 +1,23 @@
-import { Component, signal } from '@angular/core';
+import { Component, signal, ChangeDetectionStrategy } from '@angular/core';
 import { RouterOutlet, Router, RouterLink, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs';
 import { SidebarComponent } from '../sidebar/sidebar';
 import { GlobalSearchComponent } from '../../shared/global-search/global-search';
+import { SessionTimerComponent } from '../../shared/session-timer/session-timer';
 import { NotificacionService, Notificacion } from '../../services/notificacion.service';
+import { IdleService } from '../../services/idle.service';
 
 @Component({
   selector: 'app-main-layout',
   standalone: true,
-  imports: [RouterOutlet, RouterLink, SidebarComponent, GlobalSearchComponent],
+  imports: [RouterOutlet, RouterLink, SidebarComponent, GlobalSearchComponent, SessionTimerComponent],
   template: `
     <div class="layout">
       <div class="mobile-header">
         <button class="hamburger-btn" (click)="sidebarOpen.set(true)">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
         </button>
-        <span class="mobile-title">Perc Suppliers</span>
+        <span class="mobile-title">Beethoven</span>
         <button class="notif-btn-mobile" (click)="notifOpen.set(!notifOpen())">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
           @if (notifService.unreadCount() > 0) {
@@ -31,6 +33,7 @@ import { NotificacionService, Notificacion } from '../../services/notificacion.s
         <div class="top-bar">
           <app-global-search />
           <div class="top-bar-right">
+            <app-session-timer />
             <div class="notif-wrapper">
               <button class="notif-btn" (click)="notifOpen.set(!notifOpen())">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
@@ -238,6 +241,7 @@ import { NotificacionService, Notificacion } from '../../services/notificacion.s
       .notif-dropdown { width: calc(100vw - 2rem); right: -1rem; }
     }
   `],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MainLayoutComponent {
   sidebarOpen = signal(false);
@@ -246,7 +250,9 @@ export class MainLayoutComponent {
   constructor(
     private router: Router,
     public notifService: NotificacionService,
+    private idleService: IdleService,
   ) {
+    this.idleService.start();
     this.router.events.pipe(
       filter(e => e instanceof NavigationEnd),
     ).subscribe(() => {

@@ -1,4 +1,4 @@
-import { Component, input, output, computed, OnInit, OnDestroy } from '@angular/core';
+import { Component, input, output, computed, OnInit, OnDestroy, ChangeDetectionStrategy } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { UpperCasePipe } from '@angular/common';
 import { AuthService } from '../../services/auth.service';
@@ -14,8 +14,8 @@ import { AprobacionService } from '../../services/aprobacion.service';
     <aside class="sidebar" [class.open]="isOpen()">
       <div class="sidebar-header">
         <div class="logo">
-          <span class="logo-icon">P</span>
-          <span class="logo-text">Perc Suppliers</span>
+          <span class="logo-icon">B</span>
+          <span class="logo-text">Beethoven</span>
         </div>
       </div>
 
@@ -60,6 +60,16 @@ import { AprobacionService } from '../../services/aprobacion.service';
         <a routerLink="/estado-cuenta" routerLinkActive="active" class="nav-item" (click)="toggle.emit()">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1v22"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
           <span>Estado de Cuenta</span>
+        </a>
+
+        <a routerLink="/prestamos" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" class="nav-item" (click)="toggle.emit()">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M7 17l4-4 4 4 6-6"/></svg>
+          <span>Préstamos</span>
+        </a>
+
+        <a routerLink="/prestamos/simulador" routerLinkActive="active" class="nav-item nav-subitem" (click)="toggle.emit()">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="8" y1="10" x2="16" y2="10"/><line x1="8" y1="14" x2="10" y2="14"/><line x1="8" y1="18" x2="10" y2="18"/><line x1="14" y1="14" x2="16" y2="14"/><line x1="14" y1="18" x2="16" y2="18"/></svg>
+          <span>Simulador</span>
         </a>
 
         @if (isAdmin()) {
@@ -117,6 +127,7 @@ import { AprobacionService } from '../../services/aprobacion.service';
     </aside>
   `,
   styleUrl: './sidebar.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SidebarComponent implements OnInit, OnDestroy {
   isOpen = input(false);

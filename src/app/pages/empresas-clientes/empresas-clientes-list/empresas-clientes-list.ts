@@ -1,6 +1,7 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, OnInit, signal, ChangeDetectionStrategy } from '@angular/core';
 import { Router } from '@angular/router';
 import { EmpresaClienteService } from '../../../services/empresa-cliente.service';
+import { ExportService } from '../../../services/export.service';
 import { EmpresaCliente } from '../../../models';
 import { PageHeaderComponent } from '../../../shared/page-header/page-header';
 import { FilterBarComponent } from '../../../shared/filter-bar/filter-bar';
@@ -19,6 +20,10 @@ import { EmpresaClienteFormModalComponent } from '../empresa-cliente-form-modal/
   template: `
     <app-toast />
     <app-page-header title="Empresas Clientes" subtitle="Gestion de empresas clientes">
+      <button class="btn-secondary" (click)="exportar('xlsx')">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Excel
+      </button>
       <button class="btn-primary" (click)="openCreate()">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
         Nueva Empresa
@@ -63,6 +68,7 @@ import { EmpresaClienteFormModalComponent } from '../empresa-cliente-form-modal/
     }
     .btn-icon:hover { background: var(--glass-bg); color: var(--color-primary); }
   `],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EmpresasClientesListComponent implements OnInit {
   loading = signal(true);
@@ -82,7 +88,18 @@ export class EmpresasClientesListComponent implements OnInit {
     { key: 'acciones', label: '', width: '7%' },
   ];
 
-  constructor(private service: EmpresaClienteService, private router: Router, private toast: ToastService) {}
+  constructor(
+    private service: EmpresaClienteService,
+    private router: Router,
+    private toast: ToastService,
+    private exportService: ExportService,
+  ) {}
+
+  exportar(formato: 'xlsx' | 'csv') {
+    const params: Record<string, any> = {};
+    if (this.search) params['search'] = this.search;
+    this.exportService.download('empresas-clientes/export', formato, params);
+  }
 
   ngOnInit() { this.load(); }
 

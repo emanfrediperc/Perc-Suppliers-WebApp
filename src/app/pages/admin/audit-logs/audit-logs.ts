@@ -1,7 +1,8 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, OnInit, signal, ChangeDetectionStrategy } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AuditLogService, AuditLog } from '../../../services/audit-log.service';
+import { ExportService } from '../../../services/export.service';
 
 @Component({
   selector: 'app-audit-logs',
@@ -9,7 +10,13 @@ import { AuditLogService, AuditLog } from '../../../services/audit-log.service';
   imports: [DatePipe, FormsModule],
   template: `
     <div class="page">
-      <h1>Audit Logs</h1>
+      <div class="header-row">
+        <h1>Audit Logs</h1>
+        <button class="btn-export" (click)="exportar('xlsx')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Exportar Excel
+        </button>
+      </div>
       <div class="filters">
         <select [(ngModel)]="filterEntidad" (ngModelChange)="load()">
           <option value="">Todas las entidades</option>
@@ -64,7 +71,15 @@ import { AuditLogService, AuditLog } from '../../../services/audit-log.service';
   `,
   styles: [`
     .page { max-width: 1200px; }
-    h1 { font-size: 1.5rem; font-weight: 700; color: var(--text-primary); margin-bottom: 1.5rem; }
+    .header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem; }
+    h1 { font-size: 1.5rem; font-weight: 700; color: var(--text-primary); margin: 0; }
+    .btn-export {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      padding: 0.5rem 0.875rem; border: 1px solid var(--color-gray-200);
+      border-radius: 8px; background: var(--card-bg); color: var(--color-gray-700);
+      font-size: 0.8125rem; font-weight: 500; cursor: pointer;
+    }
+    .btn-export:hover { background: var(--glass-bg); border-color: var(--color-primary); color: var(--color-primary); }
     .filters { display: flex; gap: 0.75rem; margin-bottom: 1rem; }
     .filters select {
       padding: 0.5rem 0.75rem;
@@ -132,6 +147,7 @@ import { AuditLogService, AuditLog } from '../../../services/audit-log.service';
     }
     .pagination button:disabled { opacity: 0.4; cursor: not-allowed; }
   `],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AuditLogsComponent implements OnInit {
   logs = signal<AuditLog[]>([]);
@@ -140,9 +156,19 @@ export class AuditLogsComponent implements OnInit {
   filterEntidad = '';
   filterAccion = '';
 
-  constructor(private auditService: AuditLogService) {}
+  constructor(
+    private auditService: AuditLogService,
+    private exportService: ExportService,
+  ) {}
 
   ngOnInit() { this.load(); }
+
+  exportar(formato: 'xlsx' | 'csv') {
+    const params: Record<string, any> = {};
+    if (this.filterEntidad) params['entidad'] = this.filterEntidad;
+    if (this.filterAccion) params['accion'] = this.filterAccion;
+    this.exportService.download('audit-logs/export', formato, params);
+  }
 
   load() {
     const params: any = { page: this.page(), limit: 25 };

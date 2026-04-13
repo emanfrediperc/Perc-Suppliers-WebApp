@@ -1,0 +1,18 @@
+{
+  "cookies": [],
+  "origins": [
+    {
+      "origin": "http://localhost:4205",
+      "localStorage": [
+        {
+          "name": "suppliers_access_token",
+          "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2OWRjMDg5ZjhkYjY2MmZmMjQ3OGExZGMiLCJlbWFpbCI6ImNvbnN1bHRhQHBlcmMuY29tIiwicm9sZSI6ImNvbnN1bHRhIiwidG9rZW5WZXJzaW9uIjowLCJpYXQiOjE3NzYwMjc4MDgsImV4cCI6MTc3NjExNDIwOH0.DvtCMRy4WsQftsKXg7mO298MR4xtiU8stQPeaHNo52I"
+        },
+        {
+          "name": "suppliers_user",
+          "value": "{\"id\":\"69dc089f8db662ff2478a1dc\",\"email\":\"consulta@perc.com\",\"nombre\":\"Maria\",\"apellido\":\"Consulta\",\"role\":\"consulta\",\"mustChangePassword\":true}"
+        }
+      ]
+    }
+  ]
+}

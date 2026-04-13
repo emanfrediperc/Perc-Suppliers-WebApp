@@ -1,0 +1,18 @@
+{
+  "cookies": [],
+  "origins": [
+    {
+      "origin": "http://localhost:4205",
+      "localStorage": [
+        {
+          "name": "suppliers_access_token",
+          "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2OWRjMDg5ZjhkYjY2MmZmMjQ3OGExZDYiLCJlbWFpbCI6ImFkbWluQHBlcmMuY29tIiwicm9sZSI6ImFkbWluIiwidG9rZW5WZXJzaW9uIjowLCJpYXQiOjE3NzYwMjc4MDgsImV4cCI6MTc3NjExNDIwOH0.N1a68jwZdLvj7EC720Z98jitgYAhcqIo4iGldIaACn4"
+        },
+        {
+          "name": "suppliers_user",
+          "value": "{\"id\":\"69dc089f8db662ff2478a1d6\",\"email\":\"admin@perc.com\",\"nombre\":\"Admin\",\"apellido\":\"Perc\",\"role\":\"admin\",\"mustChangePassword\":true}"
+        }
+      ]
+    }
+  ]
+}

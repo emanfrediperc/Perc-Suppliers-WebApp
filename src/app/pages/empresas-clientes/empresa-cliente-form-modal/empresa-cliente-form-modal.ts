@@ -1,4 +1,4 @@
-import { Component, input, output, signal, computed, effect } from '@angular/core';
+import { Component, input, output, signal, computed, effect, ChangeDetectionStrategy } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { GlassModalComponent } from '../../../shared/glass-modal/glass-modal';
 import { EmpresaClienteService } from '../../../services/empresa-cliente.service';
@@ -101,6 +101,7 @@ import { ToastService } from '../../../shared/toast/toast.service';
     .btn-afip:disabled { opacity: 0.5; cursor: not-allowed; }
     .field-error { font-size: 0.7rem; color: var(--color-danger, #dc3545); }
   `],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EmpresaClienteFormModalComponent {
   open = input(false);

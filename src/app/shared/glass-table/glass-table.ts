@@ -1,4 +1,4 @@
-import { Component, input, output, contentChild, TemplateRef } from '@angular/core';
+import { Component, input, output, contentChild, TemplateRef, ChangeDetectionStrategy } from '@angular/core';
 import { NgTemplateOutlet } from '@angular/common';
 
 export interface TableColumn {
@@ -23,7 +23,7 @@ export interface TableColumn {
             </tr>
           </thead>
           <tbody>
-            @for (row of data(); track $index) {
+            @for (row of data(); track row) {
               <tr (click)="rowClick.emit(row)" [class.clickable]="clickable()">
                 @if (rowTemplate()) {
                   <ng-container *ngTemplateOutlet="rowTemplate()!; context: { $implicit: row, index: $index }" />
@@ -109,6 +109,7 @@ export interface TableColumn {
       font-size: 0.875rem;
     }
   `],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class GlassTableComponent {
   columns = input<TableColumn[]>([]);

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { ThemeService } from './services/theme.service';
 
@@ -14,6 +14,7 @@ import { ThemeService } from './services/theme.service';
     <router-outlet />
   `,
   styles: [`:host { display: block; height: 100%; }`],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class App implements OnInit {
   constructor(private theme: ThemeService) {}

@@ -1,7 +1,8 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, OnInit, signal, ChangeDetectionStrategy } from '@angular/core';
 import { Router } from '@angular/router';
 import { DatePipe, CurrencyPipe, UpperCasePipe } from '@angular/common';
 import { AprobacionService, Aprobacion } from '../../../services/aprobacion.service';
+import { ExportService } from '../../../services/export.service';
 
 @Component({
   selector: 'app-aprobaciones-list',
@@ -10,7 +11,13 @@ import { AprobacionService, Aprobacion } from '../../../services/aprobacion.serv
   template: `
     <div class="page">
       <div class="page-header">
-        <h1>Aprobaciones</h1>
+        <div class="header-top">
+          <h1>Aprobaciones</h1>
+          <button class="btn-export-aprob" (click)="exportar()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Exportar Excel
+          </button>
+        </div>
         <div class="tabs">
           <button class="tab" [class.active]="tab() === 'pendientes'" (click)="setTab('pendientes')">
             Pendientes
@@ -67,7 +74,15 @@ import { AprobacionService, Aprobacion } from '../../../services/aprobacion.serv
   styles: [`
     .page { max-width: 900px; }
     .page-header { margin-bottom: 1.5rem; }
-    .page-header h1 { font-size: 1.5rem; font-weight: 700; color: var(--text-primary); margin-bottom: 1rem; }
+    .page-header h1 { font-size: 1.5rem; font-weight: 700; color: var(--text-primary); margin: 0; }
+    .header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 1rem; }
+    .btn-export-aprob {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      padding: 0.5rem 0.875rem; border: 1px solid var(--color-gray-200);
+      border-radius: 8px; background: var(--card-bg); color: var(--color-gray-700);
+      font-size: 0.8125rem; font-weight: 500; cursor: pointer;
+    }
+    .btn-export-aprob:hover { background: var(--glass-bg); border-color: var(--color-primary); color: var(--color-primary); }
     .tabs { display: flex; gap: 0.5rem; }
     .tab {
       padding: 0.5rem 1rem;
@@ -140,6 +155,7 @@ import { AprobacionService, Aprobacion } from '../../../services/aprobacion.serv
     .approver-comment { color: var(--text-muted); font-style: italic; }
     .empty { text-align: center; padding: 3rem; color: var(--text-muted); }
   `],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AprobacionesListComponent implements OnInit {
   tab = signal<'pendientes' | 'historial'>('pendientes');
@@ -147,10 +163,18 @@ export class AprobacionesListComponent implements OnInit {
   historial = signal<Aprobacion[]>([]);
   displayList = signal<Aprobacion[]>([]);
 
-  constructor(private aprobacionService: AprobacionService, private router: Router) {}
+  constructor(
+    private aprobacionService: AprobacionService,
+    private router: Router,
+    private exportService: ExportService,
+  ) {}
 
   ngOnInit() {
     this.load();
+  }
+
+  exportar() {
+    this.exportService.download('aprobaciones/export', 'xlsx');
   }
 
   load() {

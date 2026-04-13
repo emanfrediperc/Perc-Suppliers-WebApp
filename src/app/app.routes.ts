@@ -5,6 +5,7 @@ import { roleGuard } from './guards/role.guard';
 export const routes: Routes = [
   { path: 'login', loadComponent: () => import('./pages/login/login').then(m => m.LoginComponent) },
   { path: 'register', loadComponent: () => import('./pages/register/register').then(m => m.RegisterComponent) },
+  { path: 'change-password', loadComponent: () => import('./pages/change-password/change-password').then(m => m.ChangePasswordComponent) },
   {
     path: '',
     loadComponent: () => import('./layout/main-layout/main-layout').then(m => m.MainLayoutComponent),
@@ -24,6 +25,8 @@ export const routes: Routes = [
       { path: 'empresas-clientes/:id', loadComponent: () => import('./pages/empresas-clientes/empresa-cliente-detail/empresa-cliente-detail').then(m => m.EmpresaClienteDetailComponent) },
       { path: 'reportes', loadComponent: () => import('./pages/reportes/reportes').then(m => m.ReportesComponent) },
       { path: 'estado-cuenta', loadComponent: () => import('./pages/estado-cuenta/estado-cuenta').then(m => m.EstadoCuentaComponent) },
+      { path: 'prestamos', loadComponent: () => import('./pages/prestamos/listado/listado').then(m => m.PrestamosListadoComponent) },
+      { path: 'prestamos/simulador', loadComponent: () => import('./pages/prestamos/simulador/simulador').then(m => m.SimuladorComponent) },
       {
         path: 'pagos-programados',
         loadComponent: () => import('./pages/pagos-programados/pagos-programados-list').then(m => m.PagosProgramadosListComponent),

@@ -1,6 +1,7 @@
-import { Component, input, output, signal, OnChanges } from '@angular/core';
+import { Component, input, output, signal, OnChanges, ChangeDetectionStrategy } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { GlassModalComponent } from '../../../shared/glass-modal/glass-modal';
+import { NumberFormatDirective } from '../../../shared/number-format/number-format.directive';
 import { ToastService } from '../../../shared/toast/toast.service';
 import { FacturaService } from '../../../services/factura.service';
 import { EmpresaProveedoraService } from '../../../services/empresa-proveedora.service';
@@ -10,7 +11,7 @@ import { EmpresaProveedora, EmpresaCliente, OcrExtractedData } from '../../../mo
 @Component({
   selector: 'app-upload-factura-modal',
   standalone: true,
-  imports: [FormsModule, GlassModalComponent],
+  imports: [FormsModule, GlassModalComponent, NumberFormatDirective],
   template: `
     <app-glass-modal [open]="open()" [title]="stepTitles[currentStep()]" [maxWidth]="'720px'" (close)="onClose()">
       <!-- Step 0: Subir archivo -->
@@ -109,15 +110,15 @@ import { EmpresaProveedora, EmpresaCliente, OcrExtractedData } from '../../../mo
           <div class="form-grid" style="margin-top: 0.75rem">
             <div class="form-group">
               <label>Monto Neto <span class="required">*</span></label>
-              <input type="number" [(ngModel)]="montoNeto" min="0" step="0.01" [class.ocr-filled]="ocrData()?.montoNeto" />
+              <input appNumberFormat [decimals]="2" [(ngModel)]="montoNeto" min="0" [class.ocr-filled]="ocrData()?.montoNeto" />
             </div>
             <div class="form-group">
               <label>IVA</label>
-              <input type="number" [(ngModel)]="montoIva" min="0" step="0.01" [class.ocr-filled]="ocrData()?.montoIva" />
+              <input appNumberFormat [decimals]="2" [(ngModel)]="montoIva" min="0" [class.ocr-filled]="ocrData()?.montoIva" />
             </div>
             <div class="form-group">
               <label>Monto Total <span class="required">*</span></label>
-              <input type="number" [(ngModel)]="montoTotal" min="0" step="0.01" [class.ocr-filled]="ocrData()?.montoTotal" />
+              <input appNumberFormat [decimals]="2" [(ngModel)]="montoTotal" min="0" [class.ocr-filled]="ocrData()?.montoTotal" />
             </div>
           </div>
 
@@ -243,6 +244,7 @@ import { EmpresaProveedora, EmpresaCliente, OcrExtractedData } from '../../../mo
     .result-step h3 { font-size: 1.125rem; font-weight: 700; color: var(--color-gray-900); }
     .result-msg { font-size: 0.875rem; color: var(--color-gray-500); margin-top: 0.5rem; }
   `],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class UploadFacturaModalComponent implements OnChanges {
   open = input(false);

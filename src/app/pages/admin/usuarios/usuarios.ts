@@ -1,4 +1,4 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, OnInit, signal, ChangeDetectionStrategy } from '@angular/core';
 import { DatePipe, UpperCasePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { UserService, UserAdmin } from '../../../services/user.service';
@@ -150,6 +150,7 @@ const ROLES = ['admin', 'tesoreria', 'contabilidad', 'consulta'];
       cursor: pointer; font-size: 0.875rem; font-weight: 600; margin-top: 1rem;
     }
   `],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class UsuariosComponent implements OnInit {
   users = signal<UserAdmin[]>([]);

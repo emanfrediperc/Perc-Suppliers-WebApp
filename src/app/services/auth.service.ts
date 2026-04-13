@@ -28,6 +28,11 @@ export class AuthService {
       .pipe(tap(res => this.setSession(res)));
   }
 
+  changePassword(oldPassword: string, newPassword: string) {
+    return this.http.post<AuthResponse>(`${environment.apiUrl}/auth/change-password`, { oldPassword, newPassword })
+      .pipe(tap(res => this.setSession(res)));
+  }
+
   logout() {
     localStorage.removeItem(TOKEN_KEY);
     localStorage.removeItem(USER_KEY);

@@ -1,4 +1,4 @@
-import { Component, signal, ElementRef, HostListener } from '@angular/core';
+import { Component, signal, ElementRef, HostListener, ChangeDetectionStrategy } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { Subject, debounceTime, distinctUntilChanged, switchMap, of } from 'rxjs';
@@ -121,6 +121,7 @@ import { BusquedaService, SearchResults } from '../../services/busqueda.service'
     .result-main { font-size: 0.875rem; font-weight: 500; color: var(--color-gray-900); }
     .result-sub { font-size: 0.75rem; color: var(--color-gray-500); }
   `],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class GlobalSearchComponent {
   query = signal('');

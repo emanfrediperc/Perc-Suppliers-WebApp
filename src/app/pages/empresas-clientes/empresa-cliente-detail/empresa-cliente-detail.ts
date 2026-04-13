@@ -1,4 +1,4 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, OnInit, signal, ChangeDetectionStrategy } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CurrencyPipe } from '@angular/common';
 import { EmpresaClienteService } from '../../../services/empresa-cliente.service';
@@ -81,6 +81,7 @@ import { EmpresaClienteFormModalComponent } from '../empresa-cliente-form-modal/
     .name-cell { font-weight: 500; }
     .empty-card { padding: 1.5rem; text-align: center; color: var(--color-gray-400); }
   `],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EmpresaClienteDetailComponent implements OnInit {
   loading = signal(true);

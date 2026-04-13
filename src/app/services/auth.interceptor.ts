@@ -3,6 +3,9 @@ import { inject } from '@angular/core';
 import { AuthService } from './auth.service';
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
+  const isApiRequest = req.url.startsWith('/api') || req.url.startsWith('api/');
+  if (!isApiRequest) return next(req);
+
   const auth = inject(AuthService);
   const token = auth.getToken();
   if (token) {

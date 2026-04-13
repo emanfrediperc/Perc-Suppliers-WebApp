@@ -1,4 +1,4 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, OnInit, signal, ChangeDetectionStrategy } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { CurrencyPipe, DatePipe, DecimalPipe, TitleCasePipe } from '@angular/common';
 import { DashboardService } from '../../services/dashboard.service';
@@ -274,6 +274,7 @@ import { DateRangeSelectorComponent } from '../../shared/date-range-selector/dat
     .activity-amount { font-size: 0.875rem; font-weight: 600; color: var(--color-gray-900); }
     .no-data { font-size: 0.875rem; color: var(--color-gray-400); text-align: center; padding: 1rem; }
   `],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DashboardComponent implements OnInit {
   loading = signal(true);

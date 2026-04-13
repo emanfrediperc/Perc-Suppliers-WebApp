@@ -1,4 +1,4 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, OnInit, signal, ChangeDetectionStrategy } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { ConvenioService } from '../../../services/convenio.service';
@@ -116,6 +116,7 @@ import { ToastComponent } from '../../../shared/toast/toast';
     }
     .btn-remove:hover { background: rgba(239, 68, 68, 0.1); }
   `],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ConvenioDetailComponent implements OnInit {
   loading = signal(true);

@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { Component, signal, ChangeDetectionStrategy } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
@@ -14,9 +14,9 @@ import { ToastComponent } from '../../shared/toast/toast';
     <div class="auth-page">
       <div class="auth-card card-glass modal-body-glass">
         <div class="auth-header">
-          <div class="logo"><span class="logo-icon">P</span></div>
+          <div class="logo"><span class="logo-icon">B</span></div>
           <h1>Crear cuenta</h1>
-          <p>Registrate en Perc Suppliers</p>
+          <p>Registrate en Beethoven</p>
         </div>
         <form (ngSubmit)="onSubmit()" class="auth-form">
           <div class="form-row">
@@ -78,6 +78,7 @@ import { ToastComponent } from '../../shared/toast/toast';
     }
     .auth-footer a { color: var(--color-primary); text-decoration: none; font-weight: 500; }
   `],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RegisterComponent {
   nombre = '';

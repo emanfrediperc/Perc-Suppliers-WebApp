@@ -1,4 +1,4 @@
-import { Component, OnInit, output, signal } from '@angular/core';
+import { Component, OnInit, output, signal, ChangeDetectionStrategy } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
 @Component({
@@ -49,6 +49,7 @@ import { FormsModule } from '@angular/forms';
     }
     .date-field input:focus { outline: none; border-color: var(--color-primary, #6366f1); }
   `],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DateRangeSelectorComponent implements OnInit {
   rangeChange = output<{ desde: string; hasta: string }>();

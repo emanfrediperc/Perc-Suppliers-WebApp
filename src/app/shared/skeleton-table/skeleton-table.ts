@@ -1,4 +1,4 @@
-import { Component, input } from '@angular/core';
+import { Component, input, ChangeDetectionStrategy } from '@angular/core';
 
 @Component({
   selector: 'app-skeleton-table',
@@ -31,6 +31,7 @@ import { Component, input } from '@angular/core';
     }
     .skeleton-row:last-child { border-bottom: none; }
   `],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SkeletonTableComponent {
   rows = input(5);

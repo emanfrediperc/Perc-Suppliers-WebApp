@@ -1,7 +1,8 @@
-import { Injectable, signal, computed, OnDestroy } from '@angular/core';
+import { Injectable, signal, DestroyRef, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { environment } from '../../environments/environment';
-import { tap, Subscription, interval } from 'rxjs';
+import { tap, interval, forkJoin } from 'rxjs';
 
 export interface Notificacion {
   _id: string;
@@ -16,11 +17,11 @@ export interface Notificacion {
 }
 
 @Injectable({ providedIn: 'root' })
-export class NotificacionService implements OnDestroy {
+export class NotificacionService {
   private url = `${environment.apiUrl}/notificaciones`;
   private _notificaciones = signal<Notificacion[]>([]);
   private _unreadCount = signal(0);
-  private pollingSub: Subscription | null = null;
+  private destroyRef = inject(DestroyRef);
 
   notificaciones = this._notificaciones.asReadonly();
   unreadCount = this._unreadCount.asReadonly();
@@ -28,24 +29,23 @@ export class NotificacionService implements OnDestroy {
   constructor(private http: HttpClient) {}
 
   loadNotifications() {
-    this.http.get<Notificacion[]>(this.url).subscribe(data => this._notificaciones.set(data));
-    this.http.get<number>(`${this.url}/count`).subscribe(count => this._unreadCount.set(count));
+    forkJoin({
+      list: this.http.get<Notificacion[]>(this.url),
+      count: this.http.get<number>(`${this.url}/count`),
+    }).subscribe(({ list, count }) => {
+      this._notificaciones.set(list);
+      this._unreadCount.set(count);
+    });
   }
 
   startPolling() {
-    this.stopPolling();
     this.loadNotifications();
-    this.pollingSub = interval(30000).subscribe(() => this.loadNotifications());
+    interval(30000).pipe(
+      takeUntilDestroyed(this.destroyRef),
+    ).subscribe(() => this.loadNotifications());
   }
 
-  stopPolling() {
-    this.pollingSub?.unsubscribe();
-    this.pollingSub = null;
-  }
-
-  ngOnDestroy() {
-    this.stopPolling();
-  }
+  stopPolling() {}
 
   markAsRead(id: string) {
     return this.http.patch<Notificacion>(`${this.url}/${id}/leer`, {}).pipe(

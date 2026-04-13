@@ -1,4 +1,4 @@
-import { Component, input } from '@angular/core';
+import { Component, input, ChangeDetectionStrategy } from '@angular/core';
 
 @Component({
   selector: 'app-page-header',
@@ -18,6 +18,7 @@ import { Component, input } from '@angular/core';
     .subtitle { font-size: 0.875rem; color: var(--color-gray-500); margin-top: 0.25rem; }
     .actions { display: flex; gap: 0.75rem; align-items: center; }
   `],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PageHeaderComponent {
   title = input<string>('');

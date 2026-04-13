@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { Component, signal, ChangeDetectionStrategy } from '@angular/core';
 import { CurrencyPipe, DatePipe, DecimalPipe, TitleCasePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { PageHeaderComponent } from '../../shared/page-header/page-header';
@@ -350,6 +350,7 @@ import {
 
     .no-data { font-size: 0.875rem; color: var(--color-gray-400); text-align: center; padding: 2rem; }
   `],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ReportesComponent {
   tabs = [

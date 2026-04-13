@@ -1,4 +1,4 @@
-import { Component, OnInit, signal, computed } from '@angular/core';
+import { Component, OnInit, signal, computed, ChangeDetectionStrategy } from '@angular/core';
 import { Router } from '@angular/router';
 import { CurrencyPipe, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -141,6 +141,7 @@ import { ExportService } from '../../../services/export.service';
     .batch-bar .btn-secondary:hover { background: rgba(255,255,255,0.2); }
     .batch-bar .btn-primary { padding: 0.5rem 1.25rem; }
   `],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class OrdenesPagoListComponent implements OnInit {
   loading = signal(true);

@@ -1,4 +1,4 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, OnInit, signal, ChangeDetectionStrategy } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { CurrencyPipe, DatePipe } from '@angular/common';
 import { FacturaService } from '../../../services/factura.service';
@@ -174,6 +174,7 @@ import { ComentariosSectionComponent } from '../../../shared/comentarios-section
     }
     .btn-comprobante:hover { background: rgba(99,102,241,0.1); }
   `],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FacturaDetailComponent implements OnInit {
   loading = signal(true);

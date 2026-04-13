@@ -1,0 +1,18 @@
+{
+  "cookies": [],
+  "origins": [
+    {
+      "origin": "http://localhost:4205",
+      "localStorage": [
+        {
+          "name": "suppliers_access_token",
+          "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2OWRjMDg5ZjhkYjY2MmZmMjQ3OGExZDgiLCJlbWFpbCI6InRlc29yZXJpYUBwZXJjLmNvbSIsInJvbGUiOiJ0ZXNvcmVyaWEiLCJ0b2tlblZlcnNpb24iOjAsImlhdCI6MTc3NjAyNzgwOCwiZXhwIjoxNzc2MTE0MjA4fQ.tmI_ZeMkyAPp43cDT_QsJGOJTz_mD5aScDQUmv2tdME"
+        },
+        {
+          "name": "suppliers_user",
+          "value": "{\"id\":\"69dc089f8db662ff2478a1d8\",\"email\":\"tesoreria@perc.com\",\"nombre\":\"Laura\",\"apellido\":\"Tesoreria\",\"role\":\"tesoreria\",\"mustChangePassword\":true}"
+        }
+      ]
+    }
+  ]
+}

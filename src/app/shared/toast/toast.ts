@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { ToastService } from './toast.service';
 
 @Component({
@@ -21,6 +21,7 @@ import { ToastService } from './toast.service';
     .toast-info { background: rgba(59, 130, 246, 0.15); color: var(--color-info); border: 1px solid rgba(59, 130, 246, 0.3); }
     @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
   `],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ToastComponent {
   constructor(public toastService: ToastService) {}

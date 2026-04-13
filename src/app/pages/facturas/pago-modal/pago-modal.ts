@@ -1,7 +1,8 @@
-import { Component, input, output, signal, computed, OnChanges } from '@angular/core';
+import { Component, input, output, signal, computed, OnChanges, ChangeDetectionStrategy } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CurrencyPipe } from '@angular/common';
 import { GlassModalComponent } from '../../../shared/glass-modal/glass-modal';
+import { NumberFormatDirective } from '../../../shared/number-format/number-format.directive';
 import { StatusBadgeComponent } from '../../../shared/status-badge/status-badge';
 import { Factura, Convenio } from '../../../models';
 import { FacturaService } from '../../../services/factura.service';
@@ -10,7 +11,7 @@ import { ConvenioService } from '../../../services/convenio.service';
 @Component({
   selector: 'app-pago-modal',
   standalone: true,
-  imports: [FormsModule, CurrencyPipe, GlassModalComponent, StatusBadgeComponent],
+  imports: [FormsModule, CurrencyPipe, GlassModalComponent, StatusBadgeComponent, NumberFormatDirective],
   template: `
     <app-glass-modal [open]="open()" [title]="stepTitles[currentStep()]" [maxWidth]="'640px'" (close)="onClose()">
       <!-- Step 1: Resumen -->
@@ -43,7 +44,7 @@ import { ConvenioService } from '../../../services/convenio.service';
           <div class="form-grid">
             <div class="form-group">
               <label>Monto a pagar</label>
-              <input type="number" [(ngModel)]="montoBase" [max]="factura()?.saldoPendiente ?? 0" min="0.01" step="0.01" />
+              <input appNumberFormat [decimals]="2" [(ngModel)]="montoBase" min="0.01" />
             </div>
             <div class="form-group">
               <label>Medio de pago</label>
@@ -65,23 +66,23 @@ import { ConvenioService } from '../../../services/convenio.service';
           <div class="form-grid">
             <div class="form-group">
               <label>IIBB</label>
-              <input type="number" [(ngModel)]="retencionIIBB" min="0" step="0.01" />
+              <input appNumberFormat [decimals]="2" [(ngModel)]="retencionIIBB" min="0" />
             </div>
             <div class="form-group">
               <label>Ganancias</label>
-              <input type="number" [(ngModel)]="retencionGanancias" min="0" step="0.01" />
+              <input appNumberFormat [decimals]="2" [(ngModel)]="retencionGanancias" min="0" />
             </div>
             <div class="form-group">
               <label>IVA</label>
-              <input type="number" [(ngModel)]="retencionIVA" min="0" step="0.01" />
+              <input appNumberFormat [decimals]="2" [(ngModel)]="retencionIVA" min="0" />
             </div>
             <div class="form-group">
               <label>SUSS</label>
-              <input type="number" [(ngModel)]="retencionSUSS" min="0" step="0.01" />
+              <input appNumberFormat [decimals]="2" [(ngModel)]="retencionSUSS" min="0" />
             </div>
             <div class="form-group">
               <label>Otras retenciones</label>
-              <input type="number" [(ngModel)]="otrasRetenciones" min="0" step="0.01" />
+              <input appNumberFormat [decimals]="2" [(ngModel)]="otrasRetenciones" min="0" />
             </div>
           </div>
 
@@ -195,6 +196,7 @@ import { ConvenioService } from '../../../services/convenio.service';
     .result-step h3 { font-size: 1.125rem; font-weight: 700; color: var(--color-gray-900); }
     .result-msg { font-size: 0.875rem; color: var(--color-gray-500); margin-top: 0.5rem; }
   `],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PagoModalComponent implements OnChanges {
   open = input(false);

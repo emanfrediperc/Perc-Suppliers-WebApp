@@ -1,4 +1,4 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, OnInit, signal, ChangeDetectionStrategy } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { CurrencyPipe, DatePipe } from '@angular/common';
@@ -110,6 +110,7 @@ import { ExportService } from '../../../services/export.service';
     .vencida { color: var(--color-error); font-weight: 600; }
     .por-vencer { color: var(--color-warning, #f59e0b); font-weight: 500; }
   `],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FacturasListComponent implements OnInit {
   showUpload = signal(false);

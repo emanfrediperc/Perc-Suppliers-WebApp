@@ -1,4 +1,4 @@
-import { Component, OnInit, signal, computed } from '@angular/core';
+import { Component, OnInit, signal, computed, ChangeDetectionStrategy } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CurrencyPipe, DatePipe, TitleCasePipe } from '@angular/common';
 import { OrdenPagoService } from '../../../services/orden-pago.service';
@@ -222,6 +222,7 @@ import { ComentariosSectionComponent } from '../../../shared/comentarios-section
     }
     .btn-comprobante:hover { background: rgba(99,102,241,0.08); border-color: var(--color-primary); }
   `],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class OrdenPagoDetailComponent implements OnInit {
   loading = signal(true);

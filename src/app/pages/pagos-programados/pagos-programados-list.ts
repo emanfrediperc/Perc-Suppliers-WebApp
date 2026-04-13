@@ -1,7 +1,8 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, OnInit, signal, ChangeDetectionStrategy } from '@angular/core';
 import { Router } from '@angular/router';
 import { CurrencyPipe, DatePipe } from '@angular/common';
 import { PagoProgramadoService } from '../../services/pago-programado.service';
+import { ExportService } from '../../services/export.service';
 import { PagoProgramado } from '../../models';
 import { PageHeaderComponent } from '../../shared/page-header/page-header';
 import { GlassTableComponent, TableColumn } from '../../shared/glass-table/glass-table';
@@ -20,7 +21,12 @@ import { ToastComponent } from '../../shared/toast/toast';
   imports: [CurrencyPipe, DatePipe, PageHeaderComponent, GlassTableComponent, GlassCardComponent, StatusBadgeComponent, PaginationComponent, SkeletonTableComponent, EmptyStateComponent, ConfirmDialogComponent, ToastComponent],
   template: `
     <app-toast />
-    <app-page-header title="Pagos Programados" subtitle="Pagos agendados para ejecucion automatica" />
+    <app-page-header title="Pagos Programados" subtitle="Pagos agendados para ejecucion automatica">
+      <button class="btn-secondary" (click)="exportar('xlsx')">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Excel
+      </button>
+    </app-page-header>
 
     <!-- Proximos pagos -->
     @if (proximos().length) {
@@ -102,6 +108,7 @@ import { ToastComponent } from '../../shared/toast/toast';
     }
     app-glass-card { margin-bottom: 1.5rem; }
   `],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PagosProgramadosListComponent implements OnInit {
   loading = signal(true);
@@ -121,7 +128,16 @@ export class PagosProgramadosListComponent implements OnInit {
     { key: 'acciones', label: '', width: '80px' },
   ];
 
-  constructor(private service: PagoProgramadoService, private router: Router, private toast: ToastService) {}
+  constructor(
+    private service: PagoProgramadoService,
+    private router: Router,
+    private toast: ToastService,
+    private exportService: ExportService,
+  ) {}
+
+  exportar(formato: 'xlsx' | 'csv') {
+    this.exportService.download('pagos-programados/export', formato);
+  }
 
   ngOnInit() {
     this.load();

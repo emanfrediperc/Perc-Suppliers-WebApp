@@ -1,4 +1,4 @@
-import { Component, input, output } from '@angular/core';
+import { Component, input, output, effect, ChangeDetectionStrategy } from '@angular/core';
 
 @Component({
   selector: 'app-glass-modal',
@@ -55,6 +55,7 @@ import { Component, input, output } from '@angular/core';
     @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
   `],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class GlassModalComponent {
   open = input(false);
@@ -62,6 +63,19 @@ export class GlassModalComponent {
   subtitle = input('');
   maxWidth = input('560px');
   close = output<void>();
+
+  private onKeydown = (e: KeyboardEvent) => {
+    if (e.key === 'Escape') this.close.emit();
+  };
+
+  constructor() {
+    effect((onCleanup) => {
+      if (this.open()) {
+        document.addEventListener('keydown', this.onKeydown);
+        onCleanup(() => document.removeEventListener('keydown', this.onKeydown));
+      }
+    });
+  }
 
   onOverlayClick(event: MouseEvent) {
     if ((event.target as HTMLElement).classList.contains('modal-overlay')) {

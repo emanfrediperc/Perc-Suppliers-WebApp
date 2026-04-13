@@ -1,4 +1,4 @@
-import { Component, input, output, computed } from '@angular/core';
+import { Component, input, output, computed, ChangeDetectionStrategy } from '@angular/core';
 
 @Component({
   selector: 'app-pagination',
@@ -34,6 +34,7 @@ import { Component, input, output, computed } from '@angular/core';
     .page-btn:disabled { opacity: 0.4; cursor: not-allowed; }
     .page-info { font-size: 0.75rem; color: var(--color-gray-500); margin-left: 0.5rem; }
   `],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PaginationComponent {
   currentPage = input(1);

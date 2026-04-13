@@ -1,4 +1,4 @@
-import { Component, input } from '@angular/core';
+import { Component, input, ChangeDetectionStrategy } from '@angular/core';
 
 @Component({
   selector: 'app-empty-state',
@@ -16,6 +16,7 @@ import { Component, input } from '@angular/core';
     .title { font-size: 1rem; font-weight: 600; color: var(--color-gray-700); margin-top: 1rem; }
     .message { font-size: 0.875rem; color: var(--color-gray-500); margin-top: 0.5rem; }
   `],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EmptyStateComponent {
   title = input('Sin datos');
