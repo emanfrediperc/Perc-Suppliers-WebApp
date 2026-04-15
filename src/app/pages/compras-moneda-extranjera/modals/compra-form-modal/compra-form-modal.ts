@@ -310,7 +310,7 @@ export class CompraFormModalComponent implements OnChanges {
   }
 
   private loadEmpresasClientes() {
-    this.empresaClienteService.getAll({ limit: 200, activa: true }).subscribe({
+    this.empresaClienteService.getAll({ limit: 200 }).subscribe({
       next: (res) => this.empresasClientes.set(res.data),
       error: () => this.empresasClientes.set([]),
     });
