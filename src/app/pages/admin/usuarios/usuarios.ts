@@ -3,7 +3,7 @@ import { DatePipe, UpperCasePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { UserService, UserAdmin } from '../../../services/user.service';
 
-const ROLES = ['admin', 'tesoreria', 'contabilidad', 'consulta'];
+const ROLES = ['admin', 'tesoreria', 'operador', 'consulta'];
 
 @Component({
   selector: 'app-usuarios',

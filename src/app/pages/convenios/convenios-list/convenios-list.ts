@@ -19,23 +19,23 @@ import { ConvenioFormModalComponent } from '../convenio-form-modal/convenio-form
   imports: [PageHeaderComponent, FilterBarComponent, GlassTableComponent, PaginationComponent, SkeletonTableComponent, EmptyStateComponent, ToastComponent, ConvenioFormModalComponent],
   template: `
     <app-toast />
-    <app-page-header title="Convenios" subtitle="Administracion de convenios con proveedores">
+    <app-page-header title="Productores" subtitle="Administracion de productores">
       <button class="btn-secondary" (click)="exportar('xlsx')">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
         Excel
       </button>
       <button class="btn-primary" (click)="openCreate()">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-        Nuevo Convenio
+        Nuevo Productor
       </button>
     </app-page-header>
 
-    <app-filter-bar placeholder="Buscar convenio..." (search)="onSearch($event)" />
+    <app-filter-bar placeholder="Buscar productor..." (search)="onSearch($event)" />
 
     @if (loading()) {
       <app-skeleton-table [rows]="5" [cols]="6" />
     } @else if (!convenios().length) {
-      <app-empty-state title="Sin convenios" message="Crea un convenio para comenzar" />
+      <app-empty-state title="Sin productores" message="Crea un productor para comenzar" />
     } @else {
       <app-glass-table [columns]="columns" [data]="convenios()" [clickable]="true" (rowClick)="goToDetail($event)">
         <ng-template #row let-c>
@@ -81,7 +81,7 @@ export class ConveniosListComponent implements OnInit {
 
   columns: TableColumn[] = [
     { key: 'nombre', label: 'Nombre', width: '25%' },
-    { key: 'comision', label: 'Comision', width: '12%' },
+    { key: 'comision', label: 'Honorarios', width: '12%' },
     { key: 'descuento', label: 'Descuento', width: '12%' },
     { key: 'empresas', label: 'Empresas', width: '12%' },
     { key: 'estado', label: 'Estado', width: '12%' },
@@ -132,7 +132,7 @@ export class ConveniosListComponent implements OnInit {
   }
 
   onSaved() {
-    const msg = this.editEntity() ? 'Convenio actualizado correctamente' : 'Convenio creado correctamente';
+    const msg = this.editEntity() ? 'Productor actualizado correctamente' : 'Productor creado correctamente';
     this.closeForm();
     this.toast.success(msg);
     this.load();

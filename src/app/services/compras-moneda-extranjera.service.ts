@@ -6,6 +6,8 @@ import type {
   CompraMonedaExtranjera,
   CreateCompraMonedaExtranjeraDto,
   AnularCompraMonedaExtranjeraDto,
+  EjecutarCompraMonedaExtranjeraDto,
+  EstimarEjecucionCompraMonedaExtranjeraDto,
   CompraMonedaExtranjeraFilters,
   PaginatedCompras,
 } from '../models/compra-moneda-extranjera';
@@ -41,5 +43,13 @@ export class ComprasMonedaExtranjeraService {
 
   anular(id: string, dto: AnularCompraMonedaExtranjeraDto): Observable<CompraMonedaExtranjera> {
     return this.http.patch<CompraMonedaExtranjera>(`${this.url}/${id}/anular`, dto);
+  }
+
+  ejecutar(id: string, dto: EjecutarCompraMonedaExtranjeraDto): Observable<CompraMonedaExtranjera> {
+    return this.http.patch<CompraMonedaExtranjera>(`${this.url}/${id}/ejecutar`, dto);
+  }
+
+  estimarEjecucion(id: string, dto: EstimarEjecucionCompraMonedaExtranjeraDto): Observable<CompraMonedaExtranjera> {
+    return this.http.patch<CompraMonedaExtranjera>(`${this.url}/${id}/estimar-ejecucion`, dto);
   }
 }

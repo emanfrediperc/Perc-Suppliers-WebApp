@@ -119,7 +119,7 @@ test.describe('Role gating — consulta (API)', () => {
         return;
       }
 
-      // Detail endpoint is gated to admin/tesoreria/contabilidad only
+      // Detail endpoint is gated to admin/tesoreria/operador only
       const detailRes = await page.request.get(`${API_BASE}/api/v1/empresas-proveedoras/${firstId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -164,8 +164,8 @@ test.describe('Change password flow', () => {
     'after changing password, re-login with new password goes directly to dashboard',
     { tag: ['@critical', '@e2e', '@security', '@SEC-E2E-006'] },
     async ({ page }) => {
-      // Use contabilidad for this test — complete the change-password flow first
-      await loginAs(page, SeedUsers.contabilidad.email, SEED_PASSWORD, NEW_PASSWORD);
+      // Use operador for this test — complete the change-password flow first
+      await loginAs(page, SeedUsers.operador.email, SEED_PASSWORD, NEW_PASSWORD);
 
       // Now simulate a full logout + re-login with the new password
       // Clear localStorage to simulate logout
@@ -176,7 +176,7 @@ test.describe('Change password flow', () => {
 
       // Navigate to login
       await page.goto(Routes.LOGIN);
-      await page.locator(AuthForm.EMAIL_INPUT).fill(SeedUsers.contabilidad.email);
+      await page.locator(AuthForm.EMAIL_INPUT).fill(SeedUsers.operador.email);
       await page.locator(AuthForm.PASSWORD_INPUT).fill(NEW_PASSWORD);
       await page.getByRole('button', { name: AuthForm.SUBMIT_BUTTON_NAME }).click();
 

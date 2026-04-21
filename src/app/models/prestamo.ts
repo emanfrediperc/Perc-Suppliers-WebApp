@@ -78,6 +78,7 @@ export interface PrestamoFilters {
   currency?: Currency;
   lenderId?: string;
   borrowerId?: string;
+  empresaId?: string;
   vehicle?: Vehicle;
   balanceCut?: BalanceCut;
 }

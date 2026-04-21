@@ -56,7 +56,7 @@ import { ComentariosSectionComponent } from '../../../shared/comentarios-section
           </div>
           @if (orden()!.pagos?.length) {
             <div class="finance-summary">
-              <div class="finance-row"><span>Total Comisiones</span><span class="text-indigo">{{ totals().totalComision | currency:'ARS':'ARS ':'1.2-2' }}</span></div>
+              <div class="finance-row"><span>Total Honorarios</span><span class="text-indigo">{{ totals().totalComision | currency:'ARS':'ARS ':'1.2-2' }}</span></div>
               <div class="finance-row"><span>Total Retenciones</span><span class="text-amber">{{ totals().totalRetenciones | currency:'ARS':'ARS ':'1.2-2' }}</span></div>
               <div class="finance-row"><span>Total Descuentos</span><span>{{ totals().totalDescuento | currency:'ARS':'ARS ':'1.2-2' }}</span></div>
               <div class="finance-row total"><span>Neto Transferido</span><span class="text-blue">{{ totals().totalNeto | currency:'ARS':'ARS ':'1.2-2' }}</span></div>
@@ -114,7 +114,7 @@ import { ComentariosSectionComponent } from '../../../shared/comentarios-section
               </div>
               @if (p.convenioAplicado) {
                 <div class="pago-amount-item">
-                  <span class="pago-amount-label">Convenio</span>
+                  <span class="pago-amount-label">Productor</span>
                   <span class="pago-amount-value">{{ p.convenioAplicado.nombre }}</span>
                 </div>
               }
@@ -129,7 +129,7 @@ import { ComentariosSectionComponent } from '../../../shared/comentarios-section
               <span class="desglose-title">Desglose</span>
               <div class="desglose-grid">
                 @if (p.comision) {
-                  <div class="desglose-item"><span>Comision ({{ p.porcentajeComision }}%)</span><span class="text-indigo">-{{ p.comision | currency:'ARS':'ARS ':'1.2-2' }}</span></div>
+                  <div class="desglose-item"><span>Honorarios ({{ p.porcentajeComision }}%)</span><span class="text-indigo">-{{ p.comision | currency:'ARS':'ARS ':'1.2-2' }}</span></div>
                 }
                 @if (p.descuento) {
                   <div class="desglose-item"><span>Descuento ({{ p.porcentajeDescuento }}%)</span><span>-{{ p.descuento | currency:'ARS':'ARS ':'1.2-2' }}</span></div>

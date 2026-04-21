@@ -23,7 +23,7 @@ import { ExportService } from '../../../services/export.service';
           <option value="ordenes-pago">Ordenes de Pago</option>
           <option value="facturas">Facturas</option>
           <option value="pagos">Pagos</option>
-          <option value="convenios">Convenios</option>
+          <option value="convenios">Productores</option>
           <option value="empresas-proveedoras">Empresas Proveedoras</option>
           <option value="auth">Auth</option>
         </select>
