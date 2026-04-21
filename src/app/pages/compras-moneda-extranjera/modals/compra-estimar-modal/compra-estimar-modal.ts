@@ -42,7 +42,13 @@ import type { CompraMonedaExtranjera } from '../../../../models/compra-moneda-ex
 
           <div class="form-row">
             <label>Fecha estimada</label>
-            <input type="date" name="fechaEstimada" [(ngModel)]="fechaEstimada" required />
+            <input
+              type="date"
+              name="fechaEstimada"
+              [(ngModel)]="fechaEstimada"
+              [min]="minFecha()"
+              required
+            />
             @if (error()) {
               <span class="error">{{ error() }}</span>
             }
@@ -149,13 +155,21 @@ export class CompraEstimarModalComponent implements OnChanges {
   ngOnChanges(changes: SimpleChanges) {
     if (changes['open']?.currentValue === true) {
       const c = this.compra();
-      this.fechaEstimada = c?.fechaEstimadaEjecucion?.split('T')[0] ?? this.today();
+      const previa = c?.fechaEstimadaEjecucion?.split('T')[0];
+      const min = this.minFecha();
+      const fallback = min && min > this.today() ? min : this.today();
+      const candidata = previa ?? fallback;
+      this.fechaEstimada = min && candidata < min ? min : candidata;
       this.error.set(null);
     }
   }
 
   private today(): string {
     return new Date().toISOString().split('T')[0];
+  }
+
+  minFecha(): string {
+    return this.compra()?.fechaSolicitada?.split('T')[0] ?? '';
   }
 
   fmtUSD(value: number): string {
@@ -170,6 +184,11 @@ export class CompraEstimarModalComponent implements OnChanges {
     if (!c) return;
     if (!this.fechaEstimada) {
       this.error.set('Requerido');
+      return;
+    }
+    const min = this.minFecha();
+    if (min && this.fechaEstimada < min) {
+      this.error.set('Debe ser igual o posterior a la fecha solicitada');
       return;
     }
     this.error.set(null);

@@ -80,7 +80,8 @@ import type { EmpresaRef } from '../../../models/prestamo';
           <label>Estado</label>
           <select [(ngModel)]="draftEstado">
             <option value="all">Todos</option>
-            <option value="CONFIRMADA">Confirmada</option>
+            <option value="SOLICITADA">Solicitada</option>
+            <option value="EJECUTADA">Ejecutada</option>
             <option value="ANULADA">Anulada</option>
           </select>
         </div>
@@ -262,6 +263,7 @@ import type { EmpresaRef } from '../../../models/prestamo';
     .filters-card {
       padding: 1rem 1.25rem;
       margin-bottom: 1.5rem;
+      overflow: visible;
     }
 
     .filters-row {
@@ -482,8 +484,8 @@ export class ComprasMonedaExtranjeraListadoComponent implements OnInit {
           this.compras.set(res.data);
           this.total.set(res.total);
         },
-        error: (err) => {
-          this.toast.error(err?.error?.message ?? 'Error al cargar las compras FX');
+        error: () => {
+          this.toast.error('No se pudieron cargar las compras FX. Verificá los filtros e intentá de nuevo.');
         },
       });
   }

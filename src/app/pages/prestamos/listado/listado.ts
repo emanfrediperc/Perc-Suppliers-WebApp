@@ -191,32 +191,34 @@ import type {
       <div class="netpos-grid">
         @for (pos of netPositions(); track pos.currency) {
           <app-glass-card [title]="'Posición neta · ' + pos.currency">
-            <table class="netpos-table">
-              <thead>
-                <tr>
-                  <th>Empresa</th>
-                  <th class="num">Prestó</th>
-                  <th class="num">Tomó</th>
-                  <th class="num">Neto</th>
-                </tr>
-              </thead>
-              <tbody>
-                @for (ent of pos.entities; track ent.empresaId) {
+            <div class="netpos-scroll">
+              <table class="netpos-table">
+                <thead>
                   <tr>
-                    <td>{{ ent.name }}</td>
-                    <td class="num">{{ fmtC(ent.lent, pos.currency) }}</td>
-                    <td class="num">{{ fmtC(ent.borrowed, pos.currency) }}</td>
-                    <td
-                      class="num"
-                      [class.positive]="ent.net > 0"
-                      [class.negative]="ent.net < 0"
-                    >
-                      {{ fmtC(ent.net, pos.currency) }}
-                    </td>
+                    <th>Empresa</th>
+                    <th class="num">Prestó</th>
+                    <th class="num">Tomó</th>
+                    <th class="num">Neto</th>
                   </tr>
-                }
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  @for (ent of pos.entities; track ent.empresaId) {
+                    <tr>
+                      <td class="empresa">{{ ent.name }}</td>
+                      <td class="num">{{ fmtC(ent.lent, pos.currency) }}</td>
+                      <td class="num">{{ fmtC(ent.borrowed, pos.currency) }}</td>
+                      <td
+                        class="num"
+                        [class.positive]="ent.net > 0"
+                        [class.negative]="ent.net < 0"
+                      >
+                        {{ fmtC(ent.net, pos.currency) }}
+                      </td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
           </app-glass-card>
         }
       </div>
@@ -338,6 +340,7 @@ import type {
       .filters-card {
         padding: 1rem 1.25rem;
         margin-bottom: 1.5rem;
+        overflow: visible;
       }
 
       .filters-row {
@@ -457,13 +460,19 @@ import type {
 
       .netpos-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
         gap: 1rem;
         margin-bottom: 1.5rem;
       }
 
+      .netpos-scroll {
+        overflow-x: auto;
+        margin: 0 -0.5rem;
+      }
+
       .netpos-table {
         width: 100%;
+        min-width: 380px;
         border-collapse: collapse;
       }
       .netpos-table th {
@@ -472,20 +481,25 @@ import type {
         text-transform: uppercase;
         letter-spacing: 0.05em;
         color: var(--color-gray-500);
-        padding: 0.5rem 0.75rem;
+        padding: 0.5rem 0.5rem;
         border-bottom: 1px solid var(--color-gray-200);
         font-weight: 600;
+        white-space: nowrap;
       }
       .netpos-table th.num,
       .netpos-table td.num {
         text-align: right;
         font-variant-numeric: tabular-nums;
+        white-space: nowrap;
       }
       .netpos-table td {
-        padding: 0.5rem 0.75rem;
+        padding: 0.5rem 0.5rem;
         font-size: 0.8125rem;
         color: var(--color-gray-700);
         border-bottom: 1px solid var(--color-gray-100);
+      }
+      .netpos-table td.empresa {
+        min-width: 120px;
       }
       .netpos-table tr:last-child td {
         border-bottom: none;
