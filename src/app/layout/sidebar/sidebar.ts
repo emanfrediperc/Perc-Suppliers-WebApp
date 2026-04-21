@@ -20,62 +20,60 @@ import { AprobacionService } from '../../services/aprobacion.service';
       </div>
 
       <nav class="sidebar-nav">
-        <a routerLink="/dashboard" routerLinkActive="active" class="nav-item" (click)="toggle.emit()">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
-          <span>Dashboard</span>
-        </a>
+        <div class="nav-section">
+          <span class="nav-section-title">Tesorería</span>
 
-        <a routerLink="/ordenes-pago" routerLinkActive="active" class="nav-item" (click)="toggle.emit()">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
-          <span>Ordenes de Pago</span>
-        </a>
-        <a routerLink="/facturas" routerLinkActive="active" class="nav-item" (click)="toggle.emit()">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><line x1="10" y1="9" x2="8" y2="9"/></svg>
-          <span>Facturas</span>
-        </a>
-
-        @if (canManage()) {
-          <a routerLink="/convenios" routerLinkActive="active" class="nav-item" (click)="toggle.emit()">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-            <span>Convenios</span>
+          <a routerLink="/dashboard" routerLinkActive="active" class="nav-item" (click)="toggle.emit()">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+            <span>Dashboard</span>
           </a>
-        }
 
-        @if (canManage()) {
-          <a routerLink="/empresas-proveedoras" routerLinkActive="active" class="nav-item" (click)="toggle.emit()">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-            <span>Empresas Proveedoras</span>
+          <a routerLink="/ordenes-pago" routerLinkActive="active" class="nav-item" (click)="toggle.emit()">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+            <span>Ordenes de Pago</span>
           </a>
-          <a routerLink="/empresas-clientes" routerLinkActive="active" class="nav-item" (click)="toggle.emit()">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-            <span>Empresas Clientes</span>
+
+          <a routerLink="/facturas" routerLinkActive="active" class="nav-item" (click)="toggle.emit()">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><line x1="10" y1="9" x2="8" y2="9"/></svg>
+            <span>Facturas</span>
           </a>
-        }
 
-        <a routerLink="/reportes" routerLinkActive="active" class="nav-item" (click)="toggle.emit()">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 20V10"/><path d="M12 20V4"/><path d="M6 20v-6"/></svg>
-          <span>Reportes</span>
-        </a>
+          @if (canManage()) {
+            <a routerLink="/convenios" routerLinkActive="active" class="nav-item" (click)="toggle.emit()">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+              <span>Productores</span>
+            </a>
 
-        <a routerLink="/estado-cuenta" routerLinkActive="active" class="nav-item" (click)="toggle.emit()">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1v22"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-          <span>Estado de Cuenta</span>
-        </a>
+            <a routerLink="/empresas" routerLinkActive="active" class="nav-item" (click)="toggle.emit()">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+              <span>Empresas</span>
+            </a>
+          }
 
-        <a routerLink="/prestamos" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" class="nav-item" (click)="toggle.emit()">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M7 17l4-4 4 4 6-6"/></svg>
-          <span>Préstamos</span>
-        </a>
+          <a routerLink="/reportes" routerLinkActive="active" class="nav-item" (click)="toggle.emit()">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 20V10"/><path d="M12 20V4"/><path d="M6 20v-6"/></svg>
+            <span>Reportes</span>
+          </a>
 
-        <a routerLink="/prestamos/simulador" routerLinkActive="active" class="nav-item nav-subitem" (click)="toggle.emit()">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="8" y1="10" x2="16" y2="10"/><line x1="8" y1="14" x2="10" y2="14"/><line x1="8" y1="18" x2="10" y2="18"/><line x1="14" y1="14" x2="16" y2="14"/><line x1="14" y1="18" x2="16" y2="18"/></svg>
-          <span>Simulador</span>
-        </a>
+          <a routerLink="/estado-cuenta" routerLinkActive="active" class="nav-item" (click)="toggle.emit()">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1v22"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+            <span>Estado de Cuenta</span>
+          </a>
+        </div>
 
-        <a routerLink="/compras-moneda-extranjera" routerLinkActive="active" class="nav-item" (click)="toggle.emit()">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"/><line x1="12" y1="6" x2="12" y2="8"/><line x1="12" y1="16" x2="12" y2="18"/></svg>
-          <span>Compras FX</span>
-        </a>
+        <div class="nav-section">
+          <span class="nav-section-title">Préstamos</span>
+
+          <a routerLink="/prestamos" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" class="nav-item" (click)="toggle.emit()">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M7 17l4-4 4 4 6-6"/></svg>
+            <span>Préstamos</span>
+          </a>
+
+          <a routerLink="/compras-moneda-extranjera" routerLinkActive="active" class="nav-item" (click)="toggle.emit()">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"/><line x1="12" y1="6" x2="12" y2="8"/><line x1="12" y1="16" x2="12" y2="18"/></svg>
+            <span>Compras FX</span>
+          </a>
+        </div>
 
         @if (isAdmin()) {
           <div class="nav-divider"></div>
@@ -157,6 +155,6 @@ export class SidebarComponent implements OnInit, OnDestroy {
   }
 
   isAdmin = computed(() => this.auth.user()?.role === 'admin');
-  canApprove = computed(() => ['admin', 'tesoreria'].includes(this.auth.user()?.role || ''));
-  canManage = computed(() => ['admin', 'tesoreria', 'contabilidad'].includes(this.auth.user()?.role || ''));
+  canApprove = computed(() => ['admin', 'operador'].includes(this.auth.user()?.role || ''));
+  canManage = computed(() => ['admin', 'tesoreria', 'operador'].includes(this.auth.user()?.role || ''));
 }

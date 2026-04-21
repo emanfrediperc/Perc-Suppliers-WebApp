@@ -49,7 +49,7 @@ import { InstrumentResult, INSTRUMENT_COLORS, INSTRUMENT_NAMES } from './simulat
         </div>
       </app-glass-card>
 
-      <app-glass-card title="Tasas y Comisiones">
+      <app-glass-card title="Tasas y Honorarios">
         <div class="input-stack">
           <div class="input-group">
             <label>Tasa Descubierto (%/mes)</label>
@@ -60,7 +60,7 @@ import { InstrumentResult, INSTRUMENT_COLORS, INSTRUMENT_NAMES } from './simulat
             />
           </div>
           <div class="input-group">
-            <label>Comisión Momentum (%)</label>
+            <label>Honorarios Momentum (%)</label>
             <input
               appNumberFormat [decimals]="2"
               [ngModel]="momentumCommission()"

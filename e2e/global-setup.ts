@@ -31,7 +31,7 @@ const SEED_PASSWORD = process.env.SEED_PASSWORD || 'admin123';
 const USERS = [
   { email: 'admin@perc.com', password: SEED_PASSWORD, file: 'admin.json' },
   { email: 'tesoreria@perc.com', password: SEED_PASSWORD, file: 'tesoreria.json' },
-  { email: 'contabilidad@perc.com', password: SEED_PASSWORD, file: 'contabilidad.json' },
+  { email: 'operador@perc.com', password: SEED_PASSWORD, file: 'operador.json' },
   { email: 'consulta@perc.com', password: SEED_PASSWORD, file: 'consulta.json' },
 ];
 

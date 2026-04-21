@@ -15,7 +15,7 @@ import {
  * Covers:
  *  - read flows (list, dashboard, filters, net position) as admin
  *  - full create → edit → history → renew → clear → delete lifecycle (serial)
- *  - role gating for consulta, contabilidad, tesoreria
+ *  - role gating for consulta, operador, tesoreria
  *
  * Assumes globalSetup has re-seeded the DB with 7 baseline prestamos:
  *  5 ACTIVE (2 USD, 2 ARS, 1 USDC), 1 CLEARED (ARS), 1 RENEWED parent (ARS).
@@ -304,10 +304,10 @@ test.describe('Role gating — consulta (read only)', () => {
   });
 });
 
-test.describe('Role gating — contabilidad (read only)', () => {
-  test.use({ storageState: '.auth/contabilidad.json' });
+test.describe('Role gating — operador (read only)', () => {
+  test.use({ storageState: '.auth/operador.json' });
 
-  test('contabilidad user sees list but no action buttons', async ({ page }) => {
+  test('operador user sees list but no action buttons', async ({ page }) => {
     await page.goto(Routes.PRESTAMOS);
     await expect(page.locator(Listado.TABLE_ROW).first()).toBeVisible();
     await expect(

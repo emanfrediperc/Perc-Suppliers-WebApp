@@ -25,6 +25,6 @@ export async function loginViaApi(
 export const SeedUsers = {
   admin: { email: 'admin@perc.com', password: 'admin123', role: 'admin' },
   tesoreria: { email: 'tesoreria@perc.com', password: 'admin123', role: 'tesoreria' },
-  contabilidad: { email: 'contabilidad@perc.com', password: 'admin123', role: 'contabilidad' },
+  operador: { email: 'operador@perc.com', password: 'admin123', role: 'operador' },
   consulta: { email: 'consulta@perc.com', password: 'admin123', role: 'consulta' },
 } as const;

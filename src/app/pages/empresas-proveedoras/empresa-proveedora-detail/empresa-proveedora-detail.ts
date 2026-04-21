@@ -63,7 +63,7 @@ import { EmpresaProveedoraFormModalComponent } from '../empresa-proveedora-form-
         }
       </div>
 
-      <h3 class="section-title">Convenios Asociados ({{ convenios().length }})</h3>
+      <h3 class="section-title">Productores Asociados ({{ convenios().length }})</h3>
       @if (convenios().length) {
         <app-glass-table [columns]="convenioColumns" [data]="convenios()" [clickable]="true" (rowClick)="goToConvenio($event)">
           <ng-template #row let-c>
@@ -74,7 +74,7 @@ import { EmpresaProveedoraFormModalComponent } from '../empresa-proveedora-form-
           </ng-template>
         </app-glass-table>
       } @else {
-        <div class="card-glass empty-card">Sin convenios asociados</div>
+        <div class="card-glass empty-card">Sin productores asociados</div>
       }
 
       <h3 class="section-title" style="margin-top:1.5rem">Facturas ({{ facturas().length }})</h3>
@@ -118,7 +118,7 @@ export class EmpresaProveedoraDetailComponent implements OnInit {
 
   convenioColumns: TableColumn[] = [
     { key: 'nombre', label: 'Nombre', width: '35%' },
-    { key: 'comision', label: 'Comision', width: '20%' },
+    { key: 'comision', label: 'Honorarios', width: '20%' },
     { key: 'descuento', label: 'Descuento', width: '20%' },
     { key: 'estado', label: 'Estado', width: '15%' },
   ];

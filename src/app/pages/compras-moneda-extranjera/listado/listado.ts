@@ -1,3 +1,4 @@
+import { finalize } from 'rxjs/operators';
 import {
   Component,
   OnInit,
@@ -8,7 +9,6 @@ import {
 } from '@angular/core';
 import { DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { ArsCurrencyPipe } from '../../../pipes/currency.pipe';
 import { PageHeaderComponent } from '../../../shared/page-header/page-header';
 import { GlassCardComponent } from '../../../shared/glass-card/glass-card';
 import { GlassTableComponent, TableColumn } from '../../../shared/glass-table/glass-table';
@@ -20,14 +20,19 @@ import { ToastComponent } from '../../../shared/toast/toast';
 import { ToastService } from '../../../shared/toast/toast.service';
 import { AuthService } from '../../../services/auth.service';
 import { ComprasMonedaExtranjeraService } from '../../../services/compras-moneda-extranjera.service';
+import { EmpresaPickerComponent } from '../../../shared/empresa-picker/empresa-picker';
 import { CompraFormModalComponent } from '../modals/compra-form-modal/compra-form-modal';
 import { CompraAnularModalComponent } from '../modals/compra-anular-modal/compra-anular-modal';
+import { CompraDetalleModalComponent } from '../modals/compra-detalle-modal/compra-detalle-modal';
+import { CompraEjecutarModalComponent } from '../modals/compra-ejecutar-modal/compra-ejecutar-modal';
+import { CompraEstimarModalComponent } from '../modals/compra-estimar-modal/compra-estimar-modal';
 import type {
   CompraMonedaExtranjera,
   CompraMonedaExtranjeraFilters,
   ModalidadCompra,
   EstadoCompraMonedaExtranjera,
 } from '../../../models/compra-moneda-extranjera';
+import type { EmpresaRef } from '../../../models/prestamo';
 
 @Component({
   selector: 'app-compras-moneda-extranjera-listado',
@@ -45,7 +50,10 @@ import type {
     ToastComponent,
     CompraFormModalComponent,
     CompraAnularModalComponent,
-    ArsCurrencyPipe,
+    CompraDetalleModalComponent,
+    CompraEjecutarModalComponent,
+    CompraEstimarModalComponent,
+    EmpresaPickerComponent,
   ],
   template: `
     <app-toast />
@@ -65,6 +73,7 @@ import type {
             <option value="all">Todas</option>
             <option value="CABLE">Cable</option>
             <option value="USD_LOCAL">USD Local</option>
+            <option value="MEP">MEP</option>
           </select>
         </div>
         <div class="filter-item">
@@ -74,6 +83,12 @@ import type {
             <option value="CONFIRMADA">Confirmada</option>
             <option value="ANULADA">Anulada</option>
           </select>
+        </div>
+        <div class="filter-item filter-empresa">
+          <app-empresa-picker
+            label="Empresa"
+            placeholder="Cliente o proveedora..."
+            [(selected)]="draftEmpresa" />
         </div>
         <div class="filter-item filter-item--wide">
           <label>Fecha desde</label>
@@ -101,21 +116,49 @@ import type {
     } @else {
       <app-glass-table [columns]="columns" [data]="compras()">
         <ng-template #row let-compra>
-          <td>{{ compra.fecha | date: 'dd/MM/yyyy' }}</td>
+          <td class="cell-dates">
+            <div class="date-line">
+              <span class="date-tag">Sol</span>
+              <span>{{ compra.fechaSolicitada | date: 'dd/MM/yyyy' }}</span>
+            </div>
+            @if (compra.fechaEjecutada) {
+              <div class="date-line ejecutada">
+                <span class="date-tag tag-green">Ejec</span>
+                <span>{{ compra.fechaEjecutada | date: 'dd/MM/yyyy' }}</span>
+              </div>
+            } @else if (compra.fechaEstimadaEjecucion) {
+              <div class="date-line estimada">
+                <span class="date-tag tag-blue">Est</span>
+                <span>{{ compra.fechaEstimadaEjecucion | date: 'dd/MM/yyyy' }}</span>
+              </div>
+            }
+          </td>
           <td>
             <span class="badge-modalidad" [class]="'badge-' + compra.modalidad">
-              {{ compra.modalidad === 'CABLE' ? 'Cable' : 'USD Local' }}
+              {{ modalidadLabel(compra.modalidad) }}
             </span>
           </td>
-          <td class="cell-entity">{{ compra.empresaCliente.razonSocialCache }}</td>
-          <td class="num">USD {{ fmtUSD(compra.montoUSD) }}</td>
-          <td class="num">{{ fmtUSD(compra.tipoCambio) }}</td>
-          <td class="num">{{ compra.montoARS | arsCurrency }}</td>
-          <td class="cell-contraparte">{{ compra.contraparte }}</td>
+          <td class="cell-entity">
+            {{ compra.empresa.razonSocialCache }}
+            <span class="kind-tag">{{ compra.empresa.empresaKind === 'cliente' ? 'Cliente' : 'Proveedora' }}</span>
+          </td>
+          <td class="cell-monto">USD {{ fmtUSD(compra.montoUSD) }}</td>
           <td><app-status-badge [status]="compra.estado" /></td>
           <td class="cell-actions">
             <div class="row-actions">
-              @if (canWrite() && compra.estado === 'CONFIRMADA') {
+              <button class="btn-sm" (click)="openDetalleModal(compra._id)" title="Ver detalle">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                Ver
+              </button>
+              @if (canChangeStatus() && compra.estado === 'SOLICITADA') {
+                <button class="btn-sm btn-success" (click)="openEjecutarModal(compra)" title="Marcar como ejecutada">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                  Ejecutar
+                </button>
+                <button class="btn-sm" (click)="openEstimarModal(compra)" title="Fijar fecha estimada">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                  Estimar
+                </button>
                 <button class="btn-sm btn-warn" (click)="openAnularModal(compra)" title="Anular">
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>
                   Anular
@@ -145,6 +188,27 @@ import type {
       [compra]="selectedCompra()"
       (close)="showAnularModal.set(false)"
       (saved)="onModalSaved()"
+    />
+
+    <app-compra-ejecutar-modal
+      [open]="showEjecutarModal()"
+      [compra]="selectedCompra()"
+      (close)="showEjecutarModal.set(false)"
+      (saved)="onModalSaved()"
+    />
+
+    <app-compra-estimar-modal
+      [open]="showEstimarModal()"
+      [compra]="selectedCompra()"
+      (close)="showEstimarModal.set(false)"
+      (saved)="onModalSaved()"
+    />
+
+    <app-compra-detalle-modal
+      [open]="showDetalleModal()"
+      [compra]="detalleCompra()"
+      [loading]="detalleLoading()"
+      (close)="showDetalleModal.set(false)"
     />
   `,
   styles: [`
@@ -260,18 +324,93 @@ import type {
       background: rgba(245, 158, 11, 0.12);
       color: #d97706;
     }
+    .badge-MEP {
+      background: rgba(168, 85, 247, 0.12);
+      color: #9333ea;
+    }
+    .kind-tag {
+      display: inline-block;
+      margin-left: 0.4rem;
+      font-size: 0.6875rem;
+      font-weight: 600;
+      padding: 0.1rem 0.45rem;
+      border-radius: 999px;
+      background: var(--color-gray-100);
+      color: var(--color-gray-600);
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+    .filter-empresa {
+      min-width: 260px;
+      flex: 1 1 260px;
+      max-width: 340px;
+    }
 
     :host ::ng-deep td.num {
       text-align: right;
       font-variant-numeric: tabular-nums;
     }
-    :host ::ng-deep td.cell-entity { max-width: 180px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-    :host ::ng-deep td.cell-contraparte { max-width: 160px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    :host ::ng-deep td.cell-monto {
+      text-align: center;
+      font-variant-numeric: tabular-nums;
+      font-weight: 600;
+    }
+    :host ::ng-deep th:nth-child(4) {
+      text-align: center;
+    }
+    :host ::ng-deep td.cell-entity { max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     :host ::ng-deep td.cell-actions { white-space: nowrap; }
+    :host ::ng-deep td.cell-dates {
+      padding-top: 0.625rem;
+      padding-bottom: 0.625rem;
+      line-height: 1.3;
+    }
+
+    .date-line {
+      display: flex;
+      align-items: center;
+      gap: 0.375rem;
+      font-size: 0.75rem;
+      color: var(--color-gray-700);
+      font-variant-numeric: tabular-nums;
+    }
+    .date-line + .date-line {
+      margin-top: 0.2rem;
+    }
+    .date-tag {
+      display: inline-block;
+      min-width: 30px;
+      text-align: center;
+      font-size: 0.625rem;
+      font-weight: 700;
+      padding: 0.05rem 0.35rem;
+      border-radius: 3px;
+      background: var(--color-gray-100);
+      color: var(--color-gray-600);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .date-tag.tag-green {
+      background: rgba(34, 197, 94, 0.14);
+      color: #15803d;
+    }
+    .date-tag.tag-blue {
+      background: rgba(59, 130, 246, 0.14);
+      color: #2563eb;
+    }
 
     .row-actions {
       display: flex;
       gap: 0.25rem;
+      flex-wrap: wrap;
+    }
+    .btn-success {
+      background: rgba(34, 197, 94, 0.12);
+      color: #15803d;
+      border-color: rgba(34, 197, 94, 0.3);
+    }
+    .btn-success:hover {
+      background: rgba(34, 197, 94, 0.2);
     }
   `],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -291,6 +430,7 @@ export class ComprasMonedaExtranjeraListadoComponent implements OnInit {
   // Draft filters (template-driven)
   draftModalidad: ModalidadCompra | 'all' = 'all';
   draftEstado: EstadoCompraMonedaExtranjera | 'all' = 'all';
+  draftEmpresa = signal<EmpresaRef | null>(null);
   draftFechaDesde = '';
   draftFechaHasta = '';
 
@@ -301,24 +441,31 @@ export class ComprasMonedaExtranjeraListadoComponent implements OnInit {
   canWrite = computed(() =>
     ['admin', 'tesoreria'].includes(this.auth.user()?.role ?? ''),
   );
+  canChangeStatus = computed(() =>
+    ['admin', 'tesoreria', 'operador'].includes(this.auth.user()?.role ?? ''),
+  );
 
   totalPages = computed(() => Math.ceil(this.total() / this.limit()) || 1);
 
   // Modal state
   showFormModal = signal(false);
   showAnularModal = signal(false);
+  showEjecutarModal = signal(false);
+  showEstimarModal = signal(false);
   selectedCompra = signal<CompraMonedaExtranjera | null>(null);
 
+  // Detalle modal
+  showDetalleModal = signal(false);
+  detalleCompra = signal<CompraMonedaExtranjera | null>(null);
+  detalleLoading = signal(false);
+
   columns: TableColumn[] = [
-    { key: 'fecha', label: 'Fecha' },
-    { key: 'modalidad', label: 'Modalidad', width: '110px' },
-    { key: 'empresaCliente', label: 'Empresa Cliente' },
-    { key: 'montoUSD', label: 'Monto USD' },
-    { key: 'tipoCambio', label: 'Tipo Cambio' },
-    { key: 'montoARS', label: 'Monto ARS' },
-    { key: 'contraparte', label: 'Contraparte' },
+    { key: 'fechas', label: 'Fechas', width: '150px' },
+    { key: 'modalidad', label: 'Modalidad', width: '150px' },
+    { key: 'empresa', label: 'Empresa' },
+    { key: 'montoUSD', label: 'Monto' },
     { key: 'estado', label: 'Estado', width: '120px' },
-    { key: 'actions', label: '', width: '100px' },
+    { key: 'actions', label: '', width: '220px' },
   ];
 
   ngOnInit() {
@@ -329,15 +476,14 @@ export class ComprasMonedaExtranjeraListadoComponent implements OnInit {
     this.loading.set(true);
     this.service
       .getAll({ ...this.appliedFilters(), page: this.page(), limit: this.limit() })
+      .pipe(finalize(() => this.loading.set(false)))
       .subscribe({
         next: (res) => {
           this.compras.set(res.data);
           this.total.set(res.total);
-          this.loading.set(false);
         },
         error: (err) => {
-          this.toast.error(err?.error?.message || 'Error al cargar las compras FX');
-          this.loading.set(false);
+          this.toast.error(err?.error?.message ?? 'Error al cargar las compras FX');
         },
       });
   }
@@ -346,6 +492,8 @@ export class ComprasMonedaExtranjeraListadoComponent implements OnInit {
     const f: CompraMonedaExtranjeraFilters = {};
     if (this.draftModalidad !== 'all') f.modalidad = this.draftModalidad;
     if (this.draftEstado !== 'all') f.estado = this.draftEstado;
+    const empresa = this.draftEmpresa();
+    if (empresa) f.empresaId = empresa.empresaId;
     if (this.draftFechaDesde) f.fechaDesde = this.draftFechaDesde;
     if (this.draftFechaHasta) f.fechaHasta = this.draftFechaHasta;
     this.appliedFilters.set(f);
@@ -356,6 +504,7 @@ export class ComprasMonedaExtranjeraListadoComponent implements OnInit {
   clearFilters() {
     this.draftModalidad = 'all';
     this.draftEstado = 'all';
+    this.draftEmpresa.set(null);
     this.draftFechaDesde = '';
     this.draftFechaHasta = '';
     this.appliedFilters.set({});
@@ -377,11 +526,45 @@ export class ComprasMonedaExtranjeraListadoComponent implements OnInit {
     this.showAnularModal.set(true);
   }
 
+  openEjecutarModal(compra: CompraMonedaExtranjera) {
+    this.selectedCompra.set(compra);
+    this.showEjecutarModal.set(true);
+  }
+
+  openEstimarModal(compra: CompraMonedaExtranjera) {
+    this.selectedCompra.set(compra);
+    this.showEstimarModal.set(true);
+  }
+
+  openDetalleModal(id: string) {
+    this.detalleCompra.set(null);
+    this.detalleLoading.set(true);
+    this.showDetalleModal.set(true);
+    this.service.getOne(id).subscribe({
+      next: (compra) => {
+        this.detalleCompra.set(compra);
+        this.detalleLoading.set(false);
+      },
+      error: (err) => {
+        this.detalleLoading.set(false);
+        this.showDetalleModal.set(false);
+        this.toast.error(err?.error?.message ?? 'Error al cargar el detalle');
+      },
+    });
+  }
+
   onModalSaved() {
     this.load();
   }
 
   // USD formatter
+  modalidadLabel(m: string): string {
+    if (m === 'CABLE') return 'Cable';
+    if (m === 'USD_LOCAL') return 'USD Local';
+    if (m === 'MEP') return 'MEP';
+    return m;
+  }
+
   fmtUSD(value: number): string {
     return value.toLocaleString('es-AR', {
       minimumFractionDigits: 2,

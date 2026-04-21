@@ -16,23 +16,19 @@ import { ComprasMonedaExtranjeraService } from '../../../../services/compras-mon
 import type { CompraMonedaExtranjera } from '../../../../models/compra-moneda-extranjera';
 
 @Component({
-  selector: 'app-compra-anular-modal',
+  selector: 'app-compra-estimar-modal',
   standalone: true,
   imports: [FormsModule, GlassModalComponent],
   template: `
     <app-glass-modal
       [open]="open()"
-      title="Anular Compra FX"
-      maxWidth="500px"
+      title="Fecha estimada de ejecución"
+      subtitle="Indicá cuándo estimás que se va a ejecutar"
+      maxWidth="440px"
       (close)="close.emit()"
     >
       @if (compra()) {
-        <div class="anular-content">
-          <div class="danger-banner">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-            <span>Esta acción es <strong>irreversible</strong>. La compra quedará en estado ANULADA.</span>
-          </div>
-
+        <div class="content">
           <div class="compra-info">
             <div class="info-row">
               <span class="info-label">Empresa</span>
@@ -42,29 +38,22 @@ import type { CompraMonedaExtranjera } from '../../../../models/compra-moneda-ex
               <span class="info-label">Monto</span>
               <span class="info-value">USD {{ fmtUSD(compra()!.montoUSD) }}</span>
             </div>
-            <div class="info-row">
-              <span class="info-label">Modalidad</span>
-              <span class="info-value">{{ compra()!.modalidad }}</span>
-            </div>
           </div>
 
           <div class="form-row">
-            <label>Motivo de anulación (opcional)</label>
-            <textarea
-              name="motivo"
-              [(ngModel)]="motivo"
-              maxlength="500"
-              rows="3"
-              placeholder="Describí el motivo de la anulación..."
-            ></textarea>
+            <label>Fecha estimada</label>
+            <input type="date" name="fechaEstimada" [(ngModel)]="fechaEstimada" required />
+            @if (error()) {
+              <span class="error">{{ error() }}</span>
+            }
           </div>
 
           <div class="form-actions">
             <button type="button" class="btn-secondary" (click)="close.emit()" [disabled]="submitting()">
               Cancelar
             </button>
-            <button type="button" class="btn-danger" (click)="confirmar()" [disabled]="submitting()">
-              {{ submitting() ? 'Anulando...' : 'Confirmar anulación' }}
+            <button type="button" class="btn-primary" (click)="confirmar()" [disabled]="submitting()">
+              {{ submitting() ? 'Guardando...' : 'Guardar' }}
             </button>
           </div>
         </div>
@@ -72,46 +61,24 @@ import type { CompraMonedaExtranjera } from '../../../../models/compra-moneda-ex
     </app-glass-modal>
   `,
   styles: [`
-    .anular-content {
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-    }
-    .danger-banner {
-      display: flex;
-      align-items: flex-start;
-      gap: 0.75rem;
-      padding: 0.875rem 1rem;
-      background: rgba(239, 68, 68, 0.08);
-      border: 1px solid var(--color-error);
-      border-radius: var(--radius-sm);
-      color: var(--color-error);
-      font-size: 0.875rem;
-      line-height: 1.5;
-    }
-    .danger-banner svg { flex-shrink: 0; margin-top: 1px; }
+    .content { display: flex; flex-direction: column; gap: 1rem; }
     .compra-info {
       background: var(--color-gray-50);
       border: 1px solid var(--color-gray-200);
       border-radius: var(--radius-sm);
-      padding: 0.875rem 1rem;
+      padding: 0.75rem 1rem;
     }
     .info-row {
       display: flex;
       justify-content: space-between;
-      align-items: center;
-      padding: 0.375rem 0;
+      padding: 0.25rem 0;
       font-size: 0.875rem;
       border-bottom: 1px solid var(--color-gray-100);
     }
     .info-row:last-child { border-bottom: none; }
     .info-label { color: var(--color-gray-500); font-weight: 500; }
     .info-value { color: var(--color-gray-900); font-weight: 600; }
-    .form-row {
-      display: flex;
-      flex-direction: column;
-      gap: 0.375rem;
-    }
+    .form-row { display: flex; flex-direction: column; gap: 0.375rem; }
     .form-row label {
       font-size: 0.6875rem;
       color: var(--color-gray-500);
@@ -119,31 +86,29 @@ import type { CompraMonedaExtranjera } from '../../../../models/compra-moneda-ex
       letter-spacing: 0.05em;
       font-weight: 600;
     }
-    .form-row textarea {
+    .form-row input {
       padding: 0.625rem 0.875rem;
       border: 1px solid var(--color-gray-200);
       border-radius: var(--radius-sm);
       background: var(--color-white);
       color: var(--color-gray-900);
       font-size: 0.875rem;
-      font-family: inherit;
-      resize: vertical;
     }
-    .form-row textarea:focus {
+    .form-row input:focus {
       outline: none;
       border-color: var(--color-primary);
       box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
     }
+    .error { font-size: 0.75rem; color: var(--color-error); }
     .form-actions {
       display: flex;
       justify-content: flex-end;
       gap: 0.5rem;
       padding-top: 0.5rem;
       border-top: 1px solid var(--color-gray-200);
-      margin-top: 0.25rem;
     }
-    .btn-danger {
-      background: var(--color-error);
+    .btn-primary {
+      background: var(--color-primary);
       color: white;
       border: none;
       border-radius: var(--radius-sm);
@@ -152,8 +117,8 @@ import type { CompraMonedaExtranjera } from '../../../../models/compra-moneda-ex
       font-weight: 600;
       cursor: pointer;
     }
-    .btn-danger:disabled { opacity: 0.6; cursor: not-allowed; }
-    .btn-danger:hover:not(:disabled) { filter: brightness(0.9); }
+    .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
+    .btn-primary:hover:not(:disabled) { background: var(--color-primary-dark); }
     .btn-secondary {
       background: var(--color-gray-100);
       color: var(--color-gray-700);
@@ -168,7 +133,7 @@ import type { CompraMonedaExtranjera } from '../../../../models/compra-moneda-ex
   `],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class CompraAnularModalComponent implements OnChanges {
+export class CompraEstimarModalComponent implements OnChanges {
   private service = inject(ComprasMonedaExtranjeraService);
   private toast = inject(ToastService);
 
@@ -177,13 +142,20 @@ export class CompraAnularModalComponent implements OnChanges {
   close = output<void>();
   saved = output<void>();
 
-  motivo = '';
+  fechaEstimada = '';
   submitting = signal(false);
+  error = signal<string | null>(null);
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes['open']?.currentValue === true) {
-      this.motivo = '';
+      const c = this.compra();
+      this.fechaEstimada = c?.fechaEstimadaEjecucion?.split('T')[0] ?? this.today();
+      this.error.set(null);
     }
+  }
+
+  private today(): string {
+    return new Date().toISOString().split('T')[0];
   }
 
   fmtUSD(value: number): string {
@@ -196,18 +168,23 @@ export class CompraAnularModalComponent implements OnChanges {
   confirmar() {
     const c = this.compra();
     if (!c) return;
+    if (!this.fechaEstimada) {
+      this.error.set('Requerido');
+      return;
+    }
+    this.error.set(null);
     this.submitting.set(true);
     this.service
-      .anular(c._id, { motivo: this.motivo.trim() || undefined })
+      .estimarEjecucion(c._id, { fechaEstimadaEjecucion: this.fechaEstimada })
       .pipe(finalize(() => this.submitting.set(false)))
       .subscribe({
         next: () => {
-          this.toast.success('Compra anulada correctamente');
+          this.toast.success('Fecha estimada guardada');
           this.saved.emit();
           this.close.emit();
         },
         error: (err) => {
-          this.toast.error(err?.error?.message ?? 'Error al anular la compra');
+          this.toast.error(err?.error?.message ?? 'Error al guardar la fecha estimada');
         },
       });
   }

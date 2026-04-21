@@ -27,8 +27,8 @@ import { ConvenioService } from '../../../services/convenio.service';
           </div>
           @if (convenio()) {
             <div class="convenio-info card-glass" style="margin-top:1rem;padding:0.75rem 1rem">
-              <span class="convenio-label">Convenio: {{ convenio()!.nombre }}</span>
-              <span class="convenio-detail">Comision {{ convenio()!.comisionPorcentaje }}% | Descuento {{ convenio()!.descuentoPorcentaje }}%</span>
+              <span class="convenio-label">Productor: {{ convenio()!.nombre }}</span>
+              <span class="convenio-detail">Honorarios {{ convenio()!.comisionPorcentaje }}% | Descuento {{ convenio()!.descuentoPorcentaje }}%</span>
             </div>
           }
           <div class="step-actions">
@@ -95,7 +95,7 @@ import { ConvenioService } from '../../../services/convenio.service';
           <div class="calc-preview card-glass" style="margin-top:1rem;padding:1rem">
             <div class="calc-row"><span>Monto base</span><span>{{ montoBase | currency:'ARS':'ARS ':'1.2-2' }}</span></div>
             @if (comisionCalculada()) {
-              <div class="calc-row"><span>Comision ({{ convenio()?.comisionPorcentaje }}%)</span><span class="text-error">- {{ comisionCalculada() | currency:'ARS':'ARS ':'1.2-2' }}</span></div>
+              <div class="calc-row"><span>Honorarios ({{ convenio()?.comisionPorcentaje }}%)</span><span class="text-error">- {{ comisionCalculada() | currency:'ARS':'ARS ':'1.2-2' }}</span></div>
             }
             @if (descuentoCalculado()) {
               <div class="calc-row"><span>Descuento ({{ convenio()?.descuentoPorcentaje }}%)</span><span class="text-error">- {{ descuentoCalculado() | currency:'ARS':'ARS ':'1.2-2' }}</span></div>
@@ -121,7 +121,7 @@ import { ConvenioService } from '../../../services/convenio.service';
             <div class="calc-row"><span>Monto a pagar</span><span>{{ montoBase | currency:'ARS':'ARS ':'1.2-2' }}</span></div>
             <div class="calc-row"><span>Medio de pago</span><span>{{ medioPago }}</span></div>
             @if (comisionCalculada()) {
-              <div class="calc-row"><span>Comision</span><span>- {{ comisionCalculada() | currency:'ARS':'ARS ':'1.2-2' }}</span></div>
+              <div class="calc-row"><span>Honorarios</span><span>- {{ comisionCalculada() | currency:'ARS':'ARS ':'1.2-2' }}</span></div>
             }
             @if (descuentoCalculado()) {
               <div class="calc-row"><span>Descuento</span><span>- {{ descuentoCalculado() | currency:'ARS':'ARS ':'1.2-2' }}</span></div>

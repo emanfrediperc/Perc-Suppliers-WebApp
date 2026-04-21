@@ -19,6 +19,7 @@ export const routes: Routes = [
       { path: 'facturas/:id', loadComponent: () => import('./pages/facturas/factura-detail/factura-detail').then(m => m.FacturaDetailComponent) },
       { path: 'convenios', loadComponent: () => import('./pages/convenios/convenios-list/convenios-list').then(m => m.ConveniosListComponent) },
       { path: 'convenios/:id', loadComponent: () => import('./pages/convenios/convenio-detail/convenio-detail').then(m => m.ConvenioDetailComponent) },
+      { path: 'empresas', loadComponent: () => import('./pages/empresas/empresas-list/empresas-list').then(m => m.EmpresasListComponent) },
       { path: 'empresas-proveedoras', loadComponent: () => import('./pages/empresas-proveedoras/empresas-proveedoras-list/empresas-proveedoras-list').then(m => m.EmpresasProveedorasListComponent) },
       { path: 'empresas-proveedoras/:id', loadComponent: () => import('./pages/empresas-proveedoras/empresa-proveedora-detail/empresa-proveedora-detail').then(m => m.EmpresaProveedoraDetailComponent) },
       { path: 'empresas-clientes', loadComponent: () => import('./pages/empresas-clientes/empresas-clientes-list/empresas-clientes-list').then(m => m.EmpresasClientesListComponent) },
@@ -36,7 +37,7 @@ export const routes: Routes = [
       {
         path: 'aprobaciones',
         loadComponent: () => import('./pages/aprobaciones/aprobaciones-list/aprobaciones-list').then(m => m.AprobacionesListComponent),
-        canActivate: [roleGuard('admin', 'tesoreria')],
+        canActivate: [roleGuard('admin', 'operador')],
       },
       {
         path: 'admin/usuarios',

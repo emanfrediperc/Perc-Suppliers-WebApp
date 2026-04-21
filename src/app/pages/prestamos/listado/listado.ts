@@ -18,6 +18,7 @@ import { PrestamoFormModalComponent } from '../modals/prestamo-form-modal/presta
 import { PrestamoEditModalComponent } from '../modals/prestamo-edit-modal/prestamo-edit-modal';
 import { PrestamoRenewModalComponent } from '../modals/prestamo-renew-modal/prestamo-renew-modal';
 import { PrestamoHistoryModalComponent } from '../modals/prestamo-history-modal/prestamo-history-modal';
+import { EmpresaPickerComponent } from '../../../shared/empresa-picker/empresa-picker';
 import type {
   PrestamoWithComputed,
   CurrencyCard,
@@ -27,6 +28,7 @@ import type {
   Currency,
   Vehicle,
   BalanceCut,
+  EmpresaRef,
 } from '../../../models/prestamo';
 
 @Component({
@@ -47,6 +49,7 @@ import type {
     PrestamoEditModalComponent,
     PrestamoRenewModalComponent,
     PrestamoHistoryModalComponent,
+    EmpresaPickerComponent,
   ],
   template: `
     <app-toast />
@@ -99,6 +102,12 @@ import type {
             <option value="12-31">12-31</option>
             <option value="06-30">06-30</option>
           </select>
+        </div>
+        <div class="filter-item filter-empresa">
+          <app-empresa-picker
+            label="Empresa"
+            placeholder="Acreedor o deudor..."
+            [(selected)]="draftEmpresa" />
         </div>
         <div class="filter-actions">
           <button class="btn-primary" (click)="applyFilters()">Buscar</button>
@@ -157,13 +166,17 @@ import type {
           <td><app-status-badge [status]="loan.status" /></td>
           <td class="cell-actions">
             <div class="row-actions">
-              @if (canWrite() && loan.status === 'ACTIVE') {
-                <button class="btn-sm" (click)="openEditModal(loan)" title="Editar">✎</button>
-                <button class="btn-sm" (click)="openRenewModal(loan)" title="Renovar">↻</button>
-                <button class="btn-sm btn-warn" (click)="requestClear(loan)" title="Cancelar">⊘</button>
+              @if (loan.status === 'ACTIVE') {
+                @if (canWrite()) {
+                  <button class="btn-sm" (click)="openEditModal(loan)" title="Editar">✎</button>
+                }
+                @if (canChangeStatus()) {
+                  <button class="btn-sm" (click)="openRenewModal(loan)" title="Renovar">↻</button>
+                  <button class="btn-sm btn-warn" (click)="requestClear(loan)" title="Cancelar">⊘</button>
+                }
               }
               <button class="btn-sm" (click)="openHistoryModal(loan)" title="Historial">⌚</button>
-              @if (canDelete()) {
+              @if (canDelete() && loan.status === 'ACTIVE') {
                 <button class="btn-sm btn-danger" (click)="requestDelete(loan)" title="Eliminar">✕</button>
               }
             </div>
@@ -363,6 +376,12 @@ import type {
         border-color: var(--color-primary);
       }
 
+      .filter-empresa {
+        min-width: 280px;
+        flex: 1 1 280px;
+        max-width: 360px;
+      }
+
       .filter-actions {
         display: flex;
         gap: 0.5rem;
@@ -496,6 +515,7 @@ export class PrestamosListadoComponent implements OnInit {
     if (f.currency) params['currency'] = f.currency;
     if (f.vehicle) params['vehicle'] = f.vehicle;
     if (f.balanceCut) params['balanceCut'] = f.balanceCut;
+    if (f.empresaId) params['empresaId'] = f.empresaId;
     this.exportService.download('prestamos/export', formato, params);
   }
 
@@ -510,6 +530,7 @@ export class PrestamosListadoComponent implements OnInit {
   draftCurrency: Currency | 'all' = 'all';
   draftVehicle: Vehicle | 'all' = 'all';
   draftBalanceCut: BalanceCut | 'all' = 'all';
+  draftEmpresa = signal<EmpresaRef | null>(null);
 
   // Applied filters (what's actually been fetched)
   private appliedFilters = signal<PrestamoFilters>({});
@@ -518,7 +539,12 @@ export class PrestamosListadoComponent implements OnInit {
   canWrite = computed(() =>
     ['admin', 'tesoreria'].includes(this.auth.user()?.role ?? ''),
   );
-  canDelete = computed(() => this.auth.user()?.role === 'admin');
+  canChangeStatus = computed(() =>
+    ['admin', 'tesoreria', 'operador'].includes(this.auth.user()?.role ?? ''),
+  );
+  canDelete = computed(() =>
+    ['admin', 'tesoreria'].includes(this.auth.user()?.role ?? ''),
+  );
 
   // Modal state (form/edit/renew/history)
   showFormModal = signal(false);
@@ -580,6 +606,8 @@ export class PrestamosListadoComponent implements OnInit {
     if (this.draftCurrency !== 'all') f.currency = this.draftCurrency;
     if (this.draftVehicle !== 'all') f.vehicle = this.draftVehicle;
     if (this.draftBalanceCut !== 'all') f.balanceCut = this.draftBalanceCut;
+    const empresa = this.draftEmpresa();
+    if (empresa) f.empresaId = empresa.empresaId;
     this.appliedFilters.set(f);
     this.load();
   }
@@ -589,6 +617,7 @@ export class PrestamosListadoComponent implements OnInit {
     this.draftCurrency = 'all';
     this.draftVehicle = 'all';
     this.draftBalanceCut = 'all';
+    this.draftEmpresa.set(null);
     this.appliedFilters.set({});
     this.load();
   }

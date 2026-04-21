@@ -100,9 +100,40 @@ import type {
           </div>
         </div>
 
+        @if (simulation(); as sim) {
+          <div class="simulation card-glass">
+            <div class="sim-header">
+              <span class="sim-title">Simulación al vencimiento</span>
+              <button type="button" class="sim-close" (click)="clearSimulation()" aria-label="Cerrar simulación">✕</button>
+            </div>
+            <div class="sim-grid">
+              <div class="sim-item">
+                <span class="sim-label">Días</span>
+                <span class="sim-value">{{ sim.days }}</span>
+              </div>
+              <div class="sim-item">
+                <span class="sim-label">Capital</span>
+                <span class="sim-value">{{ fmtCurrency(sim.capital) }}</span>
+              </div>
+              <div class="sim-item">
+                <span class="sim-label">Interés ({{ rate }}% anual)</span>
+                <span class="sim-value text-indigo">{{ fmtCurrency(sim.interest) }}</span>
+              </div>
+              <div class="sim-item total">
+                <span class="sim-label">Total al vencimiento</span>
+                <span class="sim-value">{{ fmtCurrency(sim.total) }}</span>
+              </div>
+            </div>
+            <p class="sim-note">Interés simple anual sobre {{ sim.days }} días. Al cambiar los valores, volvé a tocar «Simular».</p>
+          </div>
+        }
+
         <div class="form-actions">
           <button type="button" class="btn-secondary" (click)="close.emit()" [disabled]="submitting()">
             Cancelar
+          </button>
+          <button type="button" class="btn-secondary" (click)="simulate()" [disabled]="submitting()">
+            Simular
           </button>
           <button type="submit" class="btn-primary" [disabled]="submitting()">
             {{ submitting() ? 'Guardando...' : 'Registrar Préstamo' }}
@@ -197,6 +228,71 @@ import type {
       .btn-secondary:hover:not(:disabled) {
         background: var(--color-gray-200);
       }
+      .simulation {
+        padding: 0.875rem 1rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.625rem;
+      }
+      .sim-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .sim-title {
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: var(--color-gray-500);
+      }
+      .sim-close {
+        background: none;
+        border: none;
+        color: var(--color-gray-400);
+        cursor: pointer;
+        padding: 0 0.25rem;
+        font-size: 0.875rem;
+        line-height: 1;
+      }
+      .sim-close:hover {
+        color: var(--color-error);
+      }
+      .sim-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+        gap: 0.75rem;
+      }
+      .sim-item {
+        display: flex;
+        flex-direction: column;
+        gap: 0.125rem;
+      }
+      .sim-label {
+        font-size: 0.6875rem;
+        color: var(--color-gray-500);
+        text-transform: uppercase;
+        letter-spacing: 0.03em;
+        font-weight: 600;
+      }
+      .sim-value {
+        font-size: 0.9375rem;
+        font-weight: 600;
+        color: var(--color-gray-900);
+        font-variant-numeric: tabular-nums;
+      }
+      .sim-item.total .sim-value {
+        font-size: 1.0625rem;
+        color: var(--color-primary);
+      }
+      .text-indigo {
+        color: var(--color-primary);
+      }
+      .sim-note {
+        font-size: 0.75rem;
+        color: var(--color-gray-500);
+        margin: 0;
+      }
     `,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -221,6 +317,7 @@ export class PrestamoFormModalComponent implements OnChanges {
 
   submitting = signal(false);
   errors = signal<Record<string, string>>({});
+  simulation = signal<{ capital: number; days: number; interest: number; total: number } | null>(null);
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes['open']?.currentValue === true) {
@@ -239,6 +336,7 @@ export class PrestamoFormModalComponent implements OnChanges {
     this.vehicle = 'PAGARE';
     this.balanceCut = '12-31';
     this.errors.set({});
+    this.simulation.set(null);
   }
 
   private today(): string {
@@ -265,6 +363,43 @@ export class PrestamoFormModalComponent implements OnChanges {
     }
     this.errors.set(e);
     return Object.keys(e).length === 0;
+  }
+
+  simulate() {
+    const errs: Record<string, string> = {};
+    if (this.capital == null || this.capital <= 0) errs['capital'] = 'Debe ser mayor a 0';
+    if (this.rate == null || this.rate < 0) errs['rate'] = 'Debe ser ≥ 0';
+    if (!this.startDate) errs['startDate'] = 'Requerido';
+    if (!this.dueDate) errs['dueDate'] = 'Requerido';
+    else if (new Date(this.dueDate) <= new Date(this.startDate)) {
+      errs['dueDate'] = 'Debe ser posterior al inicio';
+    }
+    this.errors.set(errs);
+    if (Object.keys(errs).length > 0) {
+      this.simulation.set(null);
+      return;
+    }
+
+    const start = new Date(this.startDate);
+    const due = new Date(this.dueDate);
+    const days = Math.max(0, Math.floor((due.getTime() - start.getTime()) / 86_400_000));
+    const capital = this.capital!;
+    const rate = this.rate!;
+    const interest = capital * (rate / 100) * (days / 365);
+    this.simulation.set({ capital, days, interest, total: capital + interest });
+  }
+
+  clearSimulation() {
+    this.simulation.set(null);
+  }
+
+  fmtCurrency(n: number): string {
+    return new Intl.NumberFormat('es-AR', {
+      style: 'currency',
+      currency: this.currency === 'ARS' ? 'ARS' : 'USD',
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }).format(n);
   }
 
   submit() {

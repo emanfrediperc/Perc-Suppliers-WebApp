@@ -10,19 +10,19 @@ import { Convenio } from '../../../models';
   standalone: true,
   imports: [FormsModule, GlassModalComponent, NumberFormatDirective],
   template: `
-    <app-glass-modal [open]="open()" [title]="isEdit() ? 'Editar Convenio' : 'Nuevo Convenio'" subtitle="Configura las reglas del convenio" (close)="onClose()">
+    <app-glass-modal [open]="open()" [title]="isEdit() ? 'Editar Productor' : 'Nuevo Productor'" subtitle="Configura las reglas del productor" (close)="onClose()">
       <form (ngSubmit)="onSubmit()" class="form">
         <div class="form-grid">
           <div class="form-group full">
             <label>Nombre</label>
-            <input type="text" [(ngModel)]="nombre" name="nombre" placeholder="Nombre del convenio" required />
+            <input type="text" [(ngModel)]="nombre" name="nombre" placeholder="Nombre del productor" required />
           </div>
           <div class="form-group full">
             <label>Descripcion</label>
             <textarea [(ngModel)]="descripcion" name="descripcion" rows="2" placeholder="Descripcion opcional"></textarea>
           </div>
           <div class="form-group">
-            <label>Comision (%)</label>
+            <label>Honorarios (%)</label>
             <input appNumberFormat [decimals]="2" [(ngModel)]="comisionPorcentaje" name="comision" min="0" />
           </div>
           <div class="form-group">
@@ -34,11 +34,11 @@ import { Convenio } from '../../../models';
         <h4 class="section-subtitle">Reglas (opcional)</h4>
         <div class="form-grid">
           <div class="form-group">
-            <label>Comision Minima</label>
+            <label>Honorarios Minimos</label>
             <input appNumberFormat [decimals]="2" [(ngModel)]="comisionMinima" name="comMin" min="0" />
           </div>
           <div class="form-group">
-            <label>Comision Maxima</label>
+            <label>Honorarios Maximos</label>
             <input appNumberFormat [decimals]="2" [(ngModel)]="comisionMaxima" name="comMax" min="0" />
           </div>
           <div class="form-group">
@@ -46,7 +46,7 @@ import { Convenio } from '../../../models';
             <input appNumberFormat [(ngModel)]="diasPago" name="diasPago" min="0" />
           </div>
           <div class="form-group checkbox-group">
-            <label><input type="checkbox" [(ngModel)]="aplicaIVA" name="aplicaIVA" /> Aplica IVA sobre comision</label>
+            <label><input type="checkbox" [(ngModel)]="aplicaIVA" name="aplicaIVA" /> Aplica IVA sobre honorarios</label>
           </div>
         </div>
 

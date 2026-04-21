@@ -20,7 +20,7 @@ import { ToastComponent } from '../../../shared/toast/toast';
     @if (loading()) {
       <div class="card-glass" style="padding:2rem"><div class="skeleton skeleton-text-lg" style="width:40%"></div></div>
     } @else if (convenio()) {
-      <app-page-header [title]="convenio()!.nombre" subtitle="Detalle del convenio">
+      <app-page-header [title]="convenio()!.nombre" subtitle="Detalle del productor">
         <button class="btn-secondary" (click)="goBack()">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
           Volver
@@ -28,15 +28,15 @@ import { ToastComponent } from '../../../shared/toast/toast';
       </app-page-header>
 
       <div class="detail-grid">
-        <app-glass-card title="Reglas del Convenio">
+        <app-glass-card title="Reglas del Productor">
           <div class="info-grid">
-            <div class="info-item"><span class="info-label">Comision</span><span class="info-value">{{ convenio()!.comisionPorcentaje }}%</span></div>
+            <div class="info-item"><span class="info-label">Honorarios</span><span class="info-value">{{ convenio()!.comisionPorcentaje }}%</span></div>
             <div class="info-item"><span class="info-label">Descuento</span><span class="info-value">{{ convenio()!.descuentoPorcentaje }}%</span></div>
             @if (convenio()!.reglas) {
-              <div class="info-item"><span class="info-label">Comision Min.</span><span class="info-value">{{ convenio()!.reglas!.comisionMinima }}</span></div>
-              <div class="info-item"><span class="info-label">Comision Max.</span><span class="info-value">{{ convenio()!.reglas!.comisionMaxima }}</span></div>
+              <div class="info-item"><span class="info-label">Honorarios Min.</span><span class="info-value">{{ convenio()!.reglas!.comisionMinima }}</span></div>
+              <div class="info-item"><span class="info-label">Honorarios Max.</span><span class="info-value">{{ convenio()!.reglas!.comisionMaxima }}</span></div>
               <div class="info-item"><span class="info-label">Dias de pago</span><span class="info-value">{{ convenio()!.reglas!.diasPago }}</span></div>
-              <div class="info-item"><span class="info-label">IVA sobre comision</span><span class="info-value">{{ convenio()!.reglas!.aplicaIVASobreComision ? 'Si' : 'No' }}</span></div>
+              <div class="info-item"><span class="info-label">IVA sobre honorarios</span><span class="info-value">{{ convenio()!.reglas!.aplicaIVASobreComision ? 'Si' : 'No' }}</span></div>
             }
             <div class="info-item"><span class="info-label">Estado</span><span class="info-value">
               <span class="badge" [class]="convenio()!.activo ? 'bg-glass-green' : 'bg-glass-red'">{{ convenio()!.activo ? 'Activo' : 'Inactivo' }}</span>
@@ -83,7 +83,7 @@ import { ToastComponent } from '../../../shared/toast/toast';
     <app-confirm-dialog
       [open]="showConfirm()"
       title="Quitar empresa"
-      [message]="'Desea quitar a ' + (empresaToRemove()?.razonSocial || '') + ' de este convenio?'"
+      [message]="'Desea quitar a ' + (empresaToRemove()?.razonSocial || '') + ' de este productor?'"
       confirmText="Quitar"
       confirmClass="danger"
       (confirm)="removeEmpresa()"
@@ -169,7 +169,7 @@ export class ConvenioDetailComponent implements OnInit {
       next: () => {
         this.adding.set(false);
         this.selectedEmpresa = '';
-        this.toast.success('Empresa agregada al convenio');
+        this.toast.success('Empresa agregada al productor');
         this.loadConvenio();
       },
       error: () => { this.adding.set(false); this.toast.error('Error al agregar empresa'); },
@@ -187,7 +187,7 @@ export class ConvenioDetailComponent implements OnInit {
     if (!empresaId) return;
     this.showConfirm.set(false);
     this.service.removeEmpresa(id, empresaId).subscribe({
-      next: () => { this.toast.success('Empresa quitada del convenio'); this.loadConvenio(); },
+      next: () => { this.toast.success('Empresa quitada del productor'); this.loadConvenio(); },
       error: () => this.toast.error('Error al quitar empresa'),
     });
   }

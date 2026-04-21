@@ -54,7 +54,7 @@ import {
               </div>
               <div class="card-glass table-wrap">
                 <table class="report-table">
-                  <thead><tr><th>Periodo</th><th>Cant.</th><th>Monto Base</th><th>Retenciones</th><th>Comision</th><th>Descuento</th><th>Monto Neto</th></tr></thead>
+                  <thead><tr><th>Periodo</th><th>Cant.</th><th>Monto Base</th><th>Retenciones</th><th>Honorarios</th><th>Descuento</th><th>Monto Neto</th></tr></thead>
                   <tbody>
                     @for (p of pagosPeriodo()!.periodos; track p.periodo) {
                       <tr>
@@ -179,10 +179,10 @@ import {
           @case (4) {
             @if (comisiones()?.porConvenio?.length || comisiones()?.porProveedor?.length) {
               @if (comisiones()!.porConvenio.length) {
-                <h3 class="section-title">Por Convenio</h3>
+                <h3 class="section-title">Por Productor</h3>
                 <div class="card-glass table-wrap">
                   <table class="report-table">
-                    <thead><tr><th>Convenio</th><th>Pagos</th><th>Monto Base</th><th>Comision</th><th>Descuento</th></tr></thead>
+                    <thead><tr><th>Productor</th><th>Pagos</th><th>Monto Base</th><th>Honorarios</th><th>Descuento</th></tr></thead>
                     <tbody>
                       @for (c of comisiones()!.porConvenio; track c.convenioId) {
                         <tr>
@@ -200,7 +200,7 @@ import {
                 <h3 class="section-title" style="margin-top:1.5rem">Por Proveedor</h3>
                 <div class="card-glass table-wrap">
                   <table class="report-table">
-                    <thead><tr><th>Proveedor</th><th>Monto Base</th><th>Comision</th><th>Descuento</th></tr></thead>
+                    <thead><tr><th>Proveedor</th><th>Monto Base</th><th>Honorarios</th><th>Descuento</th></tr></thead>
                     <tbody>
                       @for (p of comisiones()!.porProveedor; track p.proveedorId) {
                         <tr>
@@ -215,7 +215,7 @@ import {
                 </div>
               }
             } @else {
-              <p class="no-data card-glass">Sin datos de comisiones</p>
+              <p class="no-data card-glass">Sin datos de honorarios</p>
             }
           }
 
@@ -358,7 +358,7 @@ export class ReportesComponent {
     { key: 'pagos-proveedor', label: 'Pagos por Proveedor' },
     { key: 'vencimientos', label: 'Vencimientos' },
     { key: 'retenciones', label: 'Retenciones' },
-    { key: 'comisiones', label: 'Comisiones' },
+    { key: 'comisiones', label: 'Honorarios' },
     { key: 'estado-cuenta', label: 'Estado de Cuenta' },
     { key: 'facturas-tipo', label: 'Facturas por Tipo' },
   ];

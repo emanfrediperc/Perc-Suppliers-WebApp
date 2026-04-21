@@ -100,8 +100,9 @@ app/
 / (MainLayout) [authGuard]
   /dashboard                         → todos
   /facturas, /ordenes-pago           → todos
-  /convenios, /empresas-*            → admin, tesoreria, contabilidad
-  /aprobaciones, /pagos-programados  → admin, tesoreria
+  /convenios, /empresas-*            → admin, tesoreria, operador
+  /pagos-programados                 → admin, tesoreria
+  /aprobaciones                      → admin, operador
   /admin/usuarios, /admin/audit-logs → admin
 ```
 
