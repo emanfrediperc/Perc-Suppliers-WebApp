@@ -131,8 +131,8 @@ import type { EmpresaRef } from '../../../models/prestamo';
         <ng-template #row let-compra>
           <td class="cell-dates">
             <div class="date-line">
-              <span class="date-tag">Sol</span>
-              <span>{{ compra.fechaSolicitada | date: 'dd/MM/yyyy HH:mm' }}</span>
+              <span class="date-tag">Creada</span>
+              <span>{{ compra.createdAt | date: 'dd/MM/yyyy HH:mm' }}</span>
             </div>
             @if (compra.fechaEjecutada) {
               <div class="date-line ejecutada">
