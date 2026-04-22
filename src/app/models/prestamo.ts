@@ -1,6 +1,6 @@
 export type Currency = 'ARS' | 'USD' | 'USDC';
 export type Vehicle = 'PAGARE' | 'TITULOS_ON' | 'CVU_TITULOS' | 'CRYPTO_UY';
-export type PrestamoStatus = 'ACTIVE' | 'CLEARED' | 'RENEWED';
+export type PrestamoStatus = 'ACTIVE' | 'CLEARED' | 'RENEWED' | 'ESPERANDO_APROBACION' | 'RECHAZADO';
 export type BalanceCut = '12-31' | '06-30';
 export type EmpresaKind = 'cliente' | 'proveedora';
 

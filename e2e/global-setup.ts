@@ -31,6 +31,7 @@ const SEED_PASSWORD = process.env.SEED_PASSWORD || 'admin123';
 const USERS = [
   { email: 'admin@perc.com', password: SEED_PASSWORD, file: 'admin.json' },
   { email: 'tesoreria@perc.com', password: SEED_PASSWORD, file: 'tesoreria.json' },
+  { email: 'aprobador@perc.com', password: SEED_PASSWORD, file: 'aprobador.json' },
   { email: 'operador@perc.com', password: SEED_PASSWORD, file: 'operador.json' },
   { email: 'consulta@perc.com', password: SEED_PASSWORD, file: 'consulta.json' },
 ];
@@ -99,5 +100,5 @@ export default async function globalSetup() {
   }
 
   await requestContext.dispose();
-  console.log('[global-setup] Done. 4 storageState files ready.\n');
+  console.log('[global-setup] Done. 5 storageState files ready.\n');
 }

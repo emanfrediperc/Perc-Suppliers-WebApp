@@ -56,6 +56,8 @@ import { ExportService } from '../../../services/export.service';
         <option value="parcial">Parcial</option>
         <option value="pagada">Pagada</option>
         <option value="anulada">Anulada</option>
+        <option value="esperando_aprobacion">Esperando aprobación</option>
+        <option value="rechazado">Rechazado</option>
       </select>
       <input type="date" class="filter-date" [(ngModel)]="fechaDesde" (ngModelChange)="onFilterChange()" placeholder="Desde" />
       <input type="date" class="filter-date" [(ngModel)]="fechaHasta" (ngModelChange)="onFilterChange()" placeholder="Hasta" />

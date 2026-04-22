@@ -1,5 +1,5 @@
 export type ModalidadCompra = 'CABLE' | 'USD_LOCAL' | 'MEP';
-export type EstadoCompraMonedaExtranjera = 'SOLICITADA' | 'EJECUTADA' | 'ANULADA';
+export type EstadoCompraMonedaExtranjera = 'SOLICITADA' | 'EJECUTADA' | 'ANULADA' | 'ESPERANDO_APROBACION';
 export type EmpresaKind = 'cliente' | 'proveedora';
 
 export interface EmpresaRef {

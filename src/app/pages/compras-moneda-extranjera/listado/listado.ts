@@ -80,8 +80,10 @@ import type { EmpresaRef } from '../../../models/prestamo';
           <label>Estado</label>
           <select [(ngModel)]="draftEstado">
             <option value="all">Todos</option>
-            <option value="CONFIRMADA">Confirmada</option>
+            <option value="SOLICITADA">Solicitada</option>
+            <option value="EJECUTADA">Ejecutada</option>
             <option value="ANULADA">Anulada</option>
+            <option value="ESPERANDO_APROBACION">Esperando aprobación</option>
           </select>
         </div>
         <div class="filter-item filter-empresa">

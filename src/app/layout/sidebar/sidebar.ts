@@ -75,6 +75,20 @@ import { AprobacionService } from '../../services/aprobacion.service';
           </a>
         </div>
 
+        @if (canApprove()) {
+          <div class="nav-section">
+            <span class="nav-section-title">Aprobaciones</span>
+
+            <a routerLink="/aprobaciones" routerLinkActive="active" class="nav-item" (click)="toggle.emit()">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+              <span>Bandeja</span>
+              @if (aprobacionService.pendingCount() > 0) {
+                <span class="badge">{{ aprobacionService.pendingCount() }}</span>
+              }
+            </a>
+          </div>
+        }
+
         @if (isAdmin()) {
           <div class="nav-divider"></div>
           <a routerLink="/admin/usuarios" routerLinkActive="active" class="nav-item" (click)="toggle.emit()">
@@ -155,6 +169,6 @@ export class SidebarComponent implements OnInit, OnDestroy {
   }
 
   isAdmin = computed(() => this.auth.user()?.role === 'admin');
-  canApprove = computed(() => ['admin', 'operador'].includes(this.auth.user()?.role || ''));
+  canApprove = computed(() => ['admin', 'aprobador'].includes(this.auth.user()?.role || ''));
   canManage = computed(() => ['admin', 'tesoreria', 'operador'].includes(this.auth.user()?.role || ''));
 }

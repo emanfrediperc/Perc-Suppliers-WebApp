@@ -1,14 +1,18 @@
-import { Component, OnInit, signal, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit, signal, computed, ChangeDetectionStrategy } from '@angular/core';
 import { Router } from '@angular/router';
 import { DatePipe, CurrencyPipe, UpperCasePipe } from '@angular/common';
 import { AprobacionService, Aprobacion } from '../../../services/aprobacion.service';
 import { ExportService } from '../../../services/export.service';
+import { AuthService } from '../../../services/auth.service';
+import { ToastService } from '../../../shared/toast/toast.service';
+import { ToastComponent } from '../../../shared/toast/toast';
 
 @Component({
   selector: 'app-aprobaciones-list',
   standalone: true,
-  imports: [DatePipe, CurrencyPipe, UpperCasePipe],
+  imports: [DatePipe, CurrencyPipe, UpperCasePipe, ToastComponent],
   template: `
+    <app-toast />
     <div class="page">
       <div class="page-header">
         <div class="header-top">
@@ -45,12 +49,27 @@ import { ExportService } from '../../../services/export.service';
             </div>
             <div class="card-progress">
               <span>{{ countAprobadas(a) }} / {{ a.aprobacionesRequeridas }} aprobaciones</span>
+              @if (a.intentos && a.intentos.length > 0) {
+                <span class="ciclo-badge">Ciclo {{ a.intentos.length + 1 }} (reenviada)</span>
+              }
             </div>
-            @if (a.estado === 'pendiente') {
+            @if (a.estado === 'pendiente' && puedeDecidir()) {
               <div class="card-actions">
                 <input type="text" class="comment-input" placeholder="Comentario (opcional)" #comentario>
                 <button class="btn-approve" (click)="decidir(a._id, 'aprobada', comentario.value)">Aprobar</button>
                 <button class="btn-reject" (click)="decidir(a._id, 'rechazada', comentario.value)">Rechazar</button>
+              </div>
+            }
+            @if (a.estado === 'pendiente' && puedeReenviarMail()) {
+              <div class="card-actions secondary">
+                <button class="btn-reenviar-mail" [disabled]="reenviandoMail() === a._id" (click)="reenviarMail(a._id)">
+                  {{ reenviandoMail() === a._id ? 'Enviando...' : 'Reenviar mail al aprobador' }}
+                </button>
+              </div>
+            }
+            @if (puedeReenviar(a)) {
+              <div class="card-actions">
+                <button class="btn-reenviar" (click)="reenviar(a._id)">Reenviar solicitud</button>
               </div>
             }
             @if (a.aprobadores.length > 0) {
@@ -154,6 +173,42 @@ import { ExportService } from '../../../services/export.service';
     .approver-decision.rechazada { background: #fee2e2; color: #991b1b; }
     .approver-comment { color: var(--text-muted); font-style: italic; }
     .empty { text-align: center; padding: 3rem; color: var(--text-muted); }
+    .btn-reenviar {
+      padding: 0.5rem 1.25rem;
+      background: #f59e0b;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 0.8125rem;
+    }
+    .btn-reenviar:hover { background: #d97706; }
+    .card-actions.secondary { margin-top: 0.25rem; }
+    .btn-reenviar-mail {
+      padding: 0.375rem 0.875rem;
+      background: transparent;
+      color: var(--color-primary);
+      border: 1px solid var(--color-primary);
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 500;
+      font-size: 0.75rem;
+      display: inline-flex; align-items: center; gap: 0.375rem;
+      transition: background 0.15s;
+    }
+    .btn-reenviar-mail:hover:not(:disabled) { background: rgba(99, 102, 241, 0.08); }
+    .btn-reenviar-mail:disabled { opacity: 0.55; cursor: not-allowed; }
+    .ciclo-badge {
+      display: inline-block;
+      margin-left: 0.75rem;
+      font-size: 0.75rem;
+      background: #fef3c7;
+      color: #92400e;
+      padding: 0.125rem 0.5rem;
+      border-radius: 8px;
+      font-weight: 500;
+    }
   `],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -163,10 +218,24 @@ export class AprobacionesListComponent implements OnInit {
   historial = signal<Aprobacion[]>([]);
   displayList = signal<Aprobacion[]>([]);
 
+  puedeDecidir = computed(() => {
+    const role = this.authService.user()?.role;
+    return role === 'admin' || role === 'aprobador';
+  });
+
+  puedeReenviarMail = computed(() => {
+    const role = this.authService.user()?.role;
+    return role === 'admin' || role === 'aprobador' || role === 'tesoreria';
+  });
+
+  reenviandoMail = signal<string | null>(null);
+
   constructor(
     private aprobacionService: AprobacionService,
     private router: Router,
     private exportService: ExportService,
+    private authService: AuthService,
+    private toast: ToastService,
   ) {}
 
   ngOnInit() {
@@ -199,5 +268,41 @@ export class AprobacionesListComponent implements OnInit {
 
   decidir(id: string, decision: string, comentario: string) {
     this.aprobacionService.decidir(id, decision, comentario || undefined).subscribe(() => this.load());
+  }
+
+  puedeReenviar(a: Aprobacion): boolean {
+    const user = this.authService.user();
+    if (!user) return false;
+    if (a.estado !== 'rechazada') return false;
+    if (!a.reenviosRestantes || a.reenviosRestantes <= 0) return false;
+    if (user.role === 'admin') return true;
+    if (user.role === 'tesoreria') return a.createdBy === user.id;
+    return false;
+  }
+
+  reenviar(id: string) {
+    this.aprobacionService.reenviar(id).subscribe({
+      next: () => {
+        this.toast.success('Solicitud de aprobación reenviada correctamente.');
+        this.load();
+      },
+      error: (err) => {
+        this.toast.error(err.error?.message || 'Error al reenviar la solicitud.');
+      },
+    });
+  }
+
+  reenviarMail(id: string) {
+    this.reenviandoMail.set(id);
+    this.aprobacionService.reenviarMail(id).subscribe({
+      next: (res) => {
+        this.toast.success(`Mail reenviado a ${res.destinatarios} aprobador${res.destinatarios === 1 ? '' : 'es'}.`);
+        this.reenviandoMail.set(null);
+      },
+      error: (err) => {
+        this.reenviandoMail.set(null);
+        this.toast.error(err.error?.message || 'Error al reenviar el mail.');
+      },
+    });
   }
 }
