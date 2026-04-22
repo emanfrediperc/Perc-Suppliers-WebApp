@@ -48,6 +48,14 @@ import { FormsModule } from '@angular/forms';
       font-size: 0.8125rem; color: var(--color-gray-800); background: var(--color-gray-50);
     }
     .date-field input:focus { outline: none; border-color: var(--color-primary); }
+
+    @media (max-width: 600px) {
+      .date-range-selector { flex-direction: column; align-items: stretch; gap: 0.75rem; }
+      .presets { width: 100%; }
+      .custom-range { margin-left: 0; width: 100%; flex-wrap: wrap; }
+      .custom-range .date-field { flex: 1 1 calc(50% - 0.375rem); }
+      .custom-range .date-field input { width: 100%; }
+    }
   `],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

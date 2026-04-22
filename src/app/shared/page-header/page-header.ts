@@ -16,7 +16,14 @@ import { Component, input, ChangeDetectionStrategy } from '@angular/core';
     .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem; }
     h1 { font-size: 1.5rem; font-weight: 700; color: var(--color-gray-900); margin: 0; }
     .subtitle { font-size: 0.875rem; color: var(--color-gray-500); margin-top: 0.25rem; }
-    .actions { display: flex; gap: 0.75rem; align-items: center; }
+    .actions { display: flex; gap: 0.75rem; align-items: center; flex-wrap: wrap; }
+
+    @media (max-width: 600px) {
+      .page-header { flex-direction: column; align-items: stretch; gap: 0.75rem; }
+      h1 { font-size: 1.25rem; }
+      .actions { width: 100%; }
+      .actions > * { flex: 1 1 auto; }
+    }
   `],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

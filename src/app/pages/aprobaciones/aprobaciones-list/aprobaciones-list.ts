@@ -156,7 +156,11 @@ import { PaginationComponent } from '../../../shared/pagination/pagination';
     .card-desc { font-size: 0.875rem; color: var(--text-primary); margin-bottom: 0.75rem; }
     .card-meta { display: flex; flex-wrap: wrap; gap: 1rem; font-size: 0.75rem; color: var(--text-muted); margin-bottom: 0.75rem; }
     .card-progress { font-size: 0.8125rem; font-weight: 500; color: var(--text-secondary); margin-bottom: 0.75rem; }
-    .card-actions { display: flex; gap: 0.5rem; align-items: center; margin-top: 0.5rem; }
+    .card-actions { display: flex; gap: 0.5rem; align-items: center; margin-top: 0.5rem; flex-wrap: wrap; }
+    @media (max-width: 600px) {
+      .card-actions { flex-direction: column; align-items: stretch; }
+      .card-actions > * { width: 100%; }
+    }
     .comment-input {
       flex: 1;
       padding: 0.5rem 0.75rem;

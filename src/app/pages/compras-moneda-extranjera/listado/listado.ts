@@ -479,6 +479,16 @@ import type { EmpresaRef } from '../../../models/prestamo';
     .btn-success:hover {
       background: rgba(34, 197, 94, 0.2);
     }
+
+    @media (max-width: 600px) {
+      .filter-empresa { min-width: 0; flex: 1 1 100%; max-width: none; }
+      .filter-item { min-width: 0; flex: 1 1 calc(50% - 0.5rem); }
+      .filter-item--wide { flex: 1 1 100%; }
+      .filter-actions { margin-left: 0; width: 100%; flex-wrap: wrap; }
+      .filter-actions > * { flex: 1 1 auto; }
+      .row-actions { flex-wrap: nowrap; overflow-x: auto; -webkit-overflow-scrolling: touch; padding-bottom: 2px; }
+      .row-actions::-webkit-scrollbar { display: none; }
+    }
   `],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

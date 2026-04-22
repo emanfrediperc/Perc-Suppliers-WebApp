@@ -52,6 +52,25 @@ import { Component, input, output, effect, ChangeDetectionStrategy } from '@angu
       font-size: 0.875rem; color: var(--color-gray-500); margin-bottom: 1rem;
     }
     .modal-body { margin-top: 1rem; }
+
+    /* En mobile, que forms internos con grid auto-fit colapsen a 1 columna
+       y que el modal use menos padding para aprovechar el ancho. */
+    @media (max-width: 600px) {
+      .modal-overlay { padding: 0.5rem; align-items: flex-start; }
+      .modal-container {
+        padding: 1rem;
+        max-height: 96vh;
+        border-radius: 14px;
+      }
+      .modal-header h2 { font-size: 1.0625rem; }
+      .modal-body ::ng-deep .form-row,
+      .modal-body ::ng-deep .form-row-inline,
+      .modal-body ::ng-deep .form-grid,
+      .modal-body ::ng-deep [class*="grid-template-columns"] {
+        grid-template-columns: 1fr !important;
+      }
+    }
+
     @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
   `],
