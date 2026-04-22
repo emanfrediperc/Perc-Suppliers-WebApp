@@ -51,7 +51,14 @@ import { ConvenioFormModalComponent } from '../convenio-form-modal/convenio-form
           </td>
         </ng-template>
       </app-glass-table>
-      <app-pagination [currentPage]="page()" [totalPages]="totalPages()" (pageChange)="onPageChange($event)" />
+      <app-pagination
+        [currentPage]="page()"
+        [totalPages]="totalPages()"
+        [totalItems]="total()"
+        [pageSize]="limit()"
+        (pageChange)="onPageChange($event)"
+        (pageSizeChange)="onPageSizeChange($event)"
+      />
     }
 
     <app-convenio-form-modal [open]="showForm()" [entity]="editEntity()" (close)="closeForm()" (saved)="onSaved()" />
@@ -74,6 +81,8 @@ export class ConveniosListComponent implements OnInit {
   loading = signal(true);
   convenios = signal<Convenio[]>([]);
   page = signal(1);
+  limit = signal(5);
+  total = signal(0);
   totalPages = signal(1);
   showForm = signal(false);
   editEntity = signal<Convenio | null>(null);
@@ -105,14 +114,15 @@ export class ConveniosListComponent implements OnInit {
 
   load() {
     this.loading.set(true);
-    this.service.getAll({ page: this.page(), limit: 20, search: this.search || undefined }).subscribe({
-      next: (res) => { this.convenios.set(res.data); this.totalPages.set(res.totalPages); this.loading.set(false); },
+    this.service.getAll({ page: this.page(), limit: this.limit(), search: this.search || undefined }).subscribe({
+      next: (res) => { this.convenios.set(res.data); this.totalPages.set(res.totalPages); this.total.set((res as any).total ?? res.data.length); this.loading.set(false); },
       error: () => this.loading.set(false),
     });
   }
 
   onSearch(value: string) { this.search = value; this.page.set(1); this.load(); }
   onPageChange(p: number) { this.page.set(p); this.load(); }
+  onPageSizeChange(size: number) { this.limit.set(size); this.page.set(1); this.load(); }
   goToDetail(c: Convenio) { this.router.navigate(['/convenios', c._id]); }
 
   openCreate() {

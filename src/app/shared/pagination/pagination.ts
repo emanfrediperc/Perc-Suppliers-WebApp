@@ -8,13 +8,31 @@ type PageItem = number | 'ellipsis-left' | 'ellipsis-right';
   template: `
     @if (showPagination()) {
       <div class="pagination" role="navigation" aria-label="Paginación">
-        @if (totalItems() > 0) {
-          <span class="page-info" aria-live="polite">
-            <span class="info-range">{{ fromIndex() }}–{{ toIndex() }}</span>
-            <span class="info-sep">de</span>
-            <span class="info-total">{{ totalItems() }}</span>
-          </span>
-        }
+        <div class="page-left">
+          @if (totalItems() > 0) {
+            <span class="page-info" aria-live="polite">
+              <span class="info-range">{{ fromIndex() }}–{{ toIndex() }}</span>
+              <span class="info-sep">de</span>
+              <span class="info-total">{{ totalItems() }}</span>
+            </span>
+          }
+          @if (pageSizeOptions().length > 0) {
+            <label class="page-size-group">
+              <span class="page-size-label">por página</span>
+              <select
+                class="page-size-select"
+                [value]="pageSize()"
+                (change)="onPageSizeChange($event)"
+                aria-label="Items por página"
+              >
+                @for (opt of pageSizeOptions(); track opt) {
+                  <option [value]="opt">{{ opt }}</option>
+                }
+              </select>
+            </label>
+          }
+        </div>
+
 
         <div class="page-controls">
           <button
@@ -97,6 +115,47 @@ type PageItem = number | 'ellipsis-left' | 'ellipsis-right';
       gap: 0.75rem;
       margin-top: 1rem;
       padding: 0.625rem 0;
+    }
+
+    .page-left {
+      display: inline-flex;
+      align-items: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .page-size-group {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.8125rem;
+      color: var(--color-gray-500);
+    }
+    .page-size-label { line-height: 1; }
+    .page-size-select {
+      appearance: none;
+      -webkit-appearance: none;
+      padding: 0.25rem 1.75rem 0.25rem 0.625rem;
+      border: 1px solid var(--glass-border);
+      border-radius: 999px;
+      background:
+        linear-gradient(45deg, transparent 50%, var(--color-gray-500) 50%) calc(100% - 13px) calc(50% - 2px) / 5px 5px no-repeat,
+        linear-gradient(135deg, var(--color-gray-500) 50%, transparent 50%) calc(100% - 8px) calc(50% - 2px) / 5px 5px no-repeat,
+        var(--glass-bg);
+      color: var(--color-gray-900);
+      font-size: 0.8125rem;
+      font-weight: 600;
+      font-variant-numeric: tabular-nums;
+      cursor: pointer;
+      line-height: 1.25;
+      backdrop-filter: blur(10px);
+      transition: border-color var(--transition-fast);
+    }
+    .page-size-select:hover { border-color: var(--color-gray-300); }
+    .page-size-select:focus {
+      outline: none;
+      border-color: var(--color-primary);
+      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.18);
     }
 
     .page-info {
@@ -191,11 +250,24 @@ export class PaginationComponent {
   /** Si se pasa, se muestra "X–Y de Z" a la izquierda. */
   totalItems = input(0);
   /** Necesario para calcular el rango X–Y cuando se muestra `totalItems`. */
-  pageSize = input(20);
+  pageSize = input(5);
+  /**
+   * Opciones para el selector de items por página. Pasá `[]` para ocultarlo.
+   * Default: [5, 10, 20, 50, 100].
+   */
+  pageSizeOptions = input<number[]>([5, 10, 20, 50, 100]);
 
   pageChange = output<number>();
+  pageSizeChange = output<number>();
 
   showPagination = computed(() => this.totalPages() > 1 || this.totalItems() > 0);
+
+  onPageSizeChange(event: Event) {
+    const value = Number((event.target as HTMLSelectElement).value);
+    if (!Number.isNaN(value) && value > 0) {
+      this.pageSizeChange.emit(value);
+    }
+  }
 
   fromIndex = computed(() => {
     if (this.totalItems() === 0) return 0;

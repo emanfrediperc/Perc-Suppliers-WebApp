@@ -204,7 +204,10 @@ import type { EmpresaRef } from '../../../models/prestamo';
       <app-pagination
         [currentPage]="page()"
         [totalPages]="totalPages()"
+        [totalItems]="total()"
+        [pageSize]="limit()"
         (pageChange)="onPageChange($event)"
+        (pageSizeChange)="onPageSizeChange($event)"
       />
     }
 
@@ -491,7 +494,7 @@ export class ComprasMonedaExtranjeraListadoComponent implements OnInit {
   compras = signal<CompraMonedaExtranjera[]>([]);
   total = signal(0);
   page = signal(1);
-  limit = signal(20);
+  limit = signal(5);
   loading = signal(true);
 
   // Draft filters (template-driven)
@@ -589,6 +592,12 @@ export class ComprasMonedaExtranjeraListadoComponent implements OnInit {
 
   onPageChange(p: number) {
     this.page.set(p);
+    this.load();
+  }
+
+  onPageSizeChange(size: number) {
+    this.limit.set(size);
+    this.page.set(1);
     this.load();
   }
 

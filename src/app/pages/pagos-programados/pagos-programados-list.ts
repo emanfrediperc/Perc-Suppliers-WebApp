@@ -70,7 +70,14 @@ import { ToastComponent } from '../../shared/toast/toast';
           </td>
         </ng-template>
       </app-glass-table>
-      <app-pagination [currentPage]="page()" [totalPages]="totalPages()" (pageChange)="onPageChange($event)" />
+      <app-pagination
+        [currentPage]="page()"
+        [totalPages]="totalPages()"
+        [totalItems]="total()"
+        [pageSize]="limit()"
+        (pageChange)="onPageChange($event)"
+        (pageSizeChange)="onPageSizeChange($event)"
+      />
     }
 
     <app-confirm-dialog
@@ -115,6 +122,8 @@ export class PagosProgramadosListComponent implements OnInit {
   pagos = signal<PagoProgramado[]>([]);
   proximos = signal<PagoProgramado[]>([]);
   page = signal(1);
+  limit = signal(5);
+  total = signal(0);
   totalPages = signal(1);
   showConfirmCancel = signal(false);
   ppToCancel = signal<PagoProgramado | null>(null);
@@ -146,8 +155,8 @@ export class PagosProgramadosListComponent implements OnInit {
 
   load() {
     this.loading.set(true);
-    this.service.getAll({ page: this.page(), limit: 20 }).subscribe({
-      next: (res) => { this.pagos.set(res.data); this.totalPages.set(res.totalPages); this.loading.set(false); },
+    this.service.getAll({ page: this.page(), limit: this.limit() }).subscribe({
+      next: (res) => { this.pagos.set(res.data); this.totalPages.set(res.totalPages); this.total.set((res as any).total ?? res.data.length); this.loading.set(false); },
       error: () => this.loading.set(false),
     });
   }
@@ -159,6 +168,7 @@ export class PagosProgramadosListComponent implements OnInit {
   }
 
   onPageChange(p: number) { this.page.set(p); this.load(); }
+  onPageSizeChange(size: number) { this.limit.set(size); this.page.set(1); this.load(); }
 
   confirmCancelar(pp: PagoProgramado) {
     this.ppToCancel.set(pp);

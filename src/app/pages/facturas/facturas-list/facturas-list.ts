@@ -84,7 +84,14 @@ import { ExportService } from '../../../services/export.service';
           <td><app-status-badge [status]="f.estado" /></td>
         </ng-template>
       </app-glass-table>
-      <app-pagination [currentPage]="page()" [totalPages]="totalPages()" (pageChange)="onPageChange($event)" />
+      <app-pagination
+        [currentPage]="page()"
+        [totalPages]="totalPages()"
+        [totalItems]="total()"
+        [pageSize]="limit()"
+        (pageChange)="onPageChange($event)"
+        (pageSizeChange)="onPageSizeChange($event)"
+      />
     }
 
     <app-upload-factura-modal [open]="showUpload()" (close)="showUpload.set(false)" (saved)="onFacturaCreated()" />
@@ -117,6 +124,8 @@ export class FacturasListComponent implements OnInit {
   loading = signal(true);
   facturas = signal<Factura[]>([]);
   page = signal(1);
+  limit = signal(5);
+  total = signal(0);
   totalPages = signal(1);
   search = '';
   estadoFilter = '';
@@ -170,7 +179,7 @@ export class FacturasListComponent implements OnInit {
 
   load() {
     this.loading.set(true);
-    const params: any = { page: this.page(), limit: 20 };
+    const params: any = { page: this.page(), limit: this.limit() };
     if (this.search) params.search = this.search;
     if (this.estadoFilter) params.estado = this.estadoFilter;
     if (this.proveedorFilter) params.empresaProveedora = this.proveedorFilter;
@@ -178,7 +187,7 @@ export class FacturasListComponent implements OnInit {
     if (this.fechaDesde) params.fechaDesde = this.fechaDesde;
     if (this.fechaHasta) params.fechaHasta = this.fechaHasta;
     this.service.getAll(params).subscribe({
-      next: (res) => { this.facturas.set(res.data); this.totalPages.set(res.totalPages); this.loading.set(false); },
+      next: (res) => { this.facturas.set(res.data); this.totalPages.set(res.totalPages); this.total.set((res as any).total ?? res.data.length); this.loading.set(false); },
       error: () => this.loading.set(false),
     });
   }
@@ -203,6 +212,7 @@ export class FacturasListComponent implements OnInit {
   }
 
   onPageChange(p: number) { this.page.set(p); this.load(); }
+  onPageSizeChange(size: number) { this.limit.set(size); this.page.set(1); this.load(); }
   goToDetail(f: Factura) { this.router.navigate(['/facturas', f._id]); }
 
   exportar(formato: string) {

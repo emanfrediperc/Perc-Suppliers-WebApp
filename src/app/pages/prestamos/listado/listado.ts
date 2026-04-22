@@ -192,8 +192,9 @@ import type {
         [currentPage]="page()"
         [totalPages]="totalPages()"
         [totalItems]="loans().length"
-        [pageSize]="pageSize"
+        [pageSize]="pageSize()"
         (pageChange)="setPage($event)"
+        (pageSizeChange)="setPageSize($event)"
       />
     }
 
@@ -551,16 +552,21 @@ export class PrestamosListadoComponent implements OnInit {
 
   // Paginación client-side
   page = signal(1);
-  pageSize = 20;
-  totalPages = computed(() => Math.max(1, Math.ceil(this.loans().length / this.pageSize)));
+  pageSize = signal(5);
+  totalPages = computed(() => Math.max(1, Math.ceil(this.loans().length / this.pageSize())));
   paginatedLoans = computed(() => {
-    const start = (this.page() - 1) * this.pageSize;
-    return this.loans().slice(start, start + this.pageSize);
+    const start = (this.page() - 1) * this.pageSize();
+    return this.loans().slice(start, start + this.pageSize());
   });
 
   setPage(p: number) {
     this.page.set(p);
     window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  setPageSize(size: number) {
+    this.pageSize.set(size);
+    this.page.set(1);
   }
   netPositions = signal<CurrencyPosition[]>([]);
   loading = signal(true);

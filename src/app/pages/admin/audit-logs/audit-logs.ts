@@ -67,8 +67,9 @@ import { PaginationComponent } from '../../../shared/pagination/pagination';
         [currentPage]="page()"
         [totalPages]="totalPages()"
         [totalItems]="totalItems()"
-        [pageSize]="pageSize"
+        [pageSize]="pageSize()"
         (pageChange)="goToPage($event)"
+        (pageSizeChange)="setPageSize($event)"
       />
     </div>
   `,
@@ -138,7 +139,7 @@ export class AuditLogsComponent implements OnInit {
   page = signal(1);
   totalPages = signal(1);
   totalItems = signal(0);
-  pageSize = 25;
+  pageSize = signal(5);
   filterEntidad = '';
   filterAccion = '';
 
@@ -157,7 +158,7 @@ export class AuditLogsComponent implements OnInit {
   }
 
   load() {
-    const params: any = { page: this.page(), limit: this.pageSize };
+    const params: any = { page: this.page(), limit: this.pageSize() };
     if (this.filterEntidad) params.entidad = this.filterEntidad;
     if (this.filterAccion) params.accion = this.filterAccion;
     this.auditService.getAll(params).subscribe(res => {
@@ -171,5 +172,11 @@ export class AuditLogsComponent implements OnInit {
     this.page.set(p);
     this.load();
     window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  setPageSize(size: number) {
+    this.pageSize.set(size);
+    this.page.set(1);
+    this.load();
   }
 }

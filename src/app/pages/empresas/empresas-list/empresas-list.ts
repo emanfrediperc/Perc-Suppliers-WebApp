@@ -30,7 +30,7 @@ interface EmpresaRow {
   raw: EmpresaProveedora | EmpresaCliente;
 }
 
-const PAGE_SIZE = 20;
+// PAGE_SIZE replaced by limit signal below
 
 @Component({
   selector: 'app-empresas-list',
@@ -105,7 +105,14 @@ const PAGE_SIZE = 20;
           </td>
         </ng-template>
       </app-glass-table>
-      <app-pagination [currentPage]="page()" [totalPages]="totalPages()" (pageChange)="onPageChange($event)" />
+      <app-pagination
+        [currentPage]="page()"
+        [totalPages]="totalPages()"
+        [totalItems]="total()"
+        [pageSize]="limit()"
+        (pageChange)="onPageChange($event)"
+        (pageSizeChange)="onPageSizeChange($event)"
+      />
     }
 
     <app-empresa-proveedora-form-modal
@@ -195,6 +202,7 @@ export class EmpresasListComponent implements OnInit {
   filtro = signal<FiltroTipo>('todas');
   search = signal('');
   page = signal(1);
+  limit = signal(5);
 
   showProveedoraForm = signal(false);
   showClienteForm = signal(false);
@@ -244,10 +252,11 @@ export class EmpresasListComponent implements OnInit {
     });
   });
 
-  totalPages = computed(() => Math.max(1, Math.ceil(this.filtered().length / PAGE_SIZE)));
+  total = computed(() => this.filtered().length);
+  totalPages = computed(() => Math.max(1, Math.ceil(this.filtered().length / this.limit())));
   paginated = computed(() => {
-    const start = (this.page() - 1) * PAGE_SIZE;
-    return this.filtered().slice(start, start + PAGE_SIZE);
+    const start = (this.page() - 1) * this.limit();
+    return this.filtered().slice(start, start + this.limit());
   });
 
   constructor(
@@ -286,6 +295,7 @@ export class EmpresasListComponent implements OnInit {
   }
 
   onPageChange(p: number) { this.page.set(p); }
+  onPageSizeChange(size: number) { this.limit.set(size); this.page.set(1); }
 
   goToDetail(row: EmpresaRow) {
     const route = row.tipo === 'proveedora' ? '/empresas-proveedoras' : '/empresas-clientes';

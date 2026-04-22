@@ -51,7 +51,14 @@ import { EmpresaProveedoraFormModalComponent } from '../empresa-proveedora-form-
           </td>
         </ng-template>
       </app-glass-table>
-      <app-pagination [currentPage]="page()" [totalPages]="totalPages()" (pageChange)="onPageChange($event)" />
+      <app-pagination
+        [currentPage]="page()"
+        [totalPages]="totalPages()"
+        [totalItems]="total()"
+        [pageSize]="limit()"
+        (pageChange)="onPageChange($event)"
+        (pageSizeChange)="onPageSizeChange($event)"
+      />
     }
 
     <app-empresa-proveedora-form-modal [open]="showForm()" [entity]="editEntity()" (close)="closeForm()" (saved)="onSaved()" />
@@ -74,6 +81,8 @@ export class EmpresasProveedorasListComponent implements OnInit {
   loading = signal(true);
   empresas = signal<EmpresaProveedora[]>([]);
   page = signal(1);
+  limit = signal(5);
+  total = signal(0);
   totalPages = signal(1);
   showForm = signal(false);
   editEntity = signal<EmpresaProveedora | null>(null);
@@ -105,14 +114,15 @@ export class EmpresasProveedorasListComponent implements OnInit {
 
   load() {
     this.loading.set(true);
-    this.service.getAll({ page: this.page(), limit: 20, search: this.search || undefined }).subscribe({
-      next: (res) => { this.empresas.set(res.data); this.totalPages.set(res.totalPages); this.loading.set(false); },
+    this.service.getAll({ page: this.page(), limit: this.limit(), search: this.search || undefined }).subscribe({
+      next: (res) => { this.empresas.set(res.data); this.totalPages.set(res.totalPages); this.total.set((res as any).total ?? res.data.length); this.loading.set(false); },
       error: () => this.loading.set(false),
     });
   }
 
   onSearch(value: string) { this.search = value; this.page.set(1); this.load(); }
   onPageChange(p: number) { this.page.set(p); this.load(); }
+  onPageSizeChange(size: number) { this.limit.set(size); this.page.set(1); this.load(); }
   goToDetail(e: EmpresaProveedora) { this.router.navigate(['/empresas-proveedoras', e._id]); }
 
   openCreate() {

@@ -8,8 +8,6 @@ import { ToastService } from '../../../shared/toast/toast.service';
 import { ToastComponent } from '../../../shared/toast/toast';
 import { PaginationComponent } from '../../../shared/pagination/pagination';
 
-const PAGE_SIZE = 20;
-
 @Component({
   selector: 'app-aprobaciones-list',
   standalone: true,
@@ -96,8 +94,9 @@ const PAGE_SIZE = 20;
         [currentPage]="page()"
         [totalPages]="totalPages()"
         [totalItems]="displayList().length"
-        [pageSize]="pageSize"
+        [pageSize]="pageSize()"
         (pageChange)="setPage($event)"
+        (pageSizeChange)="setPageSize($event)"
       />
     </div>
   `,
@@ -241,11 +240,11 @@ export class AprobacionesListComponent implements OnInit {
 
   // Paginación client-side
   page = signal(1);
-  pageSize = PAGE_SIZE;
-  totalPages = computed(() => Math.max(1, Math.ceil(this.displayList().length / this.pageSize)));
+  pageSize = signal(5);
+  totalPages = computed(() => Math.max(1, Math.ceil(this.displayList().length / this.pageSize())));
   paginatedList = computed(() => {
-    const start = (this.page() - 1) * this.pageSize;
-    return this.displayList().slice(start, start + this.pageSize);
+    const start = (this.page() - 1) * this.pageSize();
+    return this.displayList().slice(start, start + this.pageSize());
   });
 
   puedeDecidir = computed(() => {
@@ -296,6 +295,11 @@ export class AprobacionesListComponent implements OnInit {
     this.page.set(p);
     // El componente no scrollea, pero si la lista está larga lleva al tope
     window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  setPageSize(size: number) {
+    this.pageSize.set(size);
+    this.page.set(1);
   }
 
   countAprobadas(a: Aprobacion): number {
