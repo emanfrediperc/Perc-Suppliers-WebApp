@@ -132,17 +132,17 @@ import type { EmpresaRef } from '../../../models/prestamo';
           <td class="cell-dates">
             <div class="date-line">
               <span class="date-tag">Sol</span>
-              <span>{{ compra.fechaSolicitada | date: 'dd/MM/yyyy' }}</span>
+              <span>{{ compra.fechaSolicitada | date: 'dd/MM/yyyy HH:mm' }}</span>
             </div>
             @if (compra.fechaEjecutada) {
               <div class="date-line ejecutada">
                 <span class="date-tag tag-green">Ejec</span>
-                <span>{{ compra.fechaEjecutada | date: 'dd/MM/yyyy' }}</span>
+                <span>{{ compra.fechaEjecutada | date: 'dd/MM/yyyy HH:mm' }}</span>
               </div>
             } @else if (compra.fechaEstimadaEjecucion) {
               <div class="date-line estimada">
                 <span class="date-tag tag-blue">Est</span>
-                <span>{{ compra.fechaEstimadaEjecucion | date: 'dd/MM/yyyy' }}</span>
+                <span>{{ compra.fechaEstimadaEjecucion | date: 'dd/MM/yyyy HH:mm' }}</span>
               </div>
             }
           </td>
