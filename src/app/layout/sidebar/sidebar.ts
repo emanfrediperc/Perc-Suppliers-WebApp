@@ -192,7 +192,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
   }
 
   isAdmin = computed(() => this.auth.user()?.role === 'admin');
-  canApprove = computed(() => this.auth.user()?.role === 'aprobador');
+  canApprove = computed(() => ['admin', 'aprobador'].includes(this.auth.user()?.role || ''));
   canManage = computed(() => ['admin', 'tesoreria', 'operador'].includes(this.auth.user()?.role || ''));
   canExecute = computed(() => ['admin', 'operador'].includes(this.auth.user()?.role || ''));
 }

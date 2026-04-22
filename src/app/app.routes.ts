@@ -38,7 +38,7 @@ export const routes: Routes = [
       {
         path: 'aprobaciones',
         loadComponent: () => import('./pages/aprobaciones/aprobaciones-list/aprobaciones-list').then(m => m.AprobacionesListComponent),
-        canActivate: [roleGuard('aprobador')],
+        canActivate: [roleGuard('admin', 'aprobador')],
       },
       {
         path: 'admin/usuarios',
