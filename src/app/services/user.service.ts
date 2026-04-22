@@ -12,6 +12,14 @@ export interface UserAdmin {
   createdAt: string;
 }
 
+export interface CreateUserDto {
+  email: string;
+  password: string;
+  nombre: string;
+  apellido?: string;
+  role?: string;
+}
+
 @Injectable({ providedIn: 'root' })
 export class UserService {
   private url = `${environment.apiUrl}/auth`;
@@ -20,6 +28,10 @@ export class UserService {
 
   getAll() {
     return this.http.get<UserAdmin[]>(`${this.url}/users`);
+  }
+
+  create(dto: CreateUserDto) {
+    return this.http.post<{ user: UserAdmin; access_token?: string }>(`${this.url}/register`, dto);
   }
 
   update(id: string, data: { role?: string; activo?: boolean; nombre?: string; apellido?: string }) {

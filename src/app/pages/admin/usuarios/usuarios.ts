@@ -1,9 +1,12 @@
 import { Component, OnInit, signal, ChangeDetectionStrategy } from '@angular/core';
 import { DatePipe, UpperCasePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { UserService, UserAdmin } from '../../../services/user.service';
+import { UserService, UserAdmin, CreateUserDto } from '../../../services/user.service';
+import { ToastService } from '../../../shared/toast/toast.service';
 
 const ROLES = ['admin', 'tesoreria', 'aprobador', 'operador', 'consulta'];
+
+interface NuevoUsuario extends CreateUserDto {}
 
 @Component({
   selector: 'app-usuarios',
@@ -11,7 +14,10 @@ const ROLES = ['admin', 'tesoreria', 'aprobador', 'operador', 'consulta'];
   imports: [DatePipe, UpperCasePipe, FormsModule],
   template: `
     <div class="page">
-      <h1>Gestion de Usuarios</h1>
+      <div class="page-header">
+        <h1>Gestion de Usuarios</h1>
+        <button class="primary-btn" (click)="openCreateModal()">+ Nuevo Usuario</button>
+      </div>
       <div class="table-wrapper">
         <table class="glass-table">
           <thead>
@@ -68,10 +74,62 @@ const ROLES = ['admin', 'tesoreria', 'aprobador', 'operador', 'consulta'];
         </div>
       </div>
     }
+
+    @if (showCreate()) {
+      <div class="modal-overlay" (click)="closeCreateModal()">
+        <div class="modal-content create-modal" (click)="$event.stopPropagation()">
+          <h3>Crear Nuevo Usuario</h3>
+          <form (submit)="submitCreate($event)">
+            <label>
+              <span>Email</span>
+              <input type="email" name="email" [(ngModel)]="nuevo.email" required autofocus>
+            </label>
+            <label>
+              <span>Password</span>
+              <input type="text" name="password" [(ngModel)]="nuevo.password" required minlength="8"
+                     placeholder="Min 8 caracteres, 1 mayus, 1 minus, 1 numero">
+            </label>
+            <label>
+              <span>Nombre</span>
+              <input type="text" name="nombre" [(ngModel)]="nuevo.nombre" required>
+            </label>
+            <label>
+              <span>Apellido</span>
+              <input type="text" name="apellido" [(ngModel)]="nuevo.apellido">
+            </label>
+            <label>
+              <span>Rol</span>
+              <select name="role" [(ngModel)]="nuevo.role" required>
+                @for (r of roles; track r) {
+                  <option [value]="r">{{ r | uppercase }}</option>
+                }
+              </select>
+            </label>
+            @if (createError()) {
+              <p class="error-msg">{{ createError() }}</p>
+            }
+            <div class="modal-actions">
+              <button type="button" class="cancel-btn" (click)="closeCreateModal()">Cancelar</button>
+              <button type="submit" class="close-btn" [disabled]="creating()">
+                {{ creating() ? 'Creando...' : 'Crear Usuario' }}
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    }
   `,
   styles: [`
     .page { max-width: 1000px; }
-    h1 { font-size: 1.5rem; font-weight: 700; color: var(--text-primary); margin-bottom: 1.5rem; }
+    .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
+    h1 { font-size: 1.5rem; font-weight: 700; color: var(--text-primary); margin: 0; }
+    .primary-btn {
+      padding: 0.5rem 1rem; border: none; border-radius: 8px;
+      background: var(--accent-color, #6366f1); color: white;
+      cursor: pointer; font-size: 0.875rem; font-weight: 600;
+      transition: filter 0.2s;
+    }
+    .primary-btn:hover { filter: brightness(1.1); }
     .table-wrapper {
       background: var(--card-bg);
       border: 1px solid var(--glass-border);
@@ -135,6 +193,24 @@ const ROLES = ['admin', 'tesoreria', 'aprobador', 'operador', 'consulta'];
       padding: 2rem; max-width: 420px; width: 90%;
       border: 1px solid var(--glass-border);
     }
+    .create-modal { max-width: 480px; }
+    .create-modal form { display: flex; flex-direction: column; gap: 0.75rem; }
+    .create-modal label { display: flex; flex-direction: column; gap: 0.25rem; }
+    .create-modal label span { font-size: 0.75rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+    .create-modal input, .create-modal select {
+      padding: 0.5rem 0.75rem;
+      border: 1px solid var(--glass-border);
+      border-radius: 6px;
+      background: var(--glass-bg);
+      color: var(--text-primary);
+      font-size: 0.875rem;
+    }
+    .modal-actions { display: flex; gap: 0.5rem; margin-top: 1rem; }
+    .cancel-btn {
+      flex: 1; padding: 0.625rem; border: 1px solid var(--glass-border);
+      border-radius: 8px; background: var(--glass-bg); color: var(--text-primary);
+      cursor: pointer; font-size: 0.875rem; font-weight: 600;
+    }
     .modal-content h3 { margin: 0 0 1rem; font-size: 1.125rem; color: var(--text-primary); }
     .modal-content p { font-size: 0.875rem; color: var(--text-secondary); margin: 0.5rem 0; }
     .temp-password {
@@ -144,11 +220,13 @@ const ROLES = ['admin', 'tesoreria', 'aprobador', 'operador', 'consulta'];
       color: var(--text-primary); user-select: all;
     }
     .warning { color: #dc2626; font-weight: 600; font-size: 0.8125rem; }
+    .error-msg { color: #dc2626; font-size: 0.8125rem; margin: 0.25rem 0 0; }
     .close-btn {
-      width: 100%; padding: 0.625rem; border: none; border-radius: 8px;
+      flex: 1; padding: 0.625rem; border: none; border-radius: 8px;
       background: var(--accent-color, #6366f1); color: white;
-      cursor: pointer; font-size: 0.875rem; font-weight: 600; margin-top: 1rem;
+      cursor: pointer; font-size: 0.875rem; font-weight: 600;
     }
+    .close-btn:disabled { opacity: 0.6; cursor: not-allowed; }
   `],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -158,7 +236,15 @@ export class UsuariosComponent implements OnInit {
   tempPassword = signal<string | null>(null);
   resetUser = signal<string>('');
 
-  constructor(private userService: UserService) {}
+  showCreate = signal(false);
+  creating = signal(false);
+  createError = signal<string | null>(null);
+  nuevo: NuevoUsuario = this.emptyNuevo();
+
+  constructor(
+    private userService: UserService,
+    private toast: ToastService,
+  ) {}
 
   ngOnInit() {
     this.userService.getAll().subscribe(data => this.users.set(data));
@@ -182,5 +268,40 @@ export class UsuariosComponent implements OnInit {
     this.userService.resetPassword(user._id).subscribe(res => {
       this.tempPassword.set(res.temporaryPassword);
     });
+  }
+
+  openCreateModal() {
+    this.nuevo = this.emptyNuevo();
+    this.createError.set(null);
+    this.showCreate.set(true);
+  }
+
+  closeCreateModal() {
+    this.showCreate.set(false);
+  }
+
+  submitCreate(event: Event) {
+    event.preventDefault();
+    if (this.creating()) return;
+    this.createError.set(null);
+    this.creating.set(true);
+
+    this.userService.create({ ...this.nuevo }).subscribe({
+      next: () => {
+        this.toast.success(`Usuario ${this.nuevo.email} creado`);
+        this.userService.getAll().subscribe(data => this.users.set(data));
+        this.creating.set(false);
+        this.showCreate.set(false);
+      },
+      error: err => {
+        this.creating.set(false);
+        const msg = err?.error?.message;
+        this.createError.set(Array.isArray(msg) ? msg.join(', ') : (msg || 'Error al crear el usuario'));
+      },
+    });
+  }
+
+  private emptyNuevo(): NuevoUsuario {
+    return { email: '', password: '', nombre: '', apellido: '', role: 'consulta' };
   }
 }
