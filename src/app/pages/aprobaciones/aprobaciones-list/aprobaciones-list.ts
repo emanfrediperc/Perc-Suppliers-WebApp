@@ -6,11 +6,14 @@ import { ExportService } from '../../../services/export.service';
 import { AuthService } from '../../../services/auth.service';
 import { ToastService } from '../../../shared/toast/toast.service';
 import { ToastComponent } from '../../../shared/toast/toast';
+import { PaginationComponent } from '../../../shared/pagination/pagination';
+
+const PAGE_SIZE = 20;
 
 @Component({
   selector: 'app-aprobaciones-list',
   standalone: true,
-  imports: [DatePipe, CurrencyPipe, UpperCasePipe, ToastComponent],
+  imports: [DatePipe, CurrencyPipe, UpperCasePipe, ToastComponent, PaginationComponent],
   template: `
     <app-toast />
     <div class="page">
@@ -32,7 +35,7 @@ import { ToastComponent } from '../../../shared/toast/toast';
       </div>
 
       <div class="card-list">
-        @for (a of displayList(); track a._id) {
+        @for (a of paginatedList(); track a._id) {
           <div class="approval-card" [class]="'status-' + a.estado">
             <div class="card-top">
               <div class="card-info">
@@ -88,6 +91,14 @@ import { ToastComponent } from '../../../shared/toast/toast';
           <div class="empty">No hay aprobaciones {{ tab() === 'pendientes' ? 'pendientes' : 'en el historial' }}</div>
         }
       </div>
+
+      <app-pagination
+        [currentPage]="page()"
+        [totalPages]="totalPages()"
+        [totalItems]="displayList().length"
+        [pageSize]="pageSize"
+        (pageChange)="setPage($event)"
+      />
     </div>
   `,
   styles: [`
@@ -228,6 +239,15 @@ export class AprobacionesListComponent implements OnInit {
   historial = signal<Aprobacion[]>([]);
   displayList = signal<Aprobacion[]>([]);
 
+  // Paginación client-side
+  page = signal(1);
+  pageSize = PAGE_SIZE;
+  totalPages = computed(() => Math.max(1, Math.ceil(this.displayList().length / this.pageSize)));
+  paginatedList = computed(() => {
+    const start = (this.page() - 1) * this.pageSize;
+    return this.displayList().slice(start, start + this.pageSize);
+  });
+
   puedeDecidir = computed(() => {
     return this.authService.user()?.role === 'aprobador';
   });
@@ -269,6 +289,13 @@ export class AprobacionesListComponent implements OnInit {
   setTab(t: 'pendientes' | 'historial') {
     this.tab.set(t);
     this.displayList.set(t === 'pendientes' ? this.pendientes() : this.historial());
+    this.page.set(1);
+  }
+
+  setPage(p: number) {
+    this.page.set(p);
+    // El componente no scrollea, pero si la lista está larga lleva al tope
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   countAprobadas(a: Aprobacion): number {

@@ -19,6 +19,7 @@ import { PrestamoEditModalComponent } from '../modals/prestamo-edit-modal/presta
 import { PrestamoRenewModalComponent } from '../modals/prestamo-renew-modal/prestamo-renew-modal';
 import { PrestamoHistoryModalComponent } from '../modals/prestamo-history-modal/prestamo-history-modal';
 import { EmpresaPickerComponent } from '../../../shared/empresa-picker/empresa-picker';
+import { PaginationComponent } from '../../../shared/pagination/pagination';
 import type {
   PrestamoWithComputed,
   CurrencyCard,
@@ -50,6 +51,7 @@ import type {
     PrestamoRenewModalComponent,
     PrestamoHistoryModalComponent,
     EmpresaPickerComponent,
+    PaginationComponent,
   ],
   template: `
     <app-toast />
@@ -150,7 +152,7 @@ import type {
         message="No hay préstamos que coincidan con los filtros aplicados."
       />
     } @else {
-      <app-glass-table [columns]="columns" [data]="loans()">
+      <app-glass-table [columns]="columns" [data]="paginatedLoans()">
         <ng-template #row let-loan>
           <td class="cell-entity">{{ loan.lender.razonSocialCache }}</td>
           <td class="cell-entity">{{ loan.borrower.razonSocialCache }}</td>
@@ -185,6 +187,14 @@ import type {
           </td>
         </ng-template>
       </app-glass-table>
+
+      <app-pagination
+        [currentPage]="page()"
+        [totalPages]="totalPages()"
+        [totalItems]="loans().length"
+        [pageSize]="pageSize"
+        (pageChange)="setPage($event)"
+      />
     }
 
     <!-- Net position -->
@@ -538,6 +548,20 @@ export class PrestamosListadoComponent implements OnInit {
   // Data
   loans = signal<PrestamoWithComputed[]>([]);
   summaryCards = signal<CurrencyCard[]>([]);
+
+  // Paginación client-side
+  page = signal(1);
+  pageSize = 20;
+  totalPages = computed(() => Math.max(1, Math.ceil(this.loans().length / this.pageSize)));
+  paginatedLoans = computed(() => {
+    const start = (this.page() - 1) * this.pageSize;
+    return this.loans().slice(start, start + this.pageSize);
+  });
+
+  setPage(p: number) {
+    this.page.set(p);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
   netPositions = signal<CurrencyPosition[]>([]);
   loading = signal(true);
 
@@ -605,6 +629,7 @@ export class PrestamosListadoComponent implements OnInit {
     }).subscribe({
       next: ({ loans, summary, netPos }) => {
         this.loans.set(loans);
+        this.page.set(1);
         this.summaryCards.set(summary.cards);
         this.netPositions.set(netPos.positions);
         this.loading.set(false);

@@ -3,11 +3,12 @@ import { DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AuditLogService, AuditLog } from '../../../services/audit-log.service';
 import { ExportService } from '../../../services/export.service';
+import { PaginationComponent } from '../../../shared/pagination/pagination';
 
 @Component({
   selector: 'app-audit-logs',
   standalone: true,
-  imports: [DatePipe, FormsModule],
+  imports: [DatePipe, FormsModule, PaginationComponent],
   template: `
     <div class="page">
       <div class="header-row">
@@ -62,11 +63,13 @@ import { ExportService } from '../../../services/export.service';
           </tbody>
         </table>
       </div>
-      <div class="pagination">
-        <button [disabled]="page() <= 1" (click)="changePage(-1)">Anterior</button>
-        <span>Pagina {{ page() }} de {{ totalPages() }}</span>
-        <button [disabled]="page() >= totalPages()" (click)="changePage(1)">Siguiente</button>
-      </div>
+      <app-pagination
+        [currentPage]="page()"
+        [totalPages]="totalPages()"
+        [totalItems]="totalItems()"
+        [pageSize]="pageSize"
+        (pageChange)="goToPage($event)"
+      />
     </div>
   `,
   styles: [`
@@ -127,25 +130,6 @@ import { ExportService } from '../../../services/export.service';
     .action-pill[data-action="pagar"] { background: #d1fae5; color: #065f46; }
     .action-pill[data-action="anular"] { background: #fee2e2; color: #991b1b; }
     .empty { text-align: center; padding: 2rem; color: var(--text-muted); }
-    .pagination {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 1rem;
-      margin-top: 1rem;
-      font-size: 0.875rem;
-      color: var(--text-secondary);
-    }
-    .pagination button {
-      padding: 0.5rem 1rem;
-      border: 1px solid var(--glass-border);
-      border-radius: 8px;
-      background: var(--card-bg);
-      color: var(--text-primary);
-      cursor: pointer;
-      font-size: 0.8125rem;
-    }
-    .pagination button:disabled { opacity: 0.4; cursor: not-allowed; }
   `],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -153,6 +137,8 @@ export class AuditLogsComponent implements OnInit {
   logs = signal<AuditLog[]>([]);
   page = signal(1);
   totalPages = signal(1);
+  totalItems = signal(0);
+  pageSize = 25;
   filterEntidad = '';
   filterAccion = '';
 
@@ -171,17 +157,19 @@ export class AuditLogsComponent implements OnInit {
   }
 
   load() {
-    const params: any = { page: this.page(), limit: 25 };
+    const params: any = { page: this.page(), limit: this.pageSize };
     if (this.filterEntidad) params.entidad = this.filterEntidad;
     if (this.filterAccion) params.accion = this.filterAccion;
     this.auditService.getAll(params).subscribe(res => {
       this.logs.set(res.data);
       this.totalPages.set(res.totalPages || 1);
+      this.totalItems.set((res as any).total ?? res.data.length);
     });
   }
 
-  changePage(delta: number) {
-    this.page.update(p => p + delta);
+  goToPage(p: number) {
+    this.page.set(p);
     this.load();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 }
