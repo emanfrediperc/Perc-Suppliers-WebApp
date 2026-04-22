@@ -219,8 +219,7 @@ export class AprobacionesListComponent implements OnInit {
   displayList = signal<Aprobacion[]>([]);
 
   puedeDecidir = computed(() => {
-    const role = this.authService.user()?.role;
-    return role === 'admin' || role === 'aprobador';
+    return this.authService.user()?.role === 'aprobador';
   });
 
   puedeReenviarMail = computed(() => {
