@@ -108,4 +108,11 @@ export class AprobacionService {
   reenviar(aprobacionId: string): Observable<Aprobacion> {
     return this.http.patch<Aprobacion>(`${this.url}/${aprobacionId}/reenviar`, {});
   }
+
+  reenviarMail(aprobacionId: string): Observable<{ mensaje: string; destinatarios: number }> {
+    return this.http.post<{ mensaje: string; destinatarios: number }>(
+      `${this.url}/${aprobacionId}/reenviar-mail`,
+      {},
+    );
+  }
 }

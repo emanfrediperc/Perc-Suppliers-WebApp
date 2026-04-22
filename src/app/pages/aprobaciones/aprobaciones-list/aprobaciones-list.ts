@@ -60,6 +60,13 @@ import { ToastComponent } from '../../../shared/toast/toast';
                 <button class="btn-reject" (click)="decidir(a._id, 'rechazada', comentario.value)">Rechazar</button>
               </div>
             }
+            @if (a.estado === 'pendiente' && puedeReenviarMail()) {
+              <div class="card-actions secondary">
+                <button class="btn-reenviar-mail" [disabled]="reenviandoMail() === a._id" (click)="reenviarMail(a._id)">
+                  {{ reenviandoMail() === a._id ? 'Enviando...' : 'Reenviar mail al aprobador' }}
+                </button>
+              </div>
+            }
             @if (puedeReenviar(a)) {
               <div class="card-actions">
                 <button class="btn-reenviar" (click)="reenviar(a._id)">Reenviar solicitud</button>
@@ -177,6 +184,21 @@ import { ToastComponent } from '../../../shared/toast/toast';
       font-size: 0.8125rem;
     }
     .btn-reenviar:hover { background: #d97706; }
+    .card-actions.secondary { margin-top: 0.25rem; }
+    .btn-reenviar-mail {
+      padding: 0.375rem 0.875rem;
+      background: transparent;
+      color: var(--color-primary);
+      border: 1px solid var(--color-primary);
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 500;
+      font-size: 0.75rem;
+      display: inline-flex; align-items: center; gap: 0.375rem;
+      transition: background 0.15s;
+    }
+    .btn-reenviar-mail:hover:not(:disabled) { background: rgba(99, 102, 241, 0.08); }
+    .btn-reenviar-mail:disabled { opacity: 0.55; cursor: not-allowed; }
     .ciclo-badge {
       display: inline-block;
       margin-left: 0.75rem;
@@ -200,6 +222,13 @@ export class AprobacionesListComponent implements OnInit {
     const role = this.authService.user()?.role;
     return role === 'admin' || role === 'aprobador';
   });
+
+  puedeReenviarMail = computed(() => {
+    const role = this.authService.user()?.role;
+    return role === 'admin' || role === 'aprobador' || role === 'tesoreria';
+  });
+
+  reenviandoMail = signal<string | null>(null);
 
   constructor(
     private aprobacionService: AprobacionService,
@@ -259,6 +288,20 @@ export class AprobacionesListComponent implements OnInit {
       },
       error: (err) => {
         this.toast.error(err.error?.message || 'Error al reenviar la solicitud.');
+      },
+    });
+  }
+
+  reenviarMail(id: string) {
+    this.reenviandoMail.set(id);
+    this.aprobacionService.reenviarMail(id).subscribe({
+      next: (res) => {
+        this.toast.success(`Mail reenviado a ${res.destinatarios} aprobador${res.destinatarios === 1 ? '' : 'es'}.`);
+        this.reenviandoMail.set(null);
+      },
+      error: (err) => {
+        this.reenviandoMail.set(null);
+        this.toast.error(err.error?.message || 'Error al reenviar el mail.');
       },
     });
   }
