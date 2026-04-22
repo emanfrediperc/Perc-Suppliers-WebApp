@@ -78,7 +78,7 @@ import { OperadorCountsService } from '../../services/operador-counts.service';
 
           <a routerLink="/compras-moneda-extranjera" routerLinkActive="active" class="nav-item" (click)="toggle.emit()">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"/><line x1="12" y1="6" x2="12" y2="8"/><line x1="12" y1="16" x2="12" y2="18"/></svg>
-            <span>Compras FX</span>
+            <span>Compras de Divisas</span>
             @if (canExecute() && operadorCountsService.counts().comprasFx > 0) {
               <span class="badge badge-action">{{ operadorCountsService.counts().comprasFx }}</span>
             }

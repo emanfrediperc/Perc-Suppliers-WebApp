@@ -20,7 +20,7 @@ import {
   template: `
     <app-glass-modal
       [open]="open()"
-      title="Detalle de Compra FX"
+      title="Detalle de Compra de Divisa"
       subtitle="Información completa del registro"
       maxWidth="600px"
       (close)="close.emit()"

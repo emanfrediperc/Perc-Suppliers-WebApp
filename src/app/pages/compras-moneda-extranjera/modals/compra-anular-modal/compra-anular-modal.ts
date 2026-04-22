@@ -22,7 +22,7 @@ import { MONEDA_LABEL, type CompraMonedaExtranjera } from '../../../../models/co
   template: `
     <app-glass-modal
       [open]="open()"
-      title="Anular Compra FX"
+      title="Anular Compra de Divisa"
       maxWidth="500px"
       (close)="close.emit()"
     >

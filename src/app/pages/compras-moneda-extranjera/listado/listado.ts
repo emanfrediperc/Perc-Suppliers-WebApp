@@ -60,9 +60,9 @@ import type { EmpresaRef } from '../../../models/prestamo';
   template: `
     <app-toast />
 
-    <app-page-header title="Compras FX" subtitle="Registro de compras de moneda extranjera">
+    <app-page-header title="Compras de Divisas" subtitle="Registro de compras de moneda extranjera">
       @if (canWrite()) {
-        <button class="btn-primary" (click)="openCreateModal()">+ Nueva Compra FX</button>
+        <button class="btn-primary" (click)="openCreateModal()">+ Nueva Compra de Divisa</button>
       }
     </app-page-header>
 
@@ -123,7 +123,7 @@ import type { EmpresaRef } from '../../../models/prestamo';
       <app-skeleton-table [rows]="5" [cols]="9" />
     } @else if (compras().length === 0) {
       <app-empty-state
-        title="Sin compras FX"
+        title="Sin compras de divisas"
         message="No hay compras de moneda extranjera que coincidan con los filtros aplicados."
       />
     } @else {
@@ -569,7 +569,7 @@ export class ComprasMonedaExtranjeraListadoComponent implements OnInit {
           this.total.set(res.total);
         },
         error: () => {
-          this.toast.error('No se pudieron cargar las compras FX. Verificá los filtros e intentá de nuevo.');
+          this.toast.error('No se pudieron cargar las compras de divisas. Verificá los filtros e intentá de nuevo.');
         },
       });
   }

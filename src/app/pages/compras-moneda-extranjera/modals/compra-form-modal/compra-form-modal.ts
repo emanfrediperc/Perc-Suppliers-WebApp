@@ -28,7 +28,7 @@ import type { EmpresaRef } from '../../../../models/prestamo';
   template: `
     <app-glass-modal
       [open]="open()"
-      title="Nueva Compra FX"
+      title="Nueva Compra de Divisa"
       subtitle="Registrar compra de moneda extranjera"
       maxWidth="640px"
       (close)="close.emit()"
@@ -436,7 +436,7 @@ export class CompraFormModalComponent implements OnChanges {
       .pipe(finalize(() => this.submitting.set(false)))
       .subscribe({
         next: () => {
-          this.toast.success('Compra FX registrada');
+          this.toast.success('Compra de Divisa registrada');
           this.saved.emit();
           this.close.emit();
         },
