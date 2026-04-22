@@ -53,7 +53,7 @@ const ENTIDAD_LABEL: Record<string, string> = {
 
         @if (!loading() && !error() && !resultado() && contexto(); as ctx) {
           <div class="confirm-state">
-            <div class="brand-eyebrow">Perc Suppliers</div>
+            <div class="brand-eyebrow">Beethoven</div>
             <h1>Aprobación pendiente</h1>
             <p class="lead">Revisá el detalle y confirmá tu decisión.</p>
 
