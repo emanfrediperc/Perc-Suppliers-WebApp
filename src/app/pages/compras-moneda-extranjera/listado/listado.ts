@@ -178,19 +178,23 @@ import type { EmpresaRef } from '../../../models/prestamo';
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
                 Ver
               </button>
-              @if (canChangeStatus() && compra.estado === 'SOLICITADA') {
-                <button class="btn-sm btn-success" (click)="openEjecutarModal(compra)" title="Marcar como ejecutada">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
-                  Ejecutar
-                </button>
-                <button class="btn-sm" (click)="openEstimarModal(compra)" title="Fijar fecha estimada">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-                  Estimar
-                </button>
-                <button class="btn-sm btn-warn" (click)="openAnularModal(compra)" title="Anular">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>
-                  Anular
-                </button>
+              @if (compra.estado === 'SOLICITADA') {
+                @if (canExecute()) {
+                  <button class="btn-sm btn-success" (click)="openEjecutarModal(compra)" title="Marcar como ejecutada">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                    Ejecutar
+                  </button>
+                  <button class="btn-sm" (click)="openEstimarModal(compra)" title="Fijar fecha estimada">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                    Estimar
+                  </button>
+                }
+                @if (canAnular()) {
+                  <button class="btn-sm btn-warn" (click)="openAnularModal(compra)" title="Anular">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>
+                    Anular
+                  </button>
+                }
               }
             </div>
           </td>
@@ -505,8 +509,13 @@ export class ComprasMonedaExtranjeraListadoComponent implements OnInit {
   canWrite = computed(() =>
     ['admin', 'tesoreria'].includes(this.auth.user()?.role ?? ''),
   );
-  canChangeStatus = computed(() =>
-    ['admin', 'tesoreria', 'operador'].includes(this.auth.user()?.role ?? ''),
+  // Ejecutar y Estimar son acciones operativas puras del operador.
+  canExecute = computed(() =>
+    this.auth.user()?.role === 'operador',
+  );
+  // Anular puede disparar el operador o el admin (este último como override).
+  canAnular = computed(() =>
+    ['admin', 'operador'].includes(this.auth.user()?.role ?? ''),
   );
 
   totalPages = computed(() => Math.ceil(this.total() / this.limit()) || 1);
