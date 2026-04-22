@@ -4,6 +4,7 @@ import { roleGuard } from './guards/role.guard';
 
 export const routes: Routes = [
   { path: 'login', loadComponent: () => import('./pages/login/login').then(m => m.LoginComponent) },
+  { path: 'aprobar', loadComponent: () => import('./pages/aprobar/aprobar').then(m => m.AprobarComponent) },
   { path: 'register', loadComponent: () => import('./pages/register/register').then(m => m.RegisterComponent) },
   { path: 'change-password', loadComponent: () => import('./pages/change-password/change-password').then(m => m.ChangePasswordComponent) },
   {
@@ -37,7 +38,7 @@ export const routes: Routes = [
       {
         path: 'aprobaciones',
         loadComponent: () => import('./pages/aprobaciones/aprobaciones-list/aprobaciones-list').then(m => m.AprobacionesListComponent),
-        canActivate: [roleGuard('admin', 'operador')],
+        canActivate: [roleGuard('admin', 'aprobador')],
       },
       {
         path: 'admin/usuarios',
