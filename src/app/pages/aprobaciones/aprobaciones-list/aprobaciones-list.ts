@@ -129,10 +129,20 @@ import { ToastComponent } from '../../../shared/toast/toast';
     .card-info { display: flex; gap: 0.5rem; }
     .card-type { font-size: 0.75rem; font-weight: 700; background: var(--glass-bg); padding: 0.25rem 0.5rem; border-radius: 6px; color: var(--primary); }
     .card-entity { font-size: 0.75rem; color: var(--text-muted); padding: 0.25rem 0.5rem; }
-    .status-pill { font-size: 0.75rem; font-weight: 600; padding: 0.25rem 0.75rem; border-radius: 12px; }
-    .status-pill.pendiente { background: #fef3c7; color: #92400e; }
-    .status-pill.aprobada { background: #d1fae5; color: #065f46; }
-    .status-pill.rechazada { background: #fee2e2; color: #991b1b; }
+    .status-pill {
+      font-size: 0.6875rem;
+      font-weight: 700;
+      padding: 0.25rem 0.625rem;
+      border-radius: 999px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      line-height: 1;
+      display: inline-flex;
+      align-items: center;
+    }
+    .status-pill.pendiente { background: #fef3c7; color: #92400e; border: 1px solid #fde68a; }
+    .status-pill.aprobada { background: #d1fae5; color: #065f46; border: 1px solid #a7f3d0; }
+    .status-pill.rechazada { background: #fee2e2; color: #991b1b; border: 1px solid #fecaca; }
     .card-desc { font-size: 0.875rem; color: var(--text-primary); margin-bottom: 0.75rem; }
     .card-meta { display: flex; flex-wrap: wrap; gap: 1rem; font-size: 0.75rem; color: var(--text-muted); margin-bottom: 0.75rem; }
     .card-progress { font-size: 0.8125rem; font-weight: 500; color: var(--text-secondary); margin-bottom: 0.75rem; }
