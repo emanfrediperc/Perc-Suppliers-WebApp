@@ -74,7 +74,7 @@ export interface OrdenPago {
   montoPagado: number;
   saldoPendiente: number;
   moneda: string;
-  estado: 'pendiente' | 'parcial' | 'pagada' | 'anulada';
+  estado: 'pendiente' | 'parcial' | 'pagada' | 'anulada' | 'esperando_aprobacion' | 'rechazado';
   facturas: Factura[];
   pagos: Pago[];
   createdAt: string;
@@ -168,7 +168,7 @@ export interface Pago {
   referenciaPago?: string;
   observaciones?: string;
   convenioAplicado?: Convenio;
-  estado: 'confirmado' | 'pendiente' | 'rechazado' | 'anulado';
+  estado: 'confirmado' | 'pendiente' | 'rechazado' | 'anulado' | 'esperando_aprobacion';
   createdAt: string;
 }
 

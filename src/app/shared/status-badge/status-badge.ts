@@ -9,6 +9,6 @@ import { Component, input, ChangeDetectionStrategy } from '@angular/core';
 })
 export class StatusBadgeComponent {
   status = input<string>('');
-  colorMap: Record<string, string> = { pendiente: 'orange', parcial: 'blue', pagada: 'green', anulada: 'red', anulado: 'red', confirmado: 'green', rechazado: 'red', CONFIRMADA: 'green', SOLICITADA: 'orange', EJECUTADA: 'green', ANULADA: 'red', ACTIVE: 'green', CLEARED: 'blue', RENEWED: 'orange' };
-  labelMap: Record<string, string> = { pendiente: 'Pendiente', parcial: 'Parcial', pagada: 'Pagada', anulada: 'Anulada', anulado: 'Anulado', confirmado: 'Confirmado', rechazado: 'Rechazado', CONFIRMADA: 'Confirmada', SOLICITADA: 'Solicitada', EJECUTADA: 'Ejecutada', ANULADA: 'Anulada', ACTIVE: 'Activo', CLEARED: 'Cancelado', RENEWED: 'Renovado' };
+  colorMap: Record<string, string> = { pendiente: 'orange', parcial: 'blue', pagada: 'green', anulada: 'red', anulado: 'red', confirmado: 'green', rechazado: 'red', CONFIRMADA: 'green', SOLICITADA: 'orange', EJECUTADA: 'green', ANULADA: 'red', ACTIVE: 'green', CLEARED: 'blue', RENEWED: 'orange', esperando_aprobacion: 'orange', ESPERANDO_APROBACION: 'orange', RECHAZADO: 'red' };
+  labelMap: Record<string, string> = { pendiente: 'Pendiente', parcial: 'Parcial', pagada: 'Pagada', anulada: 'Anulada', anulado: 'Anulado', confirmado: 'Confirmado', rechazado: 'Rechazado', CONFIRMADA: 'Confirmada', SOLICITADA: 'Solicitada', EJECUTADA: 'Ejecutada', ANULADA: 'Anulada', ACTIVE: 'Activo', CLEARED: 'Cancelado', RENEWED: 'Renovado', esperando_aprobacion: 'Esperando aprobación', ESPERANDO_APROBACION: 'Esperando aprobación', RECHAZADO: 'Rechazado' };
 }

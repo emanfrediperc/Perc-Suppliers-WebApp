@@ -74,6 +74,8 @@ import type {
             <option value="ACTIVE">Activos</option>
             <option value="CLEARED">Cancelados</option>
             <option value="RENEWED">Renovados</option>
+            <option value="ESPERANDO_APROBACION">Esperando aprobación</option>
+            <option value="RECHAZADO">Rechazado</option>
           </select>
         </div>
         <div class="filter-item">
