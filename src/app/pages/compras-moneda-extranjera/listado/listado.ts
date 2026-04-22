@@ -524,12 +524,12 @@ export class ComprasMonedaExtranjeraListadoComponent implements OnInit {
   detalleLoading = signal(false);
 
   columns: TableColumn[] = [
-    { key: 'fechas', label: 'Fechas', width: '150px' },
-    { key: 'par', label: 'Origen → Destino', width: '210px' },
+    { key: 'fechas', label: 'Fechas', width: '200px' },
+    { key: 'par', label: 'Origen → Destino', width: '180px' },
     { key: 'empresa', label: 'Empresa' },
-    { key: 'monto', label: 'Monto' },
+    { key: 'monto', label: 'Monto', width: '150px' },
     { key: 'estado', label: 'Estado', width: '120px' },
-    { key: 'actions', label: '', width: '220px' },
+    { key: 'actions', label: '', width: '280px' },
   ];
 
   ngOnInit() {
