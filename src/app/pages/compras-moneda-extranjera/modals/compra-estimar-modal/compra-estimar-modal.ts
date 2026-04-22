@@ -13,7 +13,7 @@ import { FormsModule } from '@angular/forms';
 import { GlassModalComponent } from '../../../../shared/glass-modal/glass-modal';
 import { ToastService } from '../../../../shared/toast/toast.service';
 import { ComprasMonedaExtranjeraService } from '../../../../services/compras-moneda-extranjera.service';
-import type { CompraMonedaExtranjera } from '../../../../models/compra-moneda-extranjera';
+import { MONEDA_LABEL, type CompraMonedaExtranjera } from '../../../../models/compra-moneda-extranjera';
 
 @Component({
   selector: 'app-compra-estimar-modal',
@@ -36,7 +36,7 @@ import type { CompraMonedaExtranjera } from '../../../../models/compra-moneda-ex
             </div>
             <div class="info-row">
               <span class="info-label">Monto</span>
-              <span class="info-value">USD {{ fmtUSD(compra()!.montoUSD) }}</span>
+              <span class="info-value">{{ fmtNum(montoPrincipal()) }} {{ monedaLabel[monedaPrincipal()] }}</span>
             </div>
           </div>
 
@@ -172,7 +172,21 @@ export class CompraEstimarModalComponent implements OnChanges {
     return this.compra()?.fechaSolicitada?.split('T')[0] ?? '';
   }
 
-  fmtUSD(value: number): string {
+  readonly monedaLabel = MONEDA_LABEL;
+
+  montoPrincipal(): number {
+    const c = this.compra();
+    if (!c) return 0;
+    return c.montoDestino ?? c.montoOrigen;
+  }
+
+  monedaPrincipal() {
+    const c = this.compra()!;
+    return c.montoDestino != null ? c.monedaDestino : c.monedaOrigen;
+  }
+
+  fmtNum(value: number | null | undefined): string {
+    if (value == null || !Number.isFinite(value)) return '—';
     return value.toLocaleString('es-AR', {
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,

@@ -14,7 +14,11 @@ import { GlassModalComponent } from '../../../../shared/glass-modal/glass-modal'
 import { EmpresaPickerComponent } from '../../../../shared/empresa-picker/empresa-picker';
 import { ToastService } from '../../../../shared/toast/toast.service';
 import { ComprasMonedaExtranjeraService } from '../../../../services/compras-moneda-extranjera.service';
-import type { ModalidadCompra } from '../../../../models/compra-moneda-extranjera';
+import {
+  MONEDAS,
+  MONEDA_LABEL,
+  type Moneda,
+} from '../../../../models/compra-moneda-extranjera';
 import type { EmpresaRef } from '../../../../models/prestamo';
 
 @Component({
@@ -25,13 +29,13 @@ import type { EmpresaRef } from '../../../../models/prestamo';
     <app-glass-modal
       [open]="open()"
       title="Nueva Compra FX"
-      subtitle="Registrar compra de moneda extranjera (USD)"
+      subtitle="Registrar compra de moneda extranjera"
       maxWidth="640px"
       (close)="close.emit()"
     >
       <form (ngSubmit)="submit()" class="form" novalidate>
 
-        <div class="form-row-inline">
+        <div class="form-row">
           <div class="field">
             <label>Fecha solicitada</label>
             <input type="date" name="fechaSolicitada" [(ngModel)]="fechaSolicitada" required />
@@ -39,13 +43,27 @@ import type { EmpresaRef } from '../../../../models/prestamo';
               <span class="error">{{ errors()['fechaSolicitada'] }}</span>
             }
           </div>
+        </div>
+
+        <div class="form-row-inline">
           <div class="field">
-            <label>Modalidad</label>
-            <select name="modalidad" [(ngModel)]="modalidad" required>
-              <option value="CABLE">Cable</option>
-              <option value="USD_LOCAL">USD Local</option>
-              <option value="MEP">MEP</option>
+            <label>Moneda origen</label>
+            <select name="monedaOrigen" [ngModel]="monedaOrigen()" (ngModelChange)="onMonedaOrigenChange($event)" required>
+              @for (m of monedas; track m) {
+                <option [value]="m">{{ monedaLabel[m] }}</option>
+              }
             </select>
+          </div>
+          <div class="field">
+            <label>Moneda destino</label>
+            <select name="monedaDestino" [ngModel]="monedaDestino()" (ngModelChange)="onMonedaDestinoChange($event)" required>
+              @for (m of monedas; track m) {
+                <option [value]="m">{{ monedaLabel[m] }}</option>
+              }
+            </select>
+            @if (errors()['monedas']) {
+              <span class="error">{{ errors()['monedas'] }}</span>
+            }
           </div>
         </div>
 
@@ -59,12 +77,61 @@ import type { EmpresaRef } from '../../../../models/prestamo';
           }
         </div>
 
-        <div class="form-row-inline">
+        <div class="form-row">
           <div class="field">
-            <label>Monto</label>
-            <input type="number" name="montoUSD" [(ngModel)]="montoUSD" min="0.01" step="0.01" placeholder="0.00" required />
-            @if (errors()['montoUSD']) {
-              <span class="error">{{ errors()['montoUSD'] }}</span>
+            <label>Tipo de cambio</label>
+            <input
+              type="number"
+              name="tipoCambio"
+              [ngModel]="tipoCambio()"
+              (ngModelChange)="onTipoCambioChange($event)"
+              min="0.0001"
+              step="0.0001"
+              placeholder="0.0000" />
+            <span class="hint">{{ tcHint() }}</span>
+            @if (errors()['tipoCambio']) {
+              <span class="error">{{ errors()['tipoCambio'] }}</span>
+            }
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="field">
+            <label>Monto origen <span class="req">*</span></label>
+            <div class="input-with-suffix">
+              <input
+                type="number"
+                name="montoOrigen"
+                [ngModel]="montoOrigen()"
+                (ngModelChange)="onMontoOrigenChange($event)"
+                min="0.01"
+                step="0.01"
+                placeholder="0.00"
+                required />
+              <span class="suffix">{{ monedaLabel[monedaOrigen()] }}</span>
+            </div>
+            @if (errors()['montoOrigen']) {
+              <span class="error">{{ errors()['montoOrigen'] }}</span>
+            }
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="field">
+            <label>Monto destino (opcional)</label>
+            <div class="input-with-suffix">
+              <input
+                type="number"
+                name="montoDestino"
+                [ngModel]="montoDestino()"
+                (ngModelChange)="onMontoDestinoChange($event)"
+                min="0.01"
+                step="0.01"
+                placeholder="0.00" />
+              <span class="suffix">{{ monedaLabel[monedaDestino()] }}</span>
+            </div>
+            @if (errors()['montoDestino']) {
+              <span class="error">{{ errors()['montoDestino'] }}</span>
             }
           </div>
         </div>
@@ -120,6 +187,12 @@ import type { EmpresaRef } from '../../../../models/prestamo';
       letter-spacing: 0.05em;
       font-weight: 600;
     }
+    .req { color: var(--color-error); }
+    .hint {
+      font-size: 0.6875rem;
+      color: var(--color-gray-500);
+      font-style: italic;
+    }
     .form-row input,
     .form-row textarea,
     .field input,
@@ -139,6 +212,28 @@ import type { EmpresaRef } from '../../../../models/prestamo';
       outline: none;
       border-color: var(--color-primary);
       box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+    }
+    .input-with-suffix {
+      position: relative;
+      display: flex;
+      align-items: stretch;
+    }
+    .input-with-suffix input {
+      flex: 1;
+      padding-right: 5.5rem;
+    }
+    .input-with-suffix .suffix {
+      position: absolute;
+      right: 0.75rem;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--color-gray-500);
+      pointer-events: none;
+      background: color-mix(in srgb, var(--color-gray-100) 60%, transparent);
+      padding: 0.125rem 0.375rem;
+      border-radius: var(--radius-sm);
     }
     .error {
       font-size: 0.75rem;
@@ -186,11 +281,21 @@ export class CompraFormModalComponent implements OnChanges {
   close = output<void>();
   saved = output<void>();
 
+  readonly monedas = MONEDAS;
+  readonly monedaLabel = MONEDA_LABEL;
+
   fechaSolicitada = this.today();
-  modalidad: ModalidadCompra = 'CABLE';
+  monedaOrigen = signal<Moneda>('ARS');
+  monedaDestino = signal<Moneda>('USD_CABLE');
   empresa = signal<EmpresaRef | null>(null);
-  montoUSD: number | null = null;
+
+  montoOrigen = signal<number | null>(null);
+  montoDestino = signal<number | null>(null);
+  tipoCambio = signal<number | null>(null);
+
   observaciones = '';
+
+  private lastEditedMonto: 'origen' | 'destino' | null = null;
 
   submitting = signal(false);
   errors = signal<Record<string, string>>({});
@@ -201,12 +306,87 @@ export class CompraFormModalComponent implements OnChanges {
     }
   }
 
+  tcHint(): string {
+    const o = this.monedaLabel[this.monedaOrigen()];
+    const d = this.monedaLabel[this.monedaDestino()];
+    return `${o} por 1 ${d}`;
+  }
+
+  // ── Handlers ─────────────────────────────────────────────────────────────
+
+  onMontoOrigenChange(v: number | null) {
+    this.montoOrigen.set(this.parseNum(v));
+    this.lastEditedMonto = 'origen';
+    const tc = this.tipoCambio();
+    const mo = this.montoOrigen();
+    if (tc && tc > 0 && mo != null) {
+      this.montoDestino.set(this.round2(mo / tc));
+    }
+  }
+
+  onMontoDestinoChange(v: number | null) {
+    this.montoDestino.set(this.parseNum(v));
+    this.lastEditedMonto = 'destino';
+    const tc = this.tipoCambio();
+    const md = this.montoDestino();
+    if (tc && tc > 0 && md != null) {
+      this.montoOrigen.set(this.round2(md * tc));
+    }
+  }
+
+  onTipoCambioChange(v: number | null) {
+    const tc = this.parseNum(v);
+    this.tipoCambio.set(tc);
+    if (!tc || tc <= 0) return;
+
+    // Recalculamos el que NO fue editado último
+    if (this.lastEditedMonto === 'destino' && this.montoDestino() != null) {
+      this.montoOrigen.set(this.round2(this.montoDestino()! * tc));
+    } else if (this.montoOrigen() != null) {
+      this.montoDestino.set(this.round2(this.montoOrigen()! / tc));
+    }
+  }
+
+  onMonedaOrigenChange(m: Moneda) {
+    this.monedaOrigen.set(m);
+    if (this.monedaOrigen() === this.monedaDestino()) {
+      this.monedaDestino.set(this.pickDifferent(m));
+    }
+  }
+
+  onMonedaDestinoChange(m: Moneda) {
+    this.monedaDestino.set(m);
+    if (this.monedaOrigen() === this.monedaDestino()) {
+      this.monedaOrigen.set(this.pickDifferent(m));
+    }
+  }
+
+  private pickDifferent(m: Moneda): Moneda {
+    return this.monedas.find((x) => x !== m) ?? 'ARS';
+  }
+
+  private parseNum(v: number | null | undefined): number | null {
+    if (v == null || v === ('' as unknown as number)) return null;
+    const n = Number(v);
+    return Number.isFinite(n) ? n : null;
+  }
+
+  private round2(n: number): number {
+    return Math.round(n * 100) / 100;
+  }
+
+  // ── Reset & validate ─────────────────────────────────────────────────────
+
   private reset() {
     this.fechaSolicitada = this.today();
-    this.modalidad = 'CABLE';
+    this.monedaOrigen.set('ARS');
+    this.monedaDestino.set('USD_CABLE');
     this.empresa.set(null);
-    this.montoUSD = null;
+    this.montoOrigen.set(null);
+    this.montoDestino.set(null);
+    this.tipoCambio.set(null);
     this.observaciones = '';
+    this.lastEditedMonto = null;
     this.errors.set({});
   }
 
@@ -217,8 +397,20 @@ export class CompraFormModalComponent implements OnChanges {
   private validate(): boolean {
     const e: Record<string, string> = {};
     if (!this.fechaSolicitada) e['fechaSolicitada'] = 'Requerido';
+    if (this.monedaOrigen() === this.monedaDestino()) {
+      e['monedas'] = 'Origen y destino deben ser distintos';
+    }
     if (!this.empresa()) e['empresa'] = 'Seleccioná una empresa';
-    if (this.montoUSD == null || this.montoUSD <= 0) e['montoUSD'] = 'Debe ser mayor a 0';
+
+    const mo = this.montoOrigen();
+    if (mo == null || mo <= 0) e['montoOrigen'] = 'Debe ser mayor a 0';
+
+    const tc = this.tipoCambio();
+    if (tc != null && tc <= 0) e['tipoCambio'] = 'Debe ser mayor a 0';
+
+    const md = this.montoDestino();
+    if (md != null && md <= 0) e['montoDestino'] = 'Debe ser mayor a 0';
+
     this.errors.set(e);
     return Object.keys(e).length === 0;
   }
@@ -226,14 +418,19 @@ export class CompraFormModalComponent implements OnChanges {
   submit() {
     if (!this.validate()) return;
     const empresa = this.empresa()!;
+    const tc = this.tipoCambio();
+    const md = this.montoDestino();
     this.submitting.set(true);
     this.service
       .create({
         fechaSolicitada: this.fechaSolicitada,
-        modalidad: this.modalidad,
+        monedaOrigen: this.monedaOrigen(),
+        monedaDestino: this.monedaDestino(),
         empresaId: empresa.empresaId,
         empresaKind: empresa.empresaKind,
-        montoUSD: this.montoUSD!,
+        montoOrigen: this.montoOrigen()!,
+        ...(tc != null ? { tipoCambio: tc } : {}),
+        ...(md != null ? { montoDestino: md } : {}),
         ...(this.observaciones.trim() ? { observaciones: this.observaciones.trim() } : {}),
       })
       .pipe(finalize(() => this.submitting.set(false)))

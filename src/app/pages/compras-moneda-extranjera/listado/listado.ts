@@ -26,11 +26,13 @@ import { CompraAnularModalComponent } from '../modals/compra-anular-modal/compra
 import { CompraDetalleModalComponent } from '../modals/compra-detalle-modal/compra-detalle-modal';
 import { CompraEjecutarModalComponent } from '../modals/compra-ejecutar-modal/compra-ejecutar-modal';
 import { CompraEstimarModalComponent } from '../modals/compra-estimar-modal/compra-estimar-modal';
-import type {
-  CompraMonedaExtranjera,
-  CompraMonedaExtranjeraFilters,
-  ModalidadCompra,
-  EstadoCompraMonedaExtranjera,
+import {
+  MONEDAS,
+  MONEDA_LABEL,
+  type CompraMonedaExtranjera,
+  type CompraMonedaExtranjeraFilters,
+  type Moneda,
+  type EstadoCompraMonedaExtranjera,
 } from '../../../models/compra-moneda-extranjera';
 import type { EmpresaRef } from '../../../models/prestamo';
 
@@ -58,7 +60,7 @@ import type { EmpresaRef } from '../../../models/prestamo';
   template: `
     <app-toast />
 
-    <app-page-header title="Compras FX" subtitle="Registro de compras de moneda extranjera (USD)">
+    <app-page-header title="Compras FX" subtitle="Registro de compras de moneda extranjera">
       @if (canWrite()) {
         <button class="btn-primary" (click)="openCreateModal()">+ Nueva Compra FX</button>
       }
@@ -68,12 +70,21 @@ import type { EmpresaRef } from '../../../models/prestamo';
     <div class="filters-card card-glass">
       <div class="filters-row">
         <div class="filter-item">
-          <label>Modalidad</label>
-          <select [(ngModel)]="draftModalidad">
+          <label>Moneda origen</label>
+          <select [(ngModel)]="draftMonedaOrigen">
             <option value="all">Todas</option>
-            <option value="CABLE">Cable</option>
-            <option value="USD_LOCAL">USD Local</option>
-            <option value="MEP">MEP</option>
+            @for (m of monedas; track m) {
+              <option [value]="m">{{ monedaLabel[m] }}</option>
+            }
+          </select>
+        </div>
+        <div class="filter-item">
+          <label>Moneda destino</label>
+          <select [(ngModel)]="draftMonedaDestino">
+            <option value="all">Todas</option>
+            @for (m of monedas; track m) {
+              <option [value]="m">{{ monedaLabel[m] }}</option>
+            }
           </select>
         </div>
         <div class="filter-item">
@@ -134,16 +145,31 @@ import type { EmpresaRef } from '../../../models/prestamo';
               </div>
             }
           </td>
-          <td>
-            <span class="badge-modalidad" [class]="'badge-' + compra.modalidad">
-              {{ modalidadLabel(compra.modalidad) }}
+          <td class="cell-par">
+            <span class="badge-moneda" [class]="'badge-' + compra.monedaOrigen">
+              {{ labelOf(compra.monedaOrigen) }}
+            </span>
+            <span class="arrow">→</span>
+            <span class="badge-moneda" [class]="'badge-' + compra.monedaDestino">
+              {{ labelOf(compra.monedaDestino) }}
             </span>
           </td>
           <td class="cell-entity">
             {{ compra.empresa.razonSocialCache }}
             <span class="kind-tag">{{ compra.empresa.empresaKind === 'cliente' ? 'Cliente' : 'Proveedora' }}</span>
           </td>
-          <td class="cell-monto">USD {{ fmtUSD(compra.montoUSD) }}</td>
+          <td class="cell-monto">
+            <div class="monto-line">
+              <span class="monto-val">{{ fmtNum(compra.montoOrigen) }}</span>
+              <span class="monto-moneda">{{ labelOf(compra.monedaOrigen) }}</span>
+            </div>
+            @if (compra.montoDestino != null) {
+              <div class="monto-line monto-destino">
+                <span class="monto-val">{{ fmtNum(compra.montoDestino) }}</span>
+                <span class="monto-moneda">{{ labelOf(compra.monedaDestino) }}</span>
+              </div>
+            }
+          </td>
           <td><app-status-badge [status]="compra.estado" /></td>
           <td class="cell-actions">
             <div class="row-actions">
@@ -310,15 +336,27 @@ import type { EmpresaRef } from '../../../models/prestamo';
       margin-left: auto;
     }
 
-    /* Modalidad badges */
-    .badge-modalidad {
+    /* Par moneda origen → destino */
+    .cell-par {
+      white-space: nowrap;
+    }
+    .cell-par .arrow {
+      margin: 0 0.35rem;
+      color: var(--color-gray-500);
+      font-weight: 600;
+    }
+    .badge-moneda {
       display: inline-block;
       font-size: 0.75rem;
       font-weight: 600;
-      padding: 0.2rem 0.6rem;
+      padding: 0.2rem 0.55rem;
       border-radius: var(--radius-sm);
     }
-    .badge-CABLE {
+    .badge-ARS {
+      background: rgba(34, 197, 94, 0.12);
+      color: #15803d;
+    }
+    .badge-USD_CABLE {
       background: rgba(59, 130, 246, 0.12);
       color: #2563eb;
     }
@@ -326,7 +364,7 @@ import type { EmpresaRef } from '../../../models/prestamo';
       background: rgba(245, 158, 11, 0.12);
       color: #d97706;
     }
-    .badge-MEP {
+    .badge-USD_MEP {
       background: rgba(168, 85, 247, 0.12);
       color: #9333ea;
     }
@@ -353,12 +391,31 @@ import type { EmpresaRef } from '../../../models/prestamo';
       font-variant-numeric: tabular-nums;
     }
     :host ::ng-deep td.cell-monto {
-      text-align: center;
+      text-align: right;
       font-variant-numeric: tabular-nums;
       font-weight: 600;
+      white-space: nowrap;
     }
-    :host ::ng-deep th:nth-child(4) {
-      text-align: center;
+    .monto-line {
+      display: flex;
+      justify-content: flex-end;
+      align-items: baseline;
+      gap: 0.35rem;
+    }
+    .monto-line + .monto-line {
+      margin-top: 0.15rem;
+    }
+    .monto-destino {
+      font-weight: 500;
+      font-size: 0.8125rem;
+      color: var(--color-gray-600);
+    }
+    .monto-moneda {
+      font-size: 0.6875rem;
+      font-weight: 600;
+      color: var(--color-gray-500);
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
     }
     :host ::ng-deep td.cell-entity { max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     :host ::ng-deep td.cell-actions { white-space: nowrap; }
@@ -422,6 +479,9 @@ export class ComprasMonedaExtranjeraListadoComponent implements OnInit {
   private auth = inject(AuthService);
   private toast = inject(ToastService);
 
+  readonly monedas = MONEDAS;
+  readonly monedaLabel = MONEDA_LABEL;
+
   // Data
   compras = signal<CompraMonedaExtranjera[]>([]);
   total = signal(0);
@@ -430,7 +490,8 @@ export class ComprasMonedaExtranjeraListadoComponent implements OnInit {
   loading = signal(true);
 
   // Draft filters (template-driven)
-  draftModalidad: ModalidadCompra | 'all' = 'all';
+  draftMonedaOrigen: Moneda | 'all' = 'all';
+  draftMonedaDestino: Moneda | 'all' = 'all';
   draftEstado: EstadoCompraMonedaExtranjera | 'all' = 'all';
   draftEmpresa = signal<EmpresaRef | null>(null);
   draftFechaDesde = '';
@@ -463,9 +524,9 @@ export class ComprasMonedaExtranjeraListadoComponent implements OnInit {
 
   columns: TableColumn[] = [
     { key: 'fechas', label: 'Fechas', width: '150px' },
-    { key: 'modalidad', label: 'Modalidad', width: '150px' },
+    { key: 'par', label: 'Origen → Destino', width: '210px' },
     { key: 'empresa', label: 'Empresa' },
-    { key: 'montoUSD', label: 'Monto' },
+    { key: 'monto', label: 'Monto' },
     { key: 'estado', label: 'Estado', width: '120px' },
     { key: 'actions', label: '', width: '220px' },
   ];
@@ -492,7 +553,8 @@ export class ComprasMonedaExtranjeraListadoComponent implements OnInit {
 
   applyFilters() {
     const f: CompraMonedaExtranjeraFilters = {};
-    if (this.draftModalidad !== 'all') f.modalidad = this.draftModalidad;
+    if (this.draftMonedaOrigen !== 'all') f.monedaOrigen = this.draftMonedaOrigen;
+    if (this.draftMonedaDestino !== 'all') f.monedaDestino = this.draftMonedaDestino;
     if (this.draftEstado !== 'all') f.estado = this.draftEstado;
     const empresa = this.draftEmpresa();
     if (empresa) f.empresaId = empresa.empresaId;
@@ -504,7 +566,8 @@ export class ComprasMonedaExtranjeraListadoComponent implements OnInit {
   }
 
   clearFilters() {
-    this.draftModalidad = 'all';
+    this.draftMonedaOrigen = 'all';
+    this.draftMonedaDestino = 'all';
     this.draftEstado = 'all';
     this.draftEmpresa.set(null);
     this.draftFechaDesde = '';
@@ -559,15 +622,12 @@ export class ComprasMonedaExtranjeraListadoComponent implements OnInit {
     this.load();
   }
 
-  // USD formatter
-  modalidadLabel(m: string): string {
-    if (m === 'CABLE') return 'Cable';
-    if (m === 'USD_LOCAL') return 'USD Local';
-    if (m === 'MEP') return 'MEP';
-    return m;
+  labelOf(m: Moneda): string {
+    return MONEDA_LABEL[m];
   }
 
-  fmtUSD(value: number): string {
+  fmtNum(value: number | null | undefined): string {
+    if (value == null || !Number.isFinite(value)) return '—';
     return value.toLocaleString('es-AR', {
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
