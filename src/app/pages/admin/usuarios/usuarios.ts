@@ -122,16 +122,16 @@ interface NuevoUsuario extends CreateUserDto {}
   styles: [`
     .page { max-width: 1000px; }
     .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
-    h1 { font-size: 1.5rem; font-weight: 700; color: var(--text-primary); margin: 0; }
+    h1 { font-size: 1.5rem; font-weight: 700; color: var(--color-gray-900); margin: 0; }
     .primary-btn {
       padding: 0.5rem 1rem; border: none; border-radius: 8px;
-      background: var(--accent-color, #6366f1); color: white;
+      background: var(--color-primary); color: white;
       cursor: pointer; font-size: 0.875rem; font-weight: 600;
       transition: filter 0.2s;
     }
     .primary-btn:hover { filter: brightness(1.1); }
     .table-wrapper {
-      background: var(--card-bg);
+      background: var(--bg-card);
       border: 1px solid var(--glass-border);
       border-radius: 12px;
       overflow: hidden;
@@ -143,7 +143,7 @@ interface NuevoUsuario extends CreateUserDto {}
       background: var(--glass-bg);
       font-size: 0.75rem;
       font-weight: 600;
-      color: var(--text-muted);
+      color: var(--color-gray-500);
       text-transform: uppercase;
       letter-spacing: 0.5px;
     }
@@ -151,14 +151,14 @@ interface NuevoUsuario extends CreateUserDto {}
       padding: 0.875rem 1rem;
       border-top: 1px solid var(--glass-border);
       font-size: 0.875rem;
-      color: var(--text-primary);
+      color: var(--color-gray-900);
     }
     .role-select {
       padding: 0.375rem 0.5rem;
       border: 1px solid var(--glass-border);
       border-radius: 6px;
       background: var(--glass-bg);
-      color: var(--text-primary);
+      color: var(--color-gray-900);
       font-size: 0.8125rem;
       cursor: pointer;
     }
@@ -175,55 +175,75 @@ interface NuevoUsuario extends CreateUserDto {}
       border: 1px solid var(--glass-border);
       border-radius: 6px;
       background: var(--glass-bg);
-      color: var(--text-primary);
+      color: var(--color-gray-900);
       cursor: pointer;
       font-size: 0.75rem;
       transition: all 0.2s;
     }
-    .toggle-btn:hover { background: var(--glass-hover); }
+    .toggle-btn:hover { background: var(--glass-hover-bg); }
     .actions-cell { display: flex; gap: 0.5rem; }
-    .reset-btn { color: var(--accent-color, #6366f1); }
+    .reset-btn { color: var(--color-primary); }
     .modal-overlay {
       position: fixed; top: 0; left: 0; right: 0; bottom: 0;
       background: rgba(0,0,0,0.5); display: flex; align-items: center;
       justify-content: center; z-index: 1000;
     }
     .modal-content {
-      background: var(--card-bg, #fff); border-radius: 12px;
+      background: var(--bg-card); border-radius: 12px;
       padding: 2rem; max-width: 420px; width: 90%;
       border: 1px solid var(--glass-border);
+      color: var(--color-gray-900);
     }
-    .create-modal { max-width: 480px; }
+    .create-modal {
+      max-width: 480px;
+      background: var(--bg-card);
+      color: var(--color-gray-900);
+    }
+    .create-modal h3 { color: var(--color-gray-900); }
     .create-modal form { display: flex; flex-direction: column; gap: 0.75rem; }
     .create-modal label { display: flex; flex-direction: column; gap: 0.25rem; }
-    .create-modal label span { font-size: 0.75rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+    .create-modal label span {
+      font-size: 0.75rem; font-weight: 600;
+      color: var(--color-gray-500);
+      text-transform: uppercase; letter-spacing: 0.5px;
+    }
     .create-modal input, .create-modal select {
       padding: 0.5rem 0.75rem;
-      border: 1px solid var(--glass-border);
+      border: 1px solid var(--color-gray-200);
       border-radius: 6px;
-      background: var(--glass-bg);
-      color: var(--text-primary);
+      background: var(--bg-card);
+      color: var(--color-gray-900);
       font-size: 0.875rem;
+    }
+    .create-modal input::placeholder { color: var(--color-gray-400); }
+    .create-modal input:focus, .create-modal select:focus {
+      outline: none;
+      border-color: var(--color-primary);
     }
     .modal-actions { display: flex; gap: 0.5rem; margin-top: 1rem; }
     .cancel-btn {
-      flex: 1; padding: 0.625rem; border: 1px solid var(--glass-border);
-      border-radius: 8px; background: var(--glass-bg); color: var(--text-primary);
+      flex: 1; padding: 0.625rem;
+      border: 1px solid var(--color-gray-200);
+      border-radius: 8px;
+      background: transparent;
+      color: var(--color-gray-700);
       cursor: pointer; font-size: 0.875rem; font-weight: 600;
+      transition: background 0.2s;
     }
-    .modal-content h3 { margin: 0 0 1rem; font-size: 1.125rem; color: var(--text-primary); }
-    .modal-content p { font-size: 0.875rem; color: var(--text-secondary); margin: 0.5rem 0; }
+    .cancel-btn:hover { background: var(--color-gray-100); }
+    .modal-content h3 { margin: 0 0 1rem; font-size: 1.125rem; color: var(--color-gray-900); }
+    .modal-content p { font-size: 0.875rem; color: var(--color-gray-700); margin: 0.5rem 0; }
     .temp-password {
       background: var(--glass-bg); border: 1px solid var(--glass-border);
       border-radius: 8px; padding: 0.75rem 1rem; font-family: monospace;
       font-size: 1.125rem; text-align: center; margin: 1rem 0;
-      color: var(--text-primary); user-select: all;
+      color: var(--color-gray-900); user-select: all;
     }
     .warning { color: #dc2626; font-weight: 600; font-size: 0.8125rem; }
     .error-msg { color: #dc2626; font-size: 0.8125rem; margin: 0.25rem 0 0; }
     .close-btn {
       flex: 1; padding: 0.625rem; border: none; border-radius: 8px;
-      background: var(--accent-color, #6366f1); color: white;
+      background: var(--color-primary); color: white;
       cursor: pointer; font-size: 0.875rem; font-weight: 600;
     }
     .close-btn:disabled { opacity: 0.6; cursor: not-allowed; }
