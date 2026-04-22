@@ -15,7 +15,7 @@ import type {
 @Injectable({ providedIn: 'root' })
 export class ComprasMonedaExtranjeraService {
   private http = inject(HttpClient);
-  private url = `${environment.apiUrl}/compras-moneda-extranjera`;
+  private url = `${environment.apiUrl}/compras-divisas`;
 
   private buildParams(obj: Record<string, unknown>): HttpParams {
     let params = new HttpParams();

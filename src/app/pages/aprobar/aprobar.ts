@@ -15,7 +15,7 @@ const ENTIDAD_LABEL: Record<string, string> = {
   'ordenes-pago': 'Orden de Pago',
   pagos: 'Pago',
   prestamos: 'Préstamo',
-  'compras-fx': 'Compra de Divisa',
+  'compras-divisas': 'Compra de Divisa',
 };
 
 @Component({

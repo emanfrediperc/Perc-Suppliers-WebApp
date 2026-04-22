@@ -29,7 +29,7 @@ export const routes: Routes = [
       { path: 'estado-cuenta', loadComponent: () => import('./pages/estado-cuenta/estado-cuenta').then(m => m.EstadoCuentaComponent) },
       { path: 'prestamos', loadComponent: () => import('./pages/prestamos/listado/listado').then(m => m.PrestamosListadoComponent) },
       { path: 'prestamos/simulador', loadComponent: () => import('./pages/prestamos/simulador/simulador').then(m => m.SimuladorComponent) },
-      { path: 'compras-moneda-extranjera', loadComponent: () => import('./pages/compras-moneda-extranjera/listado/listado').then(m => m.ComprasMonedaExtranjeraListadoComponent) },
+      { path: 'compras-divisas', loadComponent: () => import('./pages/compras-moneda-extranjera/listado/listado').then(m => m.ComprasMonedaExtranjeraListadoComponent) },
       {
         path: 'pagos-programados',
         loadComponent: () => import('./pages/pagos-programados/pagos-programados-list').then(m => m.PagosProgramadosListComponent),

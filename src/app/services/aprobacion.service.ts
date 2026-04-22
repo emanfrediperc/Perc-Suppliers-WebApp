@@ -24,7 +24,7 @@ export interface IntentoAprobacion {
 
 export interface Aprobacion {
   _id: string;
-  entidad: 'ordenes-pago' | 'pagos' | 'prestamos' | 'compras-fx';
+  entidad: 'ordenes-pago' | 'pagos' | 'prestamos' | 'compras-divisas';
   entidadId: string;
   tipo: string;
   estado: 'pendiente' | 'aprobada' | 'rechazada';
