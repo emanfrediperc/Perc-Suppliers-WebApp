@@ -13,7 +13,7 @@ import { FormsModule } from '@angular/forms';
 import { GlassModalComponent } from '../../../../shared/glass-modal/glass-modal';
 import { ToastService } from '../../../../shared/toast/toast.service';
 import { ComprasMonedaExtranjeraService } from '../../../../services/compras-moneda-extranjera.service';
-import type { CompraMonedaExtranjera } from '../../../../models/compra-moneda-extranjera';
+import { MONEDA_LABEL, type CompraMonedaExtranjera } from '../../../../models/compra-moneda-extranjera';
 
 @Component({
   selector: 'app-compra-ejecutar-modal',
@@ -34,12 +34,18 @@ import type { CompraMonedaExtranjera } from '../../../../models/compra-moneda-ex
               <span class="info-value">{{ compra()!.empresa.razonSocialCache }}</span>
             </div>
             <div class="info-row">
-              <span class="info-label">Monto</span>
-              <span class="info-value">USD {{ fmtUSD(compra()!.montoUSD) }}</span>
+              <span class="info-label">Monto origen</span>
+              <span class="info-value">{{ fmtNum(compra()!.montoOrigen) }} {{ monedaLabel[compra()!.monedaOrigen] }}</span>
             </div>
+            @if (compra()!.montoDestino != null) {
+              <div class="info-row">
+                <span class="info-label">Monto destino</span>
+                <span class="info-value">{{ fmtNum(compra()!.montoDestino!) }} {{ monedaLabel[compra()!.monedaDestino] }}</span>
+              </div>
+            }
             <div class="info-row">
-              <span class="info-label">Modalidad</span>
-              <span class="info-value">{{ compra()!.modalidad }}</span>
+              <span class="info-label">Origen → Destino</span>
+              <span class="info-value">{{ monedaLabel[compra()!.monedaOrigen] }} → {{ monedaLabel[compra()!.monedaDestino] }}</span>
             </div>
           </div>
 
@@ -177,7 +183,10 @@ export class CompraEjecutarModalComponent implements OnChanges {
     return new Date().toISOString().split('T')[0];
   }
 
-  fmtUSD(value: number): string {
+  readonly monedaLabel = MONEDA_LABEL;
+
+  fmtNum(value: number | null | undefined): string {
+    if (value == null || !Number.isFinite(value)) return '—';
     return value.toLocaleString('es-AR', {
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,

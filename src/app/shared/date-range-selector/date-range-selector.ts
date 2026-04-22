@@ -36,18 +36,18 @@ import { FormsModule } from '@angular/forms';
       background: transparent; color: var(--color-gray-600); font-size: 0.8125rem; cursor: pointer;
       transition: all 0.2s;
     }
-    .preset-btn:hover { border-color: var(--color-primary, #6366f1); color: var(--color-primary, #6366f1); }
+    .preset-btn:hover { border-color: var(--color-primary); color: var(--color-primary); }
     .preset-btn.active {
-      background: var(--color-primary, #6366f1); color: #fff; border-color: var(--color-primary, #6366f1);
+      background: var(--color-primary); color: #fff; border-color: var(--color-primary);
     }
     .custom-range { display: flex; gap: 0.75rem; align-items: flex-end; margin-left: auto; }
     .date-field { display: flex; flex-direction: column; gap: 0.25rem; }
     .date-field label { font-size: 0.6875rem; font-weight: 500; color: var(--color-gray-500); text-transform: uppercase; }
     .date-field input {
-      padding: 0.375rem 0.5rem; border: 1px solid var(--color-gray-200); border-radius: var(--radius-sm, 6px);
-      font-size: 0.8125rem; color: var(--color-gray-800); background: var(--color-gray-50, #f9fafb);
+      padding: 0.375rem 0.5rem; border: 1px solid var(--color-gray-200); border-radius: var(--radius-sm);
+      font-size: 0.8125rem; color: var(--color-gray-800); background: var(--color-gray-50);
     }
-    .date-field input:focus { outline: none; border-color: var(--color-primary, #6366f1); }
+    .date-field input:focus { outline: none; border-color: var(--color-primary); }
   `],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

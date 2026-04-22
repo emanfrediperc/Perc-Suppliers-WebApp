@@ -91,6 +91,10 @@ export class ChangePasswordComponent {
       this.error.set('Las contraseñas no coinciden');
       return;
     }
+    if (this.oldPassword === this.newPassword) {
+      this.error.set('La nueva contraseña no puede ser igual a la contraseña actual');
+      return;
+    }
     this.loading.set(true);
     this.auth.changePassword(this.oldPassword, this.newPassword).subscribe({
       next: () => {

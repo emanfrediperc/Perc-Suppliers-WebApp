@@ -1,6 +1,24 @@
-export type ModalidadCompra = 'CABLE' | 'USD_LOCAL' | 'MEP';
-export type EstadoCompraMonedaExtranjera = 'SOLICITADA' | 'EJECUTADA' | 'ANULADA' | 'ESPERANDO_APROBACION';
+export type Moneda = 'ARS' | 'USD_CABLE' | 'USD_LOCAL' | 'USD_MEP';
+export type EstadoCompraMonedaExtranjera =
+  | 'SOLICITADA'
+  | 'EJECUTADA'
+  | 'ANULADA'
+  | 'ESPERANDO_APROBACION'
+  | 'RECHAZADO';
 export type EmpresaKind = 'cliente' | 'proveedora';
+
+export const MONEDAS: Moneda[] = ['ARS', 'USD_CABLE', 'USD_LOCAL', 'USD_MEP'];
+
+export const MONEDA_LABEL: Record<Moneda, string> = {
+  ARS: 'ARS',
+  USD_CABLE: 'USD Cable',
+  USD_LOCAL: 'USD Local',
+  USD_MEP: 'USD MEP',
+};
+
+export function monedaLabel(m: Moneda | null | undefined): string {
+  return m ? MONEDA_LABEL[m] : '';
+}
 
 export interface EmpresaRef {
   empresaId: string;
@@ -19,11 +37,12 @@ export interface CompraMonedaExtranjera {
   fechaSolicitada: string;
   fechaEstimadaEjecucion?: string;
   fechaEjecutada?: string;
-  modalidad: ModalidadCompra;
+  monedaOrigen: Moneda;
+  monedaDestino: Moneda;
   empresa: EmpresaRef;
-  montoUSD: number;
+  montoOrigen: number;
   tipoCambio?: number;
-  montoARS?: number;
+  montoDestino?: number;
   contraparte?: string;
   comision: number;
   referencia?: string;
@@ -41,12 +60,13 @@ export interface CompraMonedaExtranjera {
 
 export interface CreateCompraMonedaExtranjeraDto {
   fechaSolicitada: string;
-  modalidad: ModalidadCompra;
+  monedaOrigen: Moneda;
+  monedaDestino: Moneda;
   empresaId: string;
   empresaKind: EmpresaKind;
-  montoUSD: number;
+  montoOrigen: number;
   tipoCambio?: number;
-  montoARS?: number;
+  montoDestino?: number;
   contraparte?: string;
   comision?: number;
   referencia?: string;
@@ -67,7 +87,8 @@ export interface EstimarEjecucionCompraMonedaExtranjeraDto {
 }
 
 export interface CompraMonedaExtranjeraFilters {
-  modalidad?: ModalidadCompra;
+  monedaOrigen?: Moneda;
+  monedaDestino?: Moneda;
   estado?: EstadoCompraMonedaExtranjera;
   empresaId?: string;
   fechaDesde?: string;

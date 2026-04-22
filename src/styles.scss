@@ -236,6 +236,32 @@
   box-sizing: border-box;
 }
 
+input[type="date"],
+input[type="datetime-local"],
+input[type="time"],
+input[type="month"],
+input[type="week"] {
+  color-scheme: light;
+}
+
+[data-theme="dark"] input[type="date"],
+[data-theme="dark"] input[type="datetime-local"],
+[data-theme="dark"] input[type="time"],
+[data-theme="dark"] input[type="month"],
+[data-theme="dark"] input[type="week"] {
+  color-scheme: dark;
+}
+
+@media (prefers-color-scheme: dark) {
+  html:not([data-theme="light"]) input[type="date"],
+  html:not([data-theme="light"]) input[type="datetime-local"],
+  html:not([data-theme="light"]) input[type="time"],
+  html:not([data-theme="light"]) input[type="month"],
+  html:not([data-theme="light"]) input[type="week"] {
+    color-scheme: dark;
+  }
+}
+
 input, select, textarea {
   color: var(--color-gray-900);
 
@@ -409,6 +435,59 @@ body {
   }
 }
 
+/* =========================================================
+   SCROLLBARS — custom, themeable, subtle
+   ========================================================= */
+
+:root {
+  --sb-thumb: rgba(15, 23, 42, 0.22);
+  --sb-thumb-hover: rgba(15, 23, 42, 0.38);
+  --sb-track: transparent;
+}
+
+[data-theme="dark"] {
+  --sb-thumb: rgba(148, 163, 184, 0.28);
+  --sb-thumb-hover: rgba(148, 163, 184, 0.50);
+  --sb-track: rgba(255, 255, 255, 0.03);
+}
+
+@media (prefers-color-scheme: dark) {
+  html:not([data-theme="light"]) {
+    --sb-thumb: rgba(148, 163, 184, 0.28);
+    --sb-thumb-hover: rgba(148, 163, 184, 0.50);
+    --sb-track: rgba(255, 255, 255, 0.03);
+  }
+}
+
+/* Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--sb-thumb) var(--sb-track);
+}
+
+/* Webkit (Chrome, Edge, Safari) */
+*::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+*::-webkit-scrollbar-track {
+  background: var(--sb-track);
+}
+*::-webkit-scrollbar-thumb {
+  background: var(--sb-thumb);
+  border-radius: 999px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+  transition: background 0.2s ease;
+}
+*::-webkit-scrollbar-thumb:hover {
+  background: var(--sb-thumb-hover);
+  background-clip: padding-box;
+}
+*::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
 /* Import Google Font */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
@@ -566,20 +645,31 @@ body {
    MODAL GLASS BACKGROUND  –  reusable ambient glow for modals
    ========================================================= */
 
-.modal-body-glass {
-  background:
-    radial-gradient(ellipse 600px 300px at 10% 20%, rgba(99, 102, 241, 0.12), transparent 70%),
-    radial-gradient(ellipse 500px 350px at 90% 60%, rgba(167, 139, 250, 0.10), transparent 65%),
-    radial-gradient(ellipse 400px 250px at 50% 90%, rgba(59, 130, 246, 0.08), transparent 60%),
-    radial-gradient(ellipse 300px 200px at 70% 30%, rgba(236, 72, 153, 0.06), transparent 60%);
+/* Variables de fondo para modales — se reusan en hover/focus-within */
+:root {
+  --modal-bg: radial-gradient(ellipse 600px 300px at 10% 20%, rgba(99, 102, 241, 0.12), transparent 70%),
+              radial-gradient(ellipse 500px 350px at 90% 60%, rgba(167, 139, 250, 0.10), transparent 65%),
+              radial-gradient(ellipse 400px 250px at 50% 90%, rgba(59, 130, 246, 0.08), transparent 60%),
+              radial-gradient(ellipse 300px 200px at 70% 30%, rgba(236, 72, 153, 0.06), transparent 60%),
+              rgba(255, 255, 255, 0.97);
 }
 
-[data-theme="dark"] .modal-body-glass {
-  background:
-    radial-gradient(ellipse 600px 300px at 10% 20%, rgba(99, 102, 241, 0.14), transparent 70%),
-    radial-gradient(ellipse 500px 350px at 90% 60%, rgba(167, 139, 250, 0.12), transparent 65%),
-    radial-gradient(ellipse 400px 250px at 50% 90%, rgba(59, 130, 246, 0.10), transparent 60%),
-    radial-gradient(ellipse 300px 200px at 70% 30%, rgba(236, 72, 153, 0.08), transparent 60%);
+[data-theme="dark"] {
+  --modal-bg: radial-gradient(ellipse 600px 300px at 10% 20%, rgba(99, 102, 241, 0.14), transparent 70%),
+              radial-gradient(ellipse 500px 350px at 90% 60%, rgba(167, 139, 250, 0.12), transparent 65%),
+              radial-gradient(ellipse 400px 250px at 50% 90%, rgba(59, 130, 246, 0.10), transparent 60%),
+              radial-gradient(ellipse 300px 200px at 70% 30%, rgba(236, 72, 153, 0.08), transparent 60%),
+              rgba(22, 30, 46, 0.97);
+}
+
+@media (prefers-color-scheme: dark) {
+  html:not([data-theme="light"]) {
+    --modal-bg: radial-gradient(ellipse 600px 300px at 10% 20%, rgba(99, 102, 241, 0.14), transparent 70%),
+                radial-gradient(ellipse 500px 350px at 90% 60%, rgba(167, 139, 250, 0.12), transparent 65%),
+                radial-gradient(ellipse 400px 250px at 50% 90%, rgba(59, 130, 246, 0.10), transparent 60%),
+                radial-gradient(ellipse 300px 200px at 70% 30%, rgba(236, 72, 153, 0.08), transparent 60%),
+                rgba(22, 30, 46, 0.97);
+  }
 }
 
 /* =========================================================
@@ -675,6 +765,15 @@ body {
   .card-glass {
     transition: none;
   }
+}
+
+/* Modal-specific surface override — debe ir DESPUES de .card-glass
+   para ganar por orden de cascada (misma especificidad). */
+.modal-body-glass,
+.modal-body-glass:hover,
+.modal-body-glass:focus-within {
+  background: var(--modal-bg);
+  transform: none;
 }
 
 /* =========================================================
@@ -829,4 +928,17 @@ body {
   to {
     transform: rotate(360deg);
   }
+}
+
+/* ===== Hide native number input spinners ===== */
+/* Chrome, Safari, Edge, Opera */
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+/* Firefox */
+input[type="number"] {
+  -moz-appearance: textfield;
+  appearance: textfield;
 }
