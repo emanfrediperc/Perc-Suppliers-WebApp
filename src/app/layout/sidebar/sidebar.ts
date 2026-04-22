@@ -5,6 +5,7 @@ import { AuthService } from '../../services/auth.service';
 import { ThemeService, ThemeMode } from '../../services/theme.service';
 import { NotificacionService } from '../../services/notificacion.service';
 import { AprobacionService } from '../../services/aprobacion.service';
+import { OperadorCountsService } from '../../services/operador-counts.service';
 
 @Component({
   selector: 'app-sidebar',
@@ -31,6 +32,9 @@ import { AprobacionService } from '../../services/aprobacion.service';
           <a routerLink="/ordenes-pago" routerLinkActive="active" class="nav-item" (click)="toggle.emit()">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
             <span>Ordenes de Pago</span>
+            @if (canExecute() && operadorCountsService.counts().ordenesPago > 0) {
+              <span class="badge badge-action">{{ operadorCountsService.counts().ordenesPago }}</span>
+            }
           </a>
 
           <a routerLink="/facturas" routerLinkActive="active" class="nav-item" (click)="toggle.emit()">
@@ -67,11 +71,17 @@ import { AprobacionService } from '../../services/aprobacion.service';
           <a routerLink="/prestamos" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" class="nav-item" (click)="toggle.emit()">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M7 17l4-4 4 4 6-6"/></svg>
             <span>Préstamos</span>
+            @if (canExecute() && operadorCountsService.counts().prestamos > 0) {
+              <span class="badge badge-action">{{ operadorCountsService.counts().prestamos }}</span>
+            }
           </a>
 
           <a routerLink="/compras-moneda-extranjera" routerLinkActive="active" class="nav-item" (click)="toggle.emit()">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"/><line x1="12" y1="6" x2="12" y2="8"/><line x1="12" y1="16" x2="12" y2="18"/></svg>
             <span>Compras FX</span>
+            @if (canExecute() && operadorCountsService.counts().comprasFx > 0) {
+              <span class="badge badge-action">{{ operadorCountsService.counts().comprasFx }}</span>
+            }
           </a>
         </div>
 
@@ -150,25 +160,39 @@ export class SidebarComponent implements OnInit, OnDestroy {
   isOpen = input(false);
   toggle = output<void>();
 
+  private countsInterval: ReturnType<typeof setInterval> | null = null;
+
   constructor(
     public auth: AuthService,
     public theme: ThemeService,
     public notifService: NotificacionService,
     public aprobacionService: AprobacionService,
+    public operadorCountsService: OperadorCountsService,
   ) {}
 
   ngOnInit() {
     if (this.auth.isAuthenticated()) {
       this.notifService.startPolling();
       this.aprobacionService.loadPendingCount();
+      if (this.canExecute()) {
+        this.operadorCountsService.load();
+        // Refresco suave cada 60s; alcanza para que el operador vea nuevos items
+        // sin golpear el endpoint como si fuera notificaciones.
+        this.countsInterval = setInterval(() => this.operadorCountsService.load(), 60_000);
+      }
     }
   }
 
   ngOnDestroy() {
     this.notifService.stopPolling();
+    if (this.countsInterval) {
+      clearInterval(this.countsInterval);
+      this.countsInterval = null;
+    }
   }
 
   isAdmin = computed(() => this.auth.user()?.role === 'admin');
   canApprove = computed(() => ['admin', 'aprobador'].includes(this.auth.user()?.role || ''));
   canManage = computed(() => ['admin', 'tesoreria', 'operador'].includes(this.auth.user()?.role || ''));
+  canExecute = computed(() => ['admin', 'operador'].includes(this.auth.user()?.role || ''));
 }

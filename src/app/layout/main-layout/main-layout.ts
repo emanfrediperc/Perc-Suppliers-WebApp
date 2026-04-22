@@ -55,7 +55,10 @@ import { IdleService } from '../../services/idle.service';
                         <div class="notif-icon" [attr.data-type]="n.tipo">
                           @switch (n.tipo) {
                             @case ('aprobacion_pendiente') { <span>!</span> }
+                            @case ('aprobacion_reenviada') { <span>!</span> }
+                            @case ('aprobacion_para_ejecutar') { <span>▶</span> }
                             @case ('pago_confirmado') { <span>$</span> }
+                            @case ('pago_rechazado') { <span>✕</span> }
                             @case ('factura_por_vencer') { <span>!</span> }
                             @default { <span>i</span> }
                           }

@@ -105,6 +105,12 @@
   text-align: center;
 }
 
+// Variante "accionable": items aprobados que el operador tiene que ejecutar.
+// Color ámbar para diferenciar del badge rojo de pendientes de aprobación.
+.badge-action {
+  background: #f59e0b;
+}
+
 .nav-divider {
   height: 1px;
   background: rgba(255, 255, 255, 0.1);
