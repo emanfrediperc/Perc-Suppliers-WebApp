@@ -97,6 +97,19 @@ export class NumberFormatDirective implements ControlValueAccessor, OnInit {
     // Allow comma as decimal separator
     if (e.key === ',' && this.decimals() > 0 && !this.el.value.replace(/\./g, '').includes(',')) return;
 
+    // Accept dot as decimal separator too — insert it as comma
+    if (e.key === '.' && this.decimals() > 0 && !this.el.value.replace(/\./g, '').includes(',')) {
+      e.preventDefault();
+      const start = this.el.selectionStart ?? this.el.value.length;
+      const end = this.el.selectionEnd ?? start;
+      const before = this.el.value.slice(0, start);
+      const after = this.el.value.slice(end);
+      this.el.value = before + ',' + after;
+      this.el.setSelectionRange(start + 1, start + 1);
+      this.onInput();
+      return;
+    }
+
     e.preventDefault();
   }
 

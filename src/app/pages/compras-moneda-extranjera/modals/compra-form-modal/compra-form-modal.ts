@@ -12,6 +12,7 @@ import {
 import { FormsModule } from '@angular/forms';
 import { GlassModalComponent } from '../../../../shared/glass-modal/glass-modal';
 import { EmpresaPickerComponent } from '../../../../shared/empresa-picker/empresa-picker';
+import { NumberFormatDirective } from '../../../../shared/number-format/number-format.directive';
 import { ToastService } from '../../../../shared/toast/toast.service';
 import { ComprasMonedaExtranjeraService } from '../../../../services/compras-moneda-extranjera.service';
 import {
@@ -24,7 +25,7 @@ import type { EmpresaRef } from '../../../../models/prestamo';
 @Component({
   selector: 'app-compra-form-modal',
   standalone: true,
-  imports: [FormsModule, GlassModalComponent, EmpresaPickerComponent],
+  imports: [FormsModule, GlassModalComponent, EmpresaPickerComponent, NumberFormatDirective],
   template: `
     <app-glass-modal
       [open]="open()"
@@ -81,13 +82,12 @@ import type { EmpresaRef } from '../../../../models/prestamo';
           <div class="field">
             <label>Tipo de cambio</label>
             <input
-              type="number"
+              appNumberFormat
+              [decimals]="3"
               name="tipoCambio"
               [ngModel]="tipoCambio()"
               (ngModelChange)="onTipoCambioChange($event)"
-              min="0.0001"
-              step="0.0001"
-              placeholder="0.0000" />
+              placeholder="0,000" />
             <span class="hint">{{ tcHint() }}</span>
             @if (errors()['tipoCambio']) {
               <span class="error">{{ errors()['tipoCambio'] }}</span>
@@ -100,13 +100,12 @@ import type { EmpresaRef } from '../../../../models/prestamo';
             <label>Monto origen <span class="req">*</span></label>
             <div class="input-with-suffix">
               <input
-                type="number"
+                appNumberFormat
+                [decimals]="2"
                 name="montoOrigen"
                 [ngModel]="montoOrigen()"
                 (ngModelChange)="onMontoOrigenChange($event)"
-                min="0.01"
-                step="0.01"
-                placeholder="0.00"
+                placeholder="0,00"
                 required />
               <span class="suffix">{{ monedaLabel[monedaOrigen()] }}</span>
             </div>
@@ -121,13 +120,12 @@ import type { EmpresaRef } from '../../../../models/prestamo';
             <label>Monto destino (opcional)</label>
             <div class="input-with-suffix">
               <input
-                type="number"
+                appNumberFormat
+                [decimals]="2"
                 name="montoDestino"
                 [ngModel]="montoDestino()"
                 (ngModelChange)="onMontoDestinoChange($event)"
-                min="0.01"
-                step="0.01"
-                placeholder="0.00" />
+                placeholder="0,00" />
               <span class="suffix">{{ monedaLabel[monedaDestino()] }}</span>
             </div>
             @if (errors()['montoDestino']) {
