@@ -76,11 +76,11 @@ import { PaginationComponent } from '../../../shared/pagination/pagination';
   styles: [`
     .page { max-width: 1200px; }
     .header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem; }
-    h1 { font-size: 1.5rem; font-weight: 700; color: var(--text-primary); margin: 0; }
+    h1 { font-size: 1.5rem; font-weight: 700; color: var(--color-gray-900); margin: 0; }
     .btn-export {
       display: inline-flex; align-items: center; gap: 0.5rem;
       padding: 0.5rem 0.875rem; border: 1px solid var(--color-gray-200);
-      border-radius: 8px; background: var(--card-bg); color: var(--color-gray-700);
+      border-radius: 8px; background: var(--bg-card); color: var(--color-gray-700);
       font-size: 0.8125rem; font-weight: 500; cursor: pointer;
     }
     .btn-export:hover { background: var(--glass-bg); border-color: var(--color-primary); color: var(--color-primary); }
@@ -89,12 +89,12 @@ import { PaginationComponent } from '../../../shared/pagination/pagination';
       padding: 0.5rem 0.75rem;
       border: 1px solid var(--glass-border);
       border-radius: 8px;
-      background: var(--card-bg);
-      color: var(--text-primary);
+      background: var(--bg-card);
+      color: var(--color-gray-900);
       font-size: 0.8125rem;
     }
     .table-wrapper {
-      background: var(--card-bg);
+      background: var(--bg-card);
       border: 1px solid var(--glass-border);
       border-radius: 12px;
       overflow: hidden;
@@ -106,16 +106,16 @@ import { PaginationComponent } from '../../../shared/pagination/pagination';
       background: var(--glass-bg);
       font-size: 0.75rem;
       font-weight: 600;
-      color: var(--text-muted);
+      color: var(--color-gray-500);
       text-transform: uppercase;
     }
     .glass-table td {
       padding: 0.75rem 1rem;
       border-top: 1px solid var(--glass-border);
       font-size: 0.8125rem;
-      color: var(--text-primary);
+      color: var(--color-gray-900);
     }
-    .date-cell { white-space: nowrap; font-size: 0.75rem; color: var(--text-muted); }
+    .date-cell { white-space: nowrap; font-size: 0.75rem; color: var(--color-gray-500); }
     .desc-cell { max-width: 300px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .action-pill {
       font-size: 0.6875rem;
@@ -123,14 +123,14 @@ import { PaginationComponent } from '../../../shared/pagination/pagination';
       padding: 0.2rem 0.5rem;
       border-radius: 6px;
       background: var(--glass-bg);
-      color: var(--text-secondary);
+      color: var(--color-gray-700);
       text-transform: uppercase;
     }
     .action-pill[data-action="crear"] { background: #dbeafe; color: #1e40af; }
     .action-pill[data-action="editar"] { background: #fef3c7; color: #92400e; }
     .action-pill[data-action="pagar"] { background: #d1fae5; color: #065f46; }
     .action-pill[data-action="anular"] { background: #fee2e2; color: #991b1b; }
-    .empty { text-align: center; padding: 2rem; color: var(--text-muted); }
+    .empty { text-align: center; padding: 2rem; color: var(--color-gray-500); }
   `],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

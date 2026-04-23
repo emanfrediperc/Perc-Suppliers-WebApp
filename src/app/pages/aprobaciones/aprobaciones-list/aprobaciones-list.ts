@@ -103,12 +103,12 @@ import { PaginationComponent } from '../../../shared/pagination/pagination';
   styles: [`
     .page { max-width: 900px; }
     .page-header { margin-bottom: 1.5rem; }
-    .page-header h1 { font-size: 1.5rem; font-weight: 700; color: var(--text-primary); margin: 0; }
+    .page-header h1 { font-size: 1.5rem; font-weight: 700; color: var(--color-gray-900); margin: 0; }
     .header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 1rem; }
     .btn-export-aprob {
       display: inline-flex; align-items: center; gap: 0.5rem;
       padding: 0.5rem 0.875rem; border: 1px solid var(--color-gray-200);
-      border-radius: 8px; background: var(--card-bg); color: var(--color-gray-700);
+      border-radius: 8px; background: var(--bg-card); color: var(--color-gray-700);
       font-size: 0.8125rem; font-weight: 500; cursor: pointer;
     }
     .btn-export-aprob:hover { background: var(--glass-bg); border-color: var(--color-primary); color: var(--color-primary); }
@@ -120,25 +120,25 @@ import { PaginationComponent } from '../../../shared/pagination/pagination';
       border-radius: 8px;
       cursor: pointer;
       font-size: 0.875rem;
-      color: var(--text-secondary);
+      color: var(--color-gray-700);
       transition: all 0.2s;
       display: flex;
       align-items: center;
       gap: 0.5rem;
     }
-    .tab.active { background: var(--primary); color: white; border-color: var(--primary); }
+    .tab.active { background: var(--color-primary); color: white; border-color: var(--color-primary); }
     .tab-badge { background: #ef4444; color: white; font-size: 0.6875rem; padding: 0 6px; border-radius: 8px; font-weight: 700; }
     .card-list { display: flex; flex-direction: column; gap: 1rem; }
     .approval-card {
-      background: var(--card-bg);
+      background: var(--bg-card);
       border: 1px solid var(--glass-border);
       border-radius: 12px;
       padding: 1.25rem;
     }
     .card-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; }
     .card-info { display: flex; gap: 0.5rem; }
-    .card-type { font-size: 0.75rem; font-weight: 700; background: var(--glass-bg); padding: 0.25rem 0.5rem; border-radius: 6px; color: var(--primary); }
-    .card-entity { font-size: 0.75rem; color: var(--text-muted); padding: 0.25rem 0.5rem; }
+    .card-type { font-size: 0.75rem; font-weight: 700; background: var(--glass-bg); padding: 0.25rem 0.5rem; border-radius: 6px; color: var(--color-primary); }
+    .card-entity { font-size: 0.75rem; color: var(--color-gray-500); padding: 0.25rem 0.5rem; }
     .status-pill {
       font-size: 0.6875rem;
       font-weight: 700;
@@ -153,9 +153,9 @@ import { PaginationComponent } from '../../../shared/pagination/pagination';
     .status-pill.pendiente { background: #fef3c7; color: #92400e; border: 1px solid #fde68a; }
     .status-pill.aprobada { background: #d1fae5; color: #065f46; border: 1px solid #a7f3d0; }
     .status-pill.rechazada { background: #fee2e2; color: #991b1b; border: 1px solid #fecaca; }
-    .card-desc { font-size: 0.875rem; color: var(--text-primary); margin-bottom: 0.75rem; }
-    .card-meta { display: flex; flex-wrap: wrap; gap: 1rem; font-size: 0.75rem; color: var(--text-muted); margin-bottom: 0.75rem; }
-    .card-progress { font-size: 0.8125rem; font-weight: 500; color: var(--text-secondary); margin-bottom: 0.75rem; }
+    .card-desc { font-size: 0.875rem; color: var(--color-gray-900); margin-bottom: 0.75rem; }
+    .card-meta { display: flex; flex-wrap: wrap; gap: 1rem; font-size: 0.75rem; color: var(--color-gray-500); margin-bottom: 0.75rem; }
+    .card-progress { font-size: 0.8125rem; font-weight: 500; color: var(--color-gray-700); margin-bottom: 0.75rem; }
     .card-actions { display: flex; gap: 0.5rem; align-items: center; margin-top: 0.5rem; flex-wrap: wrap; }
     @media (max-width: 600px) {
       .card-actions { flex-direction: column; align-items: stretch; }
@@ -167,7 +167,7 @@ import { PaginationComponent } from '../../../shared/pagination/pagination';
       border: 1px solid var(--glass-border);
       border-radius: 8px;
       background: var(--glass-bg);
-      color: var(--text-primary);
+      color: var(--color-gray-900);
       font-size: 0.8125rem;
     }
     .btn-approve {
@@ -191,12 +191,12 @@ import { PaginationComponent } from '../../../shared/pagination/pagination';
       font-size: 0.8125rem;
     }
     .card-approvers { margin-top: 0.75rem; border-top: 1px solid var(--glass-border); padding-top: 0.75rem; }
-    .approver { display: flex; align-items: center; gap: 0.5rem; font-size: 0.75rem; color: var(--text-secondary); margin-bottom: 0.25rem; }
+    .approver { display: flex; align-items: center; gap: 0.5rem; font-size: 0.75rem; color: var(--color-gray-700); margin-bottom: 0.25rem; }
     .approver-decision { width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.625rem; font-weight: 700; }
     .approver-decision.aprobada { background: #d1fae5; color: #065f46; }
     .approver-decision.rechazada { background: #fee2e2; color: #991b1b; }
-    .approver-comment { color: var(--text-muted); font-style: italic; }
-    .empty { text-align: center; padding: 3rem; color: var(--text-muted); }
+    .approver-comment { color: var(--color-gray-500); font-style: italic; }
+    .empty { text-align: center; padding: 3rem; color: var(--color-gray-500); }
     .btn-reenviar {
       padding: 0.5rem 1.25rem;
       background: #f59e0b;

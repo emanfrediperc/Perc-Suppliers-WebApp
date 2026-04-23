@@ -140,7 +140,7 @@ import { EmptyStateComponent } from '../../shared/empty-state/empty-state';
     .selector-bar { display: flex; align-items: center; gap: 1rem; padding: 1rem; margin-bottom: 1.5rem; }
     .selector-bar label { font-weight: 500; font-size: 0.875rem; color: var(--color-gray-700); white-space: nowrap; }
     .selector-bar select { flex: 1; max-width: 400px; padding: 0.5rem 0.75rem; border: 1px solid var(--color-gray-200); border-radius: var(--radius-md); font-size: 0.875rem; background: var(--glass-bg); color: var(--color-gray-900); }
-    .btn-export { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.5rem 0.875rem; border: 1px solid var(--color-gray-200); border-radius: var(--radius-md); background: var(--card-bg); color: var(--color-gray-700); font-size: 0.8125rem; font-weight: 500; cursor: pointer; margin-left: auto; }
+    .btn-export { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.5rem 0.875rem; border: 1px solid var(--color-gray-200); border-radius: var(--radius-md); background: var(--bg-card); color: var(--color-gray-700); font-size: 0.8125rem; font-weight: 500; cursor: pointer; margin-left: auto; }
     .btn-export:hover:not(:disabled) { background: var(--glass-bg); border-color: var(--color-primary); color: var(--color-primary); }
     .btn-export:disabled { opacity: 0.4; cursor: not-allowed; }
     .summary-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1.5rem; }

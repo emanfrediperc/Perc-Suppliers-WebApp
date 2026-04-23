@@ -112,10 +112,10 @@ import { IdleService } from '../../services/idle.service';
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      color: var(--text-primary);
+      color: var(--color-gray-900);
       transition: all 0.2s;
     }
-    .notif-btn:hover { background: var(--glass-hover); }
+    .notif-btn:hover { background: var(--glass-hover-bg); }
     .notif-btn-mobile {
       margin-left: auto;
       background: rgba(255,255,255,0.15);
@@ -144,7 +144,7 @@ import { IdleService } from '../../services/idle.service';
       right: 0;
       width: 380px;
       max-height: 480px;
-      background: var(--card-bg);
+      background: var(--bg-card);
       border: 1px solid var(--glass-border);
       border-radius: 12px;
       box-shadow: 0 10px 40px rgba(0,0,0,0.15);
@@ -163,7 +163,7 @@ import { IdleService } from '../../services/idle.service';
     .mark-all-btn {
       background: none;
       border: none;
-      color: var(--primary);
+      color: var(--color-primary);
       cursor: pointer;
       font-size: 0.75rem;
       font-weight: 500;
@@ -177,7 +177,7 @@ import { IdleService } from '../../services/idle.service';
       transition: background 0.15s;
       border-bottom: 1px solid var(--glass-border);
     }
-    .notif-item:hover { background: var(--glass-hover); }
+    .notif-item:hover { background: var(--glass-hover-bg); }
     .notif-item.unread { background: rgba(59,130,246,0.05); }
     .notif-icon {
       width: 32px;
@@ -190,16 +190,16 @@ import { IdleService } from '../../services/idle.service';
       flex-shrink: 0;
       font-weight: 700;
       font-size: 0.75rem;
-      color: var(--primary);
+      color: var(--color-primary);
     }
     .notif-icon[data-type="factura_por_vencer"] { color: #f59e0b; background: rgba(245,158,11,0.1); }
     .notif-icon[data-type="pago_confirmado"] { color: #10b981; background: rgba(16,185,129,0.1); }
     .notif-icon[data-type="pago_rechazado"] { color: #ef4444; background: rgba(239,68,68,0.1); }
     .notif-content { flex: 1; min-width: 0; }
-    .notif-title { font-size: 0.8125rem; font-weight: 600; color: var(--text-primary); }
-    .notif-msg { font-size: 0.75rem; color: var(--text-secondary); margin-top: 2px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-    .notif-time { font-size: 0.6875rem; color: var(--text-muted); margin-top: 4px; }
-    .notif-empty { padding: 2rem; text-align: center; color: var(--text-muted); font-size: 0.875rem; }
+    .notif-title { font-size: 0.8125rem; font-weight: 600; color: var(--color-gray-900); }
+    .notif-msg { font-size: 0.75rem; color: var(--color-gray-700); margin-top: 2px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    .notif-time { font-size: 0.6875rem; color: var(--color-gray-500); margin-top: 4px; }
+    .notif-empty { padding: 2rem; text-align: center; color: var(--color-gray-500); font-size: 0.875rem; }
 
     .mobile-header {
       display: none;
