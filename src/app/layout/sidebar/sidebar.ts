@@ -47,11 +47,6 @@ import { OperadorCountsService } from '../../services/operador-counts.service';
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
               <span>Productores</span>
             </a>
-
-            <a routerLink="/empresas" routerLinkActive="active" class="nav-item" (click)="toggle.emit()">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-              <span>Empresas</span>
-            </a>
           }
 
           <a routerLink="/reportes" routerLinkActive="active" class="nav-item" (click)="toggle.emit()">
@@ -66,7 +61,7 @@ import { OperadorCountsService } from '../../services/operador-counts.service';
         </div>
 
         <div class="nav-section">
-          <span class="nav-section-title">Préstamos</span>
+          <span class="nav-section-title">Operaciones</span>
 
           <a routerLink="/prestamos" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" class="nav-item" (click)="toggle.emit()">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M7 17l4-4 4 4 6-6"/></svg>
@@ -84,6 +79,17 @@ import { OperadorCountsService } from '../../services/operador-counts.service';
             }
           </a>
         </div>
+
+        @if (canManage()) {
+          <div class="nav-section">
+            <span class="nav-section-title">Administración</span>
+
+            <a routerLink="/empresas" routerLinkActive="active" class="nav-item" (click)="toggle.emit()">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+              <span>Empresas</span>
+            </a>
+          </div>
+        }
 
         @if (canApprove()) {
           <div class="nav-section">
