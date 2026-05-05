@@ -14,11 +14,13 @@ import { ToastService } from '../../../shared/toast/toast.service';
 import { ToastComponent } from '../../../shared/toast/toast';
 import { PagoModalComponent } from '../pago-modal/pago-modal';
 import { ComentariosSectionComponent } from '../../../shared/comentarios-section/comentarios-section';
+import { SolicitudPagoModalComponent } from '../solicitud-pago-modal/solicitud-pago-modal';
+import { TipoSolicitud } from '../../../services/solicitud-pago.service';
 
 @Component({
   selector: 'app-factura-detail',
   standalone: true,
-  imports: [CurrencyPipe, DatePipe, RouterLink, PageHeaderComponent, GlassCardComponent, GlassTableComponent, StatusBadgeComponent, ConfirmDialogComponent, ToastComponent, PagoModalComponent, ComentariosSectionComponent],
+  imports: [CurrencyPipe, DatePipe, RouterLink, PageHeaderComponent, GlassCardComponent, GlassTableComponent, StatusBadgeComponent, ConfirmDialogComponent, ToastComponent, PagoModalComponent, ComentariosSectionComponent, SolicitudPagoModalComponent],
   template: `
     <app-toast />
     @if (loading()) {
@@ -30,9 +32,13 @@ import { ComentariosSectionComponent } from '../../../shared/comentarios-section
           Volver
         </button>
         @if (factura()!.estado !== 'pagada' && factura()!.estado !== 'anulada') {
-          <button class="btn-primary" (click)="showPago.set(true)">
+          <button class="btn-secondary" (click)="abrirSolicitud('compromiso')" title="Compromiso de pago con fecha futura">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            Compromiso de Pago
+          </button>
+          <button class="btn-primary" (click)="abrirSolicitud('manual')">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-            Registrar Pago
+            Solicitud de Pago
           </button>
         }
       </app-page-header>
@@ -125,6 +131,15 @@ import { ComentariosSectionComponent } from '../../../shared/comentarios-section
 
     <app-pago-modal [open]="showPago()" [factura]="factura()" (close)="showPago.set(false)" (paid)="onPaid()" />
 
+    <app-solicitud-pago-modal
+      [open]="showSolicitud()"
+      [facturaId]="factura()?._id || null"
+      [saldoPendiente]="factura()?.saldoPendiente ?? null"
+      [initialTipo]="solicitudTipo()"
+      (close)="showSolicitud.set(false)"
+      (saved)="onSolicitudCreada()"
+    />
+
     <app-confirm-dialog
       [open]="showConfirmAnular()"
       title="Anular Pago"
@@ -180,6 +195,8 @@ export class FacturaDetailComponent implements OnInit {
   loading = signal(true);
   factura = signal<Factura | null>(null);
   showPago = signal(false);
+  showSolicitud = signal(false);
+  solicitudTipo = signal<TipoSolicitud>('manual');
   showConfirmAnular = signal(false);
   pagoToAnular = signal<Pago | null>(null);
 
@@ -217,6 +234,15 @@ export class FacturaDetailComponent implements OnInit {
 
   onPaid() {
     this.toast.success('Pago registrado correctamente');
+    this.loadFactura();
+  }
+
+  abrirSolicitud(tipo: TipoSolicitud) {
+    this.solicitudTipo.set(tipo);
+    this.showSolicitud.set(true);
+  }
+
+  onSolicitudCreada() {
     this.loadFactura();
   }
 
