@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { UserService, UserAdmin, CreateUserDto } from '../../../services/user.service';
 import { ToastService } from '../../../shared/toast/toast.service';
 
-const ROLES = ['admin', 'tesoreria', 'aprobador', 'operador', 'consulta'];
+const ROLES = ['admin', 'tesoreria', 'aprobador', 'contabilidad', 'operador', 'consulta'];
 
 interface NuevoUsuario extends CreateUserDto {}
 
