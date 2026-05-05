@@ -36,6 +36,11 @@ export const routes: Routes = [
         canActivate: [roleGuard('admin', 'tesoreria')],
       },
       {
+        path: 'solicitudes-pago',
+        loadComponent: () => import('./pages/solicitudes-pago/solicitudes-pago-list').then(m => m.SolicitudesPagoListComponent),
+        canActivate: [roleGuard('admin', 'tesoreria', 'contabilidad', 'operador', 'consulta')],
+      },
+      {
         path: 'aprobaciones',
         loadComponent: () => import('./pages/aprobaciones/aprobaciones-list/aprobaciones-list').then(m => m.AprobacionesListComponent),
         canActivate: [roleGuard('admin', 'aprobador')],
