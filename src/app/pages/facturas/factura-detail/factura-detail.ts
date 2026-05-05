@@ -12,7 +12,6 @@ import { StatusBadgeComponent } from '../../../shared/status-badge/status-badge'
 import { ConfirmDialogComponent } from '../../../shared/confirm-dialog/confirm-dialog';
 import { ToastService } from '../../../shared/toast/toast.service';
 import { ToastComponent } from '../../../shared/toast/toast';
-import { PagoModalComponent } from '../pago-modal/pago-modal';
 import { ComentariosSectionComponent } from '../../../shared/comentarios-section/comentarios-section';
 import { SolicitudPagoModalComponent } from '../solicitud-pago-modal/solicitud-pago-modal';
 import { TipoSolicitud } from '../../../services/solicitud-pago.service';
@@ -20,7 +19,7 @@ import { TipoSolicitud } from '../../../services/solicitud-pago.service';
 @Component({
   selector: 'app-factura-detail',
   standalone: true,
-  imports: [CurrencyPipe, DatePipe, RouterLink, PageHeaderComponent, GlassCardComponent, GlassTableComponent, StatusBadgeComponent, ConfirmDialogComponent, ToastComponent, PagoModalComponent, ComentariosSectionComponent, SolicitudPagoModalComponent],
+  imports: [CurrencyPipe, DatePipe, RouterLink, PageHeaderComponent, GlassCardComponent, GlassTableComponent, StatusBadgeComponent, ConfirmDialogComponent, ToastComponent, ComentariosSectionComponent, SolicitudPagoModalComponent],
   template: `
     <app-toast />
     @if (loading()) {
@@ -129,8 +128,6 @@ import { TipoSolicitud } from '../../../services/solicitud-pago.service';
       <app-comentarios-section entidad="factura" [entidadId]="factura()?._id || ''" />
     }
 
-    <app-pago-modal [open]="showPago()" [factura]="factura()" (close)="showPago.set(false)" (paid)="onPaid()" />
-
     <app-solicitud-pago-modal
       [open]="showSolicitud()"
       [facturaId]="factura()?._id || null"
@@ -194,7 +191,6 @@ import { TipoSolicitud } from '../../../services/solicitud-pago.service';
 export class FacturaDetailComponent implements OnInit {
   loading = signal(true);
   factura = signal<Factura | null>(null);
-  showPago = signal(false);
   showSolicitud = signal(false);
   solicitudTipo = signal<TipoSolicitud>('manual');
   showConfirmAnular = signal(false);
@@ -231,11 +227,6 @@ export class FacturaDetailComponent implements OnInit {
   }
 
   goBack() { window.history.back(); }
-
-  onPaid() {
-    this.toast.success('Pago registrado correctamente');
-    this.loadFactura();
-  }
 
   abrirSolicitud(tipo: TipoSolicitud) {
     this.solicitudTipo.set(tipo);

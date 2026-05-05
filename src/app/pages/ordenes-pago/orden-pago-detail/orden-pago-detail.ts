@@ -9,21 +9,45 @@ import { GlassCardComponent } from '../../../shared/glass-card/glass-card';
 import { GlassTableComponent, TableColumn } from '../../../shared/glass-table/glass-table';
 import { StatusBadgeComponent } from '../../../shared/status-badge/status-badge';
 import { ComentariosSectionComponent } from '../../../shared/comentarios-section/comentarios-section';
+import { SolicitudPagoModalComponent } from '../../facturas/solicitud-pago-modal/solicitud-pago-modal';
+import { TipoSolicitud } from '../../../services/solicitud-pago.service';
+import { ToastService } from '../../../shared/toast/toast.service';
+import { ToastComponent } from '../../../shared/toast/toast';
 
 @Component({
   selector: 'app-orden-pago-detail',
   standalone: true,
-  imports: [CurrencyPipe, DatePipe, TitleCasePipe, PageHeaderComponent, GlassCardComponent, GlassTableComponent, StatusBadgeComponent, ComentariosSectionComponent],
+  imports: [CurrencyPipe, DatePipe, TitleCasePipe, PageHeaderComponent, GlassCardComponent, GlassTableComponent, StatusBadgeComponent, ComentariosSectionComponent, SolicitudPagoModalComponent, ToastComponent],
   template: `
     @if (loading()) {
       <div class="card-glass" style="padding:2rem"><div class="skeleton skeleton-text-lg" style="width:40%"></div></div>
     } @else if (orden()) {
+      <app-toast />
       <app-page-header [title]="'Orden ' + orden()!.numero" [subtitle]="'Proveedor: ' + (orden()!.empresaProveedora?.razonSocial || '-')">
         <button class="btn-secondary" (click)="goBack()">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
           Volver
         </button>
+        @if (orden()!.estado !== 'pagada' && orden()!.estado !== 'anulada') {
+          <button class="btn-secondary" (click)="abrirSolicitud('compromiso')" title="Compromiso de pago con fecha futura">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            Compromiso de Pago
+          </button>
+          <button class="btn-primary" (click)="abrirSolicitud('manual')">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+            Solicitud de Pago
+          </button>
+        }
       </app-page-header>
+
+      <app-solicitud-pago-modal
+        [open]="showSolicitud()"
+        [ordenPagoId]="orden()?._id || null"
+        [saldoPendiente]="orden()?.saldoPendiente ?? null"
+        [initialTipo]="solicitudTipo()"
+        (close)="showSolicitud.set(false)"
+        (saved)="loadOrden()"
+      />
 
       <!-- Info general + Resumen financiero -->
       <div class="top-grid">
@@ -227,6 +251,8 @@ import { ComentariosSectionComponent } from '../../../shared/comentarios-section
 export class OrdenPagoDetailComponent implements OnInit {
   loading = signal(true);
   orden = signal<OrdenPago | null>(null);
+  showSolicitud = signal(false);
+  solicitudTipo = signal<TipoSolicitud>('manual');
 
   facturaColumns: TableColumn[] = [
     { key: 'numero', label: 'Numero' },
@@ -249,14 +275,22 @@ export class OrdenPagoDetailComponent implements OnInit {
     };
   });
 
-  constructor(private route: ActivatedRoute, private service: OrdenPagoService, private pagoService: PagoService, private router: Router) {}
+  constructor(private route: ActivatedRoute, private service: OrdenPagoService, private pagoService: PagoService, private router: Router, private toast: ToastService) {}
 
-  ngOnInit() {
+  ngOnInit() { this.loadOrden(); }
+
+  loadOrden() {
     const id = this.route.snapshot.paramMap.get('id')!;
+    this.loading.set(true);
     this.service.getById(id).subscribe({
       next: (data) => { this.orden.set(data); this.loading.set(false); },
       error: () => { this.loading.set(false); this.router.navigate(['/ordenes-pago']); },
     });
+  }
+
+  abrirSolicitud(tipo: TipoSolicitud) {
+    this.solicitudTipo.set(tipo);
+    this.showSolicitud.set(true);
   }
 
   goBack() { this.router.navigate(['/ordenes-pago']); }

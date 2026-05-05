@@ -49,7 +49,7 @@ const ESTADO_LABELS: Record<EstadoSolicitud, string> = {
           <thead>
             <tr>
               <th>Tipo</th>
-              <th>Factura</th>
+              <th>Referencia</th>
               <th>Proveedor</th>
               <th>Monto</th>
               <th>Vencimiento</th>
@@ -68,7 +68,13 @@ const ESTADO_LABELS: Record<EstadoSolicitud, string> = {
                     <span class="chip">Manual</span>
                   }
                 </td>
-                <td><a [routerLink]="['/facturas', s.factura?._id]">{{ s.factura?.numero || '—' }}</a></td>
+                <td>
+                  @if (s.factura) {
+                    <a [routerLink]="['/facturas', s.factura._id]">Factura {{ s.factura.numero }}</a>
+                  } @else if (s.ordenPago) {
+                    <a [routerLink]="['/ordenes-pago', s.ordenPago._id]">Orden {{ s.ordenPago.numero }}</a>
+                  } @else { — }
+                </td>
                 <td>{{ s.empresaProveedora?.razonSocial || '—' }}</td>
                 <td>{{ s.monto | currency:'ARS':'ARS ':'1.2-2' }}</td>
                 <td>{{ s.fechaVencimiento ? (s.fechaVencimiento | date:'dd/MM/yyyy') : '—' }}</td>

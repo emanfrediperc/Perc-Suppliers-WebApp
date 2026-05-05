@@ -8,7 +8,8 @@ export type MedioPago = 'transferencia' | 'cheque' | 'efectivo' | 'compensacion'
 
 export interface SolicitudPago {
   _id: string;
-  factura: any;
+  factura?: any;
+  ordenPago?: any;
   empresaProveedora: any;
   tipo: TipoSolicitud;
   monto: number;
@@ -30,7 +31,8 @@ export interface SolicitudPago {
 }
 
 export interface CreateSolicitudPagoDto {
-  factura: string;
+  factura?: string;
+  ordenPago?: string;
   tipo: TipoSolicitud;
   monto: number;
   fechaVencimiento?: string;

@@ -89,6 +89,7 @@ import { SolicitudPagoService, MedioPago, TipoSolicitud } from '../../../service
 export class SolicitudPagoModalComponent implements OnChanges {
   open = input(false);
   facturaId = input<string | null>(null);
+  ordenPagoId = input<string | null>(null);
   saldoPendiente = input<number | null>(null);
   initialTipo = input<TipoSolicitud>('manual');
   close = output<void>();
@@ -126,7 +127,7 @@ export class SolicitudPagoModalComponent implements OnChanges {
   }
 
   isValid(): boolean {
-    if (!this.facturaId()) return false;
+    if (!this.facturaId() && !this.ordenPagoId()) return false;
     if (this.monto <= 0) return false;
     if (!this.medioPago) return false;
     if (this.tipo() === 'compromiso') {
@@ -141,7 +142,8 @@ export class SolicitudPagoModalComponent implements OnChanges {
     if (!this.isValid()) return;
     this.submitting.set(true);
     this.service.create({
-      factura: this.facturaId()!,
+      factura: this.facturaId() || undefined,
+      ordenPago: this.ordenPagoId() || undefined,
       tipo: this.tipo(),
       monto: this.monto,
       fechaVencimiento: this.tipo() === 'compromiso' ? this.fechaVencimiento : undefined,
