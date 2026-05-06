@@ -34,6 +34,10 @@ export interface EmpresaProveedora {
   convenios: Convenio[];
   activa: boolean;
   datosBancarios?: { banco: string; cbu: string; alias: string };
+  apocrifoOverride?: boolean;
+  apocrifoOverrideMotivo?: string;
+  apocrifoOverridePor?: string;
+  apocrifoOverrideFecha?: string;
   createdAt: string;
 }
 
@@ -181,6 +185,9 @@ export interface DashboardSummary {
   totalProveedores: number;
   montoPagado: number;
   saldoPendiente: number;
+  solicitudesPendientes?: number;
+  solicitudesEnProceso?: number;
+  montoComprometidoFuturo?: number;
   trends: DashboardTrends;
 }
 

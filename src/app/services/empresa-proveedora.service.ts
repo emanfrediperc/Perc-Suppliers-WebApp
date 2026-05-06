@@ -29,4 +29,8 @@ export class EmpresaProveedoraService {
   consultarCuit(cuit: string) {
     return this.http.get<AfipContribuyente>(`${this.url}/consultar-cuit/${cuit}`);
   }
+
+  setApocrifoOverride(id: string, activo: boolean, motivo?: string) {
+    return this.http.patch<EmpresaProveedora>(`${this.url}/${id}/apocrifo-override`, { activo, motivo });
+  }
 }

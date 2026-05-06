@@ -69,6 +69,24 @@ import { DateRangeSelectorComponent } from '../../shared/date-range-selector/dat
           <div class="stat-sub">{{ summary()!.totalProveedores }} proveedores</div>
         </div>
       </div>
+
+      <div class="stats-grid" style="margin-top:0.75rem">
+        <div class="card-glass stat-card clickable-card" (click)="navigateTo('/solicitudes-pago')">
+          <div class="stat-value">{{ summary()!.solicitudesPendientes ?? 0 }}</div>
+          <div class="stat-label">Solicitudes Pendientes</div>
+          <div class="stat-sub">esperando aprobación de contabilidad</div>
+        </div>
+        <div class="card-glass stat-card clickable-card" (click)="navigateTo('/solicitudes-pago')">
+          <div class="stat-value">{{ summary()!.solicitudesEnProceso ?? 0 }}</div>
+          <div class="stat-label">Solicitudes En Proceso</div>
+          <div class="stat-sub">aprobadas, esperando ejecución/procesamiento</div>
+        </div>
+        <div class="card-glass stat-card clickable-card" (click)="navigateTo('/solicitudes-pago')">
+          <div class="stat-value">{{ (summary()!.montoComprometidoFuturo ?? 0) | currency:'ARS':'ARS ':'1.0-0' }}</div>
+          <div class="stat-label">Comprometido Futuro</div>
+          <div class="stat-sub">compromisos vigentes con vencimiento futuro</div>
+        </div>
+      </div>
     }
 
     <!-- Charts row -->
