@@ -26,7 +26,12 @@ const ESTADO_LABELS: Record<EstadoSolicitud, string> = {
   imports: [FormsModule, CurrencyPipe, DatePipe, RouterLink, PageHeaderComponent, GlassCardComponent, StatusBadgeComponent, ToastComponent, GlassModalComponent, NumberFormatDirective],
   template: `
     <app-toast />
-    <app-page-header title="Solicitudes de Pago" [subtitle]="bandejaTitle()" />
+    <app-page-header title="Solicitudes de Pago" [subtitle]="bandejaTitle()">
+      <button class="btn-secondary" (click)="exportar()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Exportar Excel
+      </button>
+    </app-page-header>
 
     <div class="tabs">
       @for (e of estados; track e.value) {
@@ -286,6 +291,11 @@ export class SolicitudesPagoListComponent implements OnInit {
       next: res => { this.items.set(res.data); this.loading.set(false); },
       error: () => { this.loading.set(false); this.toast.error('Error cargando solicitudes'); },
     });
+  }
+
+  exportar() {
+    const url = this.service.exportUrl(this.filtroEstado() ? { estado: this.filtroEstado() } : {});
+    window.open(url, '_blank');
   }
 
   setEstado(e: EstadoSolicitud | '') { this.filtroEstado.set(e); }

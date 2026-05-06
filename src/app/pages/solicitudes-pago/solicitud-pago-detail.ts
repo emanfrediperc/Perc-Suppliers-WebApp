@@ -7,11 +7,14 @@ import { StatusBadgeComponent } from '../../shared/status-badge/status-badge';
 import { ToastComponent } from '../../shared/toast/toast';
 import { ToastService } from '../../shared/toast/toast.service';
 import { SolicitudPagoService, SolicitudPago } from '../../services/solicitud-pago.service';
+import { AuthService } from '../../services/auth.service';
+import { GlassModalComponent } from '../../shared/glass-modal/glass-modal';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-solicitud-pago-detail',
   standalone: true,
-  imports: [CurrencyPipe, DatePipe, TitleCasePipe, RouterLink, PageHeaderComponent, GlassCardComponent, StatusBadgeComponent, ToastComponent],
+  imports: [CurrencyPipe, DatePipe, TitleCasePipe, RouterLink, FormsModule, PageHeaderComponent, GlassCardComponent, StatusBadgeComponent, ToastComponent, GlassModalComponent],
   template: `
     <app-toast />
     @if (loading()) {
@@ -26,7 +29,34 @@ import { SolicitudPagoService, SolicitudPago } from '../../services/solicitud-pa
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
           Verificar integridad
         </button>
+        @if (canRevertir()) {
+          <button class="btn-danger" (click)="showRevertir.set(true)">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+            Revertir
+          </button>
+        }
       </app-page-header>
+
+      @if (sol()!.revertido) {
+        <div class="revertido-banner">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          <div>
+            <strong>Solicitud revertida</strong>
+            <p>El pago generado fue anulado y los saldos restaurados. {{ sol()!.revertidoPor?.motivo }}</p>
+          </div>
+        </div>
+      }
+
+      <app-glass-modal [open]="showRevertir()" title="Revertir solicitud procesada" maxWidth="440px" (close)="showRevertir.set(false)">
+        <p>El Pago generado quedará anulado y los saldos de factura/orden volverán a su estado anterior.</p>
+        <p style="font-size:0.8125rem;color:var(--color-gray-600)">Solo usar si el pago fue rebotado por el banco o se ejecutó por error.</p>
+        <label class="lbl">Motivo <span class="required">*</span></label>
+        <textarea rows="2" [(ngModel)]="motivoRevertir" placeholder="Ej: pago rebotado por el banco"></textarea>
+        <div class="actions-modal">
+          <button class="btn-secondary" (click)="showRevertir.set(false)">Cancelar</button>
+          <button class="btn-danger" (click)="revertir()" [disabled]="busyRevertir() || !motivoRevertir.trim()">Revertir</button>
+        </div>
+      </app-glass-modal>
 
       @if (integridad()) {
         <div class="integridad-banner" [class.ok]="integridad()!.valid" [class.bad]="!integridad()!.valid">
@@ -195,6 +225,13 @@ import { SolicitudPagoService, SolicitudPago } from '../../services/solicitud-pa
     .integridad-banner { display:flex; align-items:center; gap:0.75rem; padding:0.625rem 0.875rem; margin-bottom:1rem; border-radius:var(--radius-md); border:1px solid; font-size:0.875rem; }
     .integridad-banner.ok { background:color-mix(in srgb, var(--color-success) 8%, transparent); border-color:color-mix(in srgb, var(--color-success) 30%, transparent); color:var(--color-success); }
     .integridad-banner.bad { background:color-mix(in srgb, var(--color-error) 10%, transparent); border-color:color-mix(in srgb, var(--color-error) 40%, transparent); color:var(--color-error); }
+    .revertido-banner { display:flex; gap:0.75rem; align-items:flex-start; padding:0.875rem 1rem; margin-bottom:1rem; background:color-mix(in srgb, var(--color-error) 8%, transparent); border-left:3px solid var(--color-error); border-radius:var(--radius-md); color:var(--color-error); }
+    .revertido-banner strong { font-size:0.875rem; }
+    .revertido-banner p { font-size:0.75rem; margin-top:0.25rem; color:var(--color-gray-700); }
+    .lbl { display:block; font-size:0.75rem; font-weight:500; color:var(--color-gray-600); margin:0.5rem 0 0.25rem; }
+    .required { color:var(--color-error); }
+    textarea { width:100%; padding:0.625rem 0.75rem; border:1px solid var(--color-gray-200); border-radius:var(--radius-md); font-size:0.875rem; background:var(--glass-bg); font-family:inherit; box-sizing:border-box; }
+    .actions-modal { display:flex; gap:0.5rem; justify-content:flex-end; margin-top:1rem; }
   `],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -203,13 +240,36 @@ export class SolicitudPagoDetailComponent implements OnInit {
   sol = signal<SolicitudPago | null>(null);
   verifying = signal(false);
   integridad = signal<{ valid: boolean; brokenAt: number | null; total: number; conTsa: number } | null>(null);
+  showRevertir = signal(false);
+  busyRevertir = signal(false);
+  motivoRevertir = '';
 
   constructor(
     private route: ActivatedRoute,
     private router: Router,
     private service: SolicitudPagoService,
     private toast: ToastService,
+    private auth: AuthService,
   ) {}
+
+  canRevertir = () => this.sol()?.estado === 'procesado' && !this.sol()?.revertido && this.auth.user()?.role === 'admin';
+
+  revertir() {
+    const id = this.sol()?._id; if (!id || !this.motivoRevertir.trim()) return;
+    this.busyRevertir.set(true);
+    this.service.revertir(id, this.motivoRevertir).subscribe({
+      next: (s) => {
+        this.busyRevertir.set(false);
+        this.showRevertir.set(false);
+        this.toast.success('Solicitud revertida — Pago anulado y saldos restaurados');
+        this.sol.set(s);
+      },
+      error: (err) => {
+        this.busyRevertir.set(false);
+        this.toast.error(err.error?.message || 'Error al revertir');
+      },
+    });
+  }
 
   ngOnInit() {
     const id = this.route.snapshot.paramMap.get('id')!;

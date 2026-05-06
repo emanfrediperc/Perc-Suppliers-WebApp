@@ -28,6 +28,8 @@ export interface SolicitudPago {
   historial: any[];
   reagendadoVeces: number;
   pagoGenerado?: string;
+  revertido?: boolean;
+  revertidoPor?: { user: any; fecha: string; motivo?: string };
   createdAt: string;
 }
 
@@ -83,6 +85,15 @@ export class SolicitudPagoService {
   aprobar(id: string, motivo?: string) { return this.http.patch<SolicitudPago>(`${this.url}/${id}/aprobar`, { motivo }); }
   ejecutar(id: string, motivo?: string) { return this.http.patch<SolicitudPago>(`${this.url}/${id}/ejecutar`, { motivo }); }
   cancelar(id: string, motivo: string) { return this.http.patch<SolicitudPago>(`${this.url}/${id}/cancelar`, { motivo }); }
+  revertir(id: string, motivo: string) { return this.http.patch<SolicitudPago>(`${this.url}/${id}/revertir`, { motivo }); }
+
+  exportUrl(filter: { estado?: string; tipo?: string } = {}) {
+    const qs = Object.entries(filter)
+      .filter(([, v]) => v !== undefined && v !== '')
+      .map(([k, v]) => `${k}=${encodeURIComponent(String(v))}`)
+      .join('&');
+    return `${this.url}/export${qs ? '?' + qs : ''}`;
+  }
   reagendar(id: string, nuevaFecha: string, motivo?: string) {
     return this.http.patch<SolicitudPago>(`${this.url}/${id}/reagendar`, { nuevaFecha, motivo });
   }
