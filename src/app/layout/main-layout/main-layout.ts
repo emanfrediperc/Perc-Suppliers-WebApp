@@ -6,6 +6,8 @@ import { GlobalSearchComponent } from '../../shared/global-search/global-search'
 import { SessionTimerComponent } from '../../shared/session-timer/session-timer';
 import { NotificacionService, Notificacion } from '../../services/notificacion.service';
 import { IdleService } from '../../services/idle.service';
+import { AuthService } from '../../services/auth.service';
+import { IntegrationsStatusService } from '../../services/integrations-status.service';
 
 @Component({
   selector: 'app-main-layout',
@@ -78,6 +80,18 @@ import { IdleService } from '../../services/idle.service';
             </div>
           </div>
         </div>
+        @if (showIntegrationsBanner()) {
+          <div class="integrations-banner">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+            <div class="banner-body">
+              <strong>Integraciones desactivadas:</strong>
+              @for (w of integrationsStatus.warnings(); track w.key) {
+                <span class="warn-pill" [title]="w.detail">{{ w.label }}</span>
+              }
+            </div>
+            <button class="banner-close" (click)="dismissBanner()" title="Ocultar">×</button>
+          </div>
+        }
         <router-outlet />
       </main>
     </div>
@@ -243,18 +257,44 @@ import { IdleService } from '../../services/idle.service';
       .top-bar { display: none; }
       .notif-dropdown { width: calc(100vw - 2rem); right: -1rem; }
     }
+    .integrations-banner {
+      display:flex; align-items:center; gap:0.625rem;
+      margin:0 1.5rem 1rem; padding:0.625rem 0.875rem;
+      background:color-mix(in srgb, var(--color-warning) 12%, transparent);
+      border:1px solid color-mix(in srgb, var(--color-warning) 30%, transparent);
+      border-radius:var(--radius-md); color:var(--color-warning);
+      font-size:0.8125rem;
+    }
+    .integrations-banner .banner-body { flex:1; display:flex; gap:0.5rem; align-items:center; flex-wrap:wrap; }
+    .warn-pill {
+      background:color-mix(in srgb, var(--color-warning) 22%, transparent);
+      color:var(--color-warning);
+      padding:0.125rem 0.5rem; border-radius:999px; font-weight:600; cursor:help;
+    }
+    .banner-close { background:none; border:none; color:inherit; cursor:pointer; font-size:1.25rem; line-height:1; padding:0 0.25rem; }
   `],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MainLayoutComponent {
   sidebarOpen = signal(false);
   notifOpen = signal(false);
+  bannerDismissed = signal(false);
+
+  showIntegrationsBanner = () =>
+    this.auth.user()?.role === 'admin'
+    && !this.bannerDismissed()
+    && this.integrationsStatus.warnings().length > 0;
 
   constructor(
     private router: Router,
     public notifService: NotificacionService,
     private idleService: IdleService,
+    public auth: AuthService,
+    public integrationsStatus: IntegrationsStatusService,
   ) {
+    if (this.auth.isAuthenticated() && this.auth.user()?.role === 'admin') {
+      this.integrationsStatus.load();
+    }
     this.idleService.start();
     this.router.events.pipe(
       filter(e => e instanceof NavigationEnd),
@@ -262,6 +302,10 @@ export class MainLayoutComponent {
       this.sidebarOpen.set(false);
       this.notifOpen.set(false);
     });
+  }
+
+  dismissBanner() {
+    this.bannerDismissed.set(true);
   }
 
   formatTime(dateStr: string): string {
