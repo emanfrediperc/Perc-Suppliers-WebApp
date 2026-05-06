@@ -82,6 +82,7 @@ const ESTADO_LABELS: Record<EstadoSolicitud, string> = {
                 <td><app-status-badge [status]="s.estado" /></td>
                 <td>
                   <div class="actions">
+                    <a class="btn-mini" [routerLink]="['/solicitudes-pago', s._id]">Ver</a>
                     @if (canAprobar(s)) {
                       <button class="btn-mini btn-success" (click)="abrirAprobar(s)">Aprobar</button>
                     }

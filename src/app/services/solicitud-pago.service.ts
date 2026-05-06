@@ -56,6 +56,14 @@ export class SolicitudPagoService {
 
   get(id: string) { return this.http.get<SolicitudPago>(`${this.url}/${id}`); }
 
+  verificarIntegridad(id: string) {
+    return this.http.get<{ valid: boolean; brokenAt: number | null; total: number; conTsa: number }>(`${this.url}/${id}/verificar-integridad`);
+  }
+
+  getComprobanteUrl(id: string, tipo: 'perc' | 'retenciones') {
+    return this.http.get<{ url: string; nombre: string }>(`${this.url}/${id}/comprobante/${tipo}`);
+  }
+
   create(dto: CreateSolicitudPagoDto) { return this.http.post<SolicitudPago>(this.url, dto); }
 
   aprobar(id: string, motivo?: string) { return this.http.patch<SolicitudPago>(`${this.url}/${id}/aprobar`, { motivo }); }
