@@ -19,4 +19,20 @@ export class ConvenioService {
   update(id: string, data: any) { return this.http.patch<Convenio>(`${this.url}/${id}`, data); }
   addEmpresa(id: string, empresaId: string) { return this.http.post<Convenio>(`${this.url}/${id}/empresas`, { empresaId }); }
   removeEmpresa(id: string, empresaId: string) { return this.http.delete<Convenio>(`${this.url}/${id}/empresas/${empresaId}`); }
+
+  getHistorico(id: string, empresaProveedora?: string) {
+    let p = new HttpParams();
+    if (empresaProveedora) p = p.set('empresaProveedora', empresaProveedora);
+    return this.http.get<{
+      productor: { _id: string; nombre: string; comisionPorcentaje: number; descuentoPorcentaje: number };
+      totalCombinadoAdeudado: number;
+      porEmpresa: { _id: string; razonSocial: string; cuit: string; montoTotal: number; saldoPendiente: number; montoPagado: number; cantidad: number }[];
+      facturas: any[];
+      empresaFiltrada: string | null;
+    }>(`${this.url}/${id}/historico`, { params: p });
+  }
+
+  historicoExportUrl(id: string, empresaProveedora?: string) {
+    return `${this.url}/${id}/historico/export${empresaProveedora ? '?empresaProveedora=' + encodeURIComponent(empresaProveedora) : ''}`;
+  }
 }

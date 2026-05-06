@@ -25,22 +25,9 @@ import { SolicitudPagoService } from '../../services/solicitud-pago.service';
         <div class="nav-section">
           <span class="nav-section-title">Tesorería</span>
 
-          <a routerLink="/dashboard" routerLinkActive="active" class="nav-item" (click)="toggle.emit()">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
-            <span>Dashboard</span>
-          </a>
-
-          <a routerLink="/ordenes-pago" routerLinkActive="active" class="nav-item" (click)="toggle.emit()">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
-            <span>Ordenes de Pago</span>
-            @if (canExecute() && operadorCountsService.counts().ordenesPago > 0) {
-              <span class="badge badge-action">{{ operadorCountsService.counts().ordenesPago }}</span>
-            }
-          </a>
-
-          <a routerLink="/facturas" routerLinkActive="active" class="nav-item" (click)="toggle.emit()">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><line x1="10" y1="9" x2="8" y2="9"/></svg>
-            <span>Facturas</span>
+          <a routerLink="/empresas-proveedoras" routerLinkActive="active" class="nav-item" (click)="toggle.emit()">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+            <span>Proveedores</span>
           </a>
 
           @if (canManage()) {
@@ -50,14 +37,24 @@ import { SolicitudPagoService } from '../../services/solicitud-pago.service';
             </a>
           }
 
+          <a routerLink="/facturas" routerLinkActive="active" class="nav-item" (click)="toggle.emit()">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><line x1="10" y1="9" x2="8" y2="9"/></svg>
+            <span>Facturas</span>
+          </a>
+
           <a routerLink="/reportes" routerLinkActive="active" class="nav-item" (click)="toggle.emit()">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 20V10"/><path d="M12 20V4"/><path d="M6 20v-6"/></svg>
             <span>Reportes</span>
           </a>
 
-          <a routerLink="/estado-cuenta" routerLinkActive="active" class="nav-item" (click)="toggle.emit()">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1v22"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-            <span>Estado de Cuenta</span>
+          <div class="nav-divider"></div>
+
+          <a routerLink="/ordenes-pago" routerLinkActive="active" class="nav-item" (click)="toggle.emit()">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+            <span>Ordenes de Pago</span>
+            @if (canExecute() && operadorCountsService.counts().ordenesPago > 0) {
+              <span class="badge badge-action">{{ operadorCountsService.counts().ordenesPago }}</span>
+            }
           </a>
         </div>
 
