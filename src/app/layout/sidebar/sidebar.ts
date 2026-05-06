@@ -6,6 +6,7 @@ import { ThemeService, ThemeMode } from '../../services/theme.service';
 import { NotificacionService } from '../../services/notificacion.service';
 import { AprobacionService } from '../../services/aprobacion.service';
 import { OperadorCountsService } from '../../services/operador-counts.service';
+import { SolicitudPagoService } from '../../services/solicitud-pago.service';
 
 @Component({
   selector: 'app-sidebar',
@@ -109,6 +110,9 @@ import { OperadorCountsService } from '../../services/operador-counts.service';
           <a routerLink="/solicitudes-pago" routerLinkActive="active" class="nav-item" (click)="toggle.emit()">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="15" y2="17"/></svg>
             <span>Solicitudes de Pago</span>
+            @if (solicitudPagoService.pendingCount() > 0) {
+              <span class="badge">{{ solicitudPagoService.pendingCount() }}</span>
+            }
           </a>
         }
 
@@ -181,12 +185,14 @@ export class SidebarComponent implements OnInit, OnDestroy {
     public notifService: NotificacionService,
     public aprobacionService: AprobacionService,
     public operadorCountsService: OperadorCountsService,
+    public solicitudPagoService: SolicitudPagoService,
   ) {}
 
   ngOnInit() {
     if (this.auth.isAuthenticated()) {
       this.notifService.startPolling();
       this.aprobacionService.loadPendingCount();
+      if (this.canSeeSolicitudes()) this.solicitudPagoService.loadPendingCount();
       if (this.canExecute()) {
         this.operadorCountsService.load();
         // Refresco suave cada 60s; alcanza para que el operador vea nuevos items

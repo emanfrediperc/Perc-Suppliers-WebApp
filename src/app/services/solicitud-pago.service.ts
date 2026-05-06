@@ -1,4 +1,5 @@
-import { Injectable } from '@angular/core';
+import { Injectable, signal, inject, DestroyRef } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { environment } from '../../environments/environment';
 
@@ -44,7 +45,20 @@ export interface CreateSolicitudPagoDto {
 @Injectable({ providedIn: 'root' })
 export class SolicitudPagoService {
   private url = `${environment.apiUrl}/solicitudes-pago`;
+  private _pendingCount = signal(0);
+  private destroyRef = inject(DestroyRef);
+  pendingCount = this._pendingCount.asReadonly();
+
   constructor(private http: HttpClient) {}
+
+  loadPendingCount() {
+    this.http.get<{ count: number; estado: string | null }>(`${this.url}/pending-count`).pipe(
+      takeUntilDestroyed(this.destroyRef),
+    ).subscribe({
+      next: (r) => this._pendingCount.set(r.count),
+      error: () => this._pendingCount.set(0),
+    });
+  }
 
   list(filter: { estado?: string; tipo?: string; factura?: string; empresaProveedora?: string; page?: number; limit?: number } = {}) {
     let params = new HttpParams();
