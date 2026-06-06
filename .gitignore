@@ -48,3 +48,4 @@ Thumbs.db
 /playwright-report/
 /playwright/.cache/
 /.auth/*.json
+ui-e2e.mjs
