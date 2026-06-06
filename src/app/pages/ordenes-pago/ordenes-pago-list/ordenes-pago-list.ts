@@ -59,8 +59,8 @@ import { ExportService } from '../../../services/export.service';
         <option value="esperando_aprobacion">Esperando aprobación</option>
         <option value="rechazado">Rechazado</option>
       </select>
-      <input type="date" class="filter-date" [(ngModel)]="fechaDesde" (ngModelChange)="onFilterChange()" placeholder="Desde" />
-      <input type="date" class="filter-date" [(ngModel)]="fechaHasta" (ngModelChange)="onFilterChange()" placeholder="Hasta" />
+      <input type="date" class="filter-date" [(ngModel)]="fechaDesde" (ngModelChange)="onFilterChange()" placeholder="Desde" aria-label="Filtrar desde fecha" />
+      <input type="date" class="filter-date" [(ngModel)]="fechaHasta" (ngModelChange)="onFilterChange()" placeholder="Hasta" aria-label="Filtrar hasta fecha" />
       @if (hasFilters()) {
         <button class="btn-clear-filters" (click)="clearFilters()">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
