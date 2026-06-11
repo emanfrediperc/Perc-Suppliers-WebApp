@@ -14,7 +14,15 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
       const raw = error?.error?.message;
       const backendMsg = Array.isArray(raw) ? raw.join(', ') : raw;
 
-      if (error.status === 401) {
+      // Solo cerrar sesión en un 401 de una sesión YA activa y fuera del flujo de
+      // autenticación. Si no, un código 2FA incorrecto (o un login fallido) — que el
+      // backend responde como 401 — echaría al usuario en medio del flujo.
+      const url = req.url;
+      const esFlujoAuth =
+        url.includes('/auth/login') ||
+        url.includes('/auth/register') ||
+        url.includes('/auth/totp');
+      if (error.status === 401 && auth.isAuthenticated() && !esFlujoAuth) {
         auth.logout();
       } else if (error.status === 403) {
         toast.error('No tiene permisos para realizar esta accion');

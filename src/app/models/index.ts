@@ -12,6 +12,20 @@ export interface AuthResponse {
   user: User;
 }
 
+/** Respuesta del login cuando 2FA está activo: todavía no hay access_token. */
+export interface LoginChallenge {
+  requiere2fa: true;
+  requiereEnrolarTotp: boolean;
+  challengeToken: string;
+  enrolamiento?: { otpauthUrl: string; qrDataUrl: string };
+}
+
+export type LoginResult = AuthResponse | LoginChallenge;
+
+export interface EnrolarLoginResponse extends AuthResponse {
+  codigosRecuperacion: string[];
+}
+
 export interface PaginatedResponse<T> {
   data: T[];
   total: number;
