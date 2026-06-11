@@ -3,7 +3,12 @@ import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { tap } from 'rxjs';
 import { environment } from '../../environments/environment';
-import { AuthResponse, User } from '../models';
+import {
+  AuthResponse,
+  User,
+  LoginResult,
+  EnrolarLoginResponse,
+} from '../models';
 
 const TOKEN_KEY = 'suppliers_access_token';
 const USER_KEY = 'suppliers_user';
@@ -19,7 +24,21 @@ export class AuthService {
   constructor(private http: HttpClient, private router: Router) {}
 
   login(email: string, password: string) {
-    return this.http.post<AuthResponse>(`${environment.apiUrl}/auth/login`, { email, password })
+    return this.http.post<LoginResult>(`${environment.apiUrl}/auth/login`, { email, password })
+      // Solo abre sesión si el backend ya devolvió el access_token (2FA off).
+      // Si devuelve un challenge (2FA on), el componente sigue con el paso del código.
+      .pipe(tap(res => { if ('access_token' in res) this.setSession(res); }));
+  }
+
+  /** Paso 2 del login 2FA: validar código TOTP (o de recuperación). */
+  loginTotp(challengeToken: string, codigo: string) {
+    return this.http.post<AuthResponse>(`${environment.apiUrl}/auth/login/totp`, { challengeToken, codigo })
+      .pipe(tap(res => this.setSession(res)));
+  }
+
+  /** Paso 2 del login 2FA cuando el usuario aún no tiene TOTP: confirmar enrolamiento. */
+  loginTotpEnrolar(challengeToken: string, codigo: string) {
+    return this.http.post<EnrolarLoginResponse>(`${environment.apiUrl}/auth/login/totp-enrolar`, { challengeToken, codigo })
       .pipe(tap(res => this.setSession(res)));
   }
 
