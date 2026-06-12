@@ -335,11 +335,23 @@ export class AprobarComponent implements OnInit {
   ngOnInit() {
     this.meta.addTag({ name: 'referrer', content: 'no-referrer' });
 
-    const params = this.route.snapshot.queryParamMap;
-    this.token = params.get('t') ?? '';
-    const decisionParam = params.get('decision');
+    // SEGURIDAD: el token de aprobación se prioriza desde el FRAGMENTO (#) de la
+    // URL, que el navegador NUNCA envía al servidor (no aparece en access logs ni
+    // en headers Referer). El query param `?t=` se mantiene solo como fallback de
+    // compatibilidad con enlaces ya emitidos. Tras leerlo se limpia la barra de
+    // direcciones para que el token no quede en el historial/bookmarks.
+    const fragmentParams = new URLSearchParams(this.route.snapshot.fragment ?? '');
+    const queryParams = this.route.snapshot.queryParamMap;
+
+    this.token = fragmentParams.get('t') ?? queryParams.get('t') ?? '';
+    const decisionParam =
+      fragmentParams.get('decision') ?? queryParams.get('decision');
     if (decisionParam === 'aprobar' || decisionParam === 'rechazar') {
       this.decision.set(decisionParam);
+    }
+
+    if (this.token) {
+      this.scrubTokenFromUrl();
     }
 
     if (!this.token) {
@@ -376,6 +388,19 @@ export class AprobarComponent implements OnInit {
         this.submitError.set(err.error?.message || 'Ocurrió un error al registrar la decisión. Intentá nuevamente.');
       },
     });
+  }
+
+  /**
+   * SEGURIDAD: borra cualquier rastro del token de la barra de direcciones
+   * (query `?t=` y fragmento `#...`) usando replaceState, sin recargar ni
+   * disparar navegación. Evita que el token quede en el historial del navegador,
+   * en un bookmark accidental o en una captura de pantalla de la URL.
+   */
+  private scrubTokenFromUrl(): void {
+    if (typeof history === 'undefined' || typeof location === 'undefined') {
+      return;
+    }
+    history.replaceState(history.state, '', location.pathname);
   }
 
   tipoLabel(tipo: string): string {
