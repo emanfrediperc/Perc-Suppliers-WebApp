@@ -93,9 +93,11 @@ export class AprobacionService {
   }
 
   getContextoToken(token: string): Observable<ContextoToken> {
-    return this.http.get<ContextoToken>(
-      `${this.url}/contexto-token/${encodeURIComponent(token)}`,
-    );
+    // SEGURIDAD: el token NO debe viajar en el path/query de la URL — quedaría
+    // registrado en access logs (nginx/Railway), historial del navegador, cache
+    // y headers Referer. Se envía en el BODY de un POST, que no se loguea por
+    // defecto. La operación sigue siendo idempotente/read-only en el backend.
+    return this.http.post<ContextoToken>(`${this.url}/contexto-token`, { token });
   }
 
   decidirViaToken(token: string, decision: 'aprobar' | 'rechazar', comentario?: string): Observable<{ mensaje: string; estadoAprobacion: string }> {
